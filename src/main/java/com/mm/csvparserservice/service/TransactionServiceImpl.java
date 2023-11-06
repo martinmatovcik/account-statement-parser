@@ -3,6 +3,8 @@ package com.mm.csvparserservice.service;
 import com.mm.csvparserservice.dto.TransactionDto;
 import com.mm.csvparserservice.model.Transaction;
 import com.mm.csvparserservice.repository.TransactionRepository;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.hssf.usermodel.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -46,6 +49,66 @@ public class TransactionServiceImpl implements TransactionService {
     return transactionRepository.findAll().stream()
         .map(Transaction::toDto)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public void generateExcel(HttpServletResponse response) {
+    List<Transaction> transactions = transactionRepository.findAll();
+    String[] metaData = {
+      "transactionId",
+      "fioOperationId",
+      "date",
+      "amount",
+      "currency",
+      "recipientAccount",
+      "recipientAccountName",
+      "bankCode",
+      "bankName",
+      "constantSymbol",
+      "variableSymbol",
+      "specificSymbol",
+      "transactionNote",
+      "recipientMessage",
+      "transactionType",
+      "carriedOut",
+      "transactionSpecification",
+      "bicCode",
+      "fioInstructionId"
+    };
+
+    HSSFWorkbook workbook = new HSSFWorkbook();
+    HSSFSheet sheet = workbook.createSheet("Raw-Data");
+
+    HSSFRow headerRow = sheet.createRow(0);
+    headerRow.setRowStyle(setFontBold(workbook, true));
+    createCellsInRow(headerRow, metaData);
+
+    setFontBold(workbook, false);
+
+    ServletOutputStream outputStream = null;
+    try {
+      outputStream = response.getOutputStream();
+      workbook.write(outputStream);
+      workbook.close();
+      outputStream.close();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private HSSFCellStyle setFontBold(HSSFWorkbook workbook, boolean makeBold) {
+    HSSFCellStyle cellStyle = workbook.createCellStyle();
+    HSSFFont boldFont = workbook.createFont();
+    boldFont.setBold(makeBold);
+    cellStyle.setFont(boldFont);
+
+    return cellStyle;
+  }
+
+  private void createCellsInRow(HSSFRow row, String[] data) {
+    for (int i = 0; i < data.length; i++) {
+      row.createCell(i).setCellValue(data[i]);
+    }
   }
 
   private List<String> readFileAndGetFileLines(String file) {
