@@ -1,6 +1,7 @@
 package com.mm.csvparserservice.controller;
 
 import com.mm.csvparserservice.dto.TransactionDto;
+import com.mm.csvparserservice.service.ReportService;
 import com.mm.csvparserservice.service.TransactionService;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class TransactionController {
   private final TransactionService transactionService;
+  private final ReportService reportService;
 
   @GetMapping
   public ResponseEntity<List<TransactionDto>> getAllTransactions() {
@@ -31,6 +33,6 @@ public class TransactionController {
     String headerValue = "attachment;filename=report.xls";
     response.setHeader(headerKey, headerValue);
 
-    transactionService.generateExcel(response);
+    reportService.generateReport(response);
   }
 }
