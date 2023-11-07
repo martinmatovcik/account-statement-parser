@@ -7,8 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface TransactionService {
-    List<TransactionDto> getTransactionDtoListFromCSV(String filePath);
-    Transaction persistTransaction(Transaction transaction);
-    List<TransactionDto> getAllTransactions();
-    void generateExcel(HttpServletResponse response);
+  List<TransactionDto> getTransactionDtoListFromCSV(String filePath);
+
+  Transaction persistTransaction(Transaction transaction);
+
+  List<TransactionDto> getAllTransactions();
 }
