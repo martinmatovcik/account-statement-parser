@@ -33,6 +33,7 @@ public class TransactionDto extends DtoParent {
   private String transactionType;
   private String carriedOut;
   private String transactionSpecification;
+  private String note;
   private String bicCode;
   private Long fioInstructionId;
 
@@ -40,7 +41,7 @@ public class TransactionDto extends DtoParent {
   public Transaction toEntity() {
     return Transaction.builder()
         .transactionId(this.transactionId)
-        .fioInstructionId(this.fioInstructionId)
+        .fioOperationId(this.fioOperationId)
         .date(this.date)
         .amount(this.amount)
         .currency(this.currency)
@@ -56,6 +57,7 @@ public class TransactionDto extends DtoParent {
         .transactionType(this.transactionType)
         .carriedOut(this.carriedOut)
         .transactionSpecification(this.transactionSpecification)
+        .note(this.note)
         .bicCode(this.bicCode)
         .fioInstructionId(this.fioInstructionId)
         .build();
@@ -81,32 +83,8 @@ public class TransactionDto extends DtoParent {
         this.transactionType,
         this.carriedOut,
         this.transactionSpecification,
+        this.note,
         this.bicCode,
         this.fioInstructionId);
-  }
-
-  @Override
-  public String toString() {
-    return "TransactionDto{" +
-            "transactionId=" + transactionId +
-            ", fioOperationId=" + fioOperationId +
-            ", date=" + date +
-            ", amount=" + amount +
-            ", currency=" + currency +
-            ", recipientAccount='" + recipientAccount + '\'' +
-            ", recipientAccountName='" + recipientAccountName + '\'' +
-            ", bankCode=" + bankCode +
-            ", bankName='" + bankName + '\'' +
-            ", constantSymbol='" + constantSymbol + '\'' +
-            ", variableSymbol='" + variableSymbol + '\'' +
-            ", specificSymbol='" + specificSymbol + '\'' +
-            ", transactionNote='" + transactionNote + '\'' +
-            ", recipientMessage='" + recipientMessage + '\'' +
-            ", transactionType='" + transactionType + '\'' +
-            ", carriedOut='" + carriedOut + '\'' +
-            ", transactionSpecification='" + transactionSpecification + '\'' +
-            ", bicCode='" + bicCode + '\'' +
-            ", fioInstructionId=" + fioInstructionId +
-            '}';
   }
 }

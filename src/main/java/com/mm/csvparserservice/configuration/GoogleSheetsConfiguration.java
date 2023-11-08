@@ -20,30 +20,31 @@ import java.util.List;
 import java.util.Objects;
 
 public class GoogleSheetsConfiguration {
-    private static final String APPLICATION_NAME = "Java-learning";
-    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+  private static final String APPLICATION_NAME = "Java-learning";
+  private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
-    private static Credential authorize() throws IOException, GeneralSecurityException {
-        InputStream in = GoogleSheetsConfiguration.class.getResourceAsStream("/credentials.json");
-        GoogleClientSecrets clientSecrets =
-                GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(in)));
+  private static Credential authorize() throws IOException, GeneralSecurityException {
+    InputStream in = GoogleSheetsConfiguration.class.getResourceAsStream("/credentials.json");
+    GoogleClientSecrets clientSecrets =
+        GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(in)));
 
-        List<String> scopes = List.of(SheetsScopes.SPREADSHEETS);
+    List<String> scopes = List.of(SheetsScopes.SPREADSHEETS);
 
-        GoogleAuthorizationCodeFlow flow =
-                new GoogleAuthorizationCodeFlow.Builder(
-                        GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, clientSecrets, scopes)
-                        .setDataStoreFactory(new FileDataStoreFactory(new File("tokens")))
-                        .setAccessType("offline")
-                        .build();
+    GoogleAuthorizationCodeFlow flow =
+        new GoogleAuthorizationCodeFlow.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, clientSecrets, scopes)
+            .setDataStoreFactory(new FileDataStoreFactory(new File("tokens")))
+            .setAccessType("offline")
+            .build();
 
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("desktop-user-01");
-    }
+    return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver())
+        .authorize("desktop-user-01");
+  }
 
-    public static Sheets getSheetsService() throws IOException, GeneralSecurityException {
-        return new Sheets.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, authorize())
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-    }
+  public static Sheets getSheetsService() throws IOException, GeneralSecurityException {
+    return new Sheets.Builder(
+            GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, authorize())
+        .setApplicationName(APPLICATION_NAME)
+        .build();
+  }
 }

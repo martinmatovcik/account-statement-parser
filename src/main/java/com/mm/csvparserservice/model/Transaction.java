@@ -37,54 +37,15 @@ public class Transaction extends EntityParent {
   private String transactionType; // Todo: enum
   private String carriedOut;
   private String transactionSpecification;
+  private String note;
   private String bicCode;
   private Long fioInstructionId;
-
-  // Todo: delete this YAGNI
-//  public Transaction(
-//      Long fioOperationId,
-//      LocalDate date,
-//      BigDecimal amount,
-//      Currency currency,
-//      String recipientAccount,
-//      String recipientAccountName,
-//      Long bankCode,
-//      String bankName,
-//      String constantSymbol,
-//      String variableSymbol,
-//      String specificSymbol,
-//      String transactionNote,
-//      String recipientMessage,
-//      String transactionType,
-//      String carriedOut,
-//      String transactionSpecification,
-//      String bicCode,
-//      Long fioInstructionId) {
-//    this.fioOperationId = fioOperationId;
-//    this.date = date;
-//    this.amount = amount;
-//    this.currency = currency;
-//    this.recipientAccount = recipientAccount;
-//    this.recipientAccountName = recipientAccountName;
-//    this.bankCode = bankCode;
-//    this.bankName = bankName;
-//    this.constantSymbol = constantSymbol;
-//    this.variableSymbol = variableSymbol;
-//    this.specificSymbol = specificSymbol;
-//    this.transactionNote = transactionNote;
-//    this.recipientMessage = recipientMessage;
-//    this.transactionType = transactionType;
-//    this.carriedOut = carriedOut;
-//    this.transactionSpecification = transactionSpecification;
-//    this.bicCode = bicCode;
-//    this.fioInstructionId = fioInstructionId;
-//  }
 
   @Override
   public TransactionDto toDto() {
     return TransactionDto.builder()
         .transactionId(this.transactionId)
-        .fioInstructionId(this.fioInstructionId)
+        .fioOperationId(this.fioOperationId)
         .date(this.date)
         .amount(this.amount)
         .currency(this.currency)
@@ -100,6 +61,7 @@ public class Transaction extends EntityParent {
         .transactionType(this.transactionType)
         .carriedOut(this.carriedOut)
         .transactionSpecification(this.transactionSpecification)
+        .note(this.note)
         .bicCode(this.bicCode)
         .fioInstructionId(this.fioInstructionId)
         .build();

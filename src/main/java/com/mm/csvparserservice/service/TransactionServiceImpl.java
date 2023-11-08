@@ -22,6 +22,25 @@ public class TransactionServiceImpl implements TransactionService {
 
   private final TransactionRepository transactionRepository;
 
+  private static String makeNullable(String string) {
+    return Objects.equals(string, "") ? "0" : string;
+  }
+
+  private static BigDecimal convertStringToBigDecimal(String number) {
+    try {
+      return new BigDecimal(number.replace(',', '.'));
+    } catch (NumberFormatException e) {
+      throw new RuntimeException("Number format can not be parsed to BigDecimal.", e);
+    }
+  }
+
+  private static LocalDate convertStringToLocalDate(String stringDate) {
+    return LocalDate.of(
+        Integer.parseInt(stringDate.substring(6, 10)),
+        Integer.parseInt(stringDate.substring(3, 5)),
+        Integer.parseInt(stringDate.substring(0, 2)));
+  }
+
   @Override
   public List<TransactionDto> parseCSV(String file) {
 
@@ -65,48 +84,28 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   private Transaction getTransactionFromFileLine(String fileLine) {
-    //    fileLine = fileLine.substring(1, fileLine.length() - 1);
-    //    String[] fileData = fileLine.split("\";\"");
     fileLine = fileLine.replace("\"", "");
     String[] fileData = fileLine.split(";");
-    return new Transaction(
-        null,
-        Long.parseLong(fileData[0]),
-        convertStringToLocalDate(fileData[1]),
-        convertStringToBigDecimal(fileData[2]),
-        Currency.getInstance(fileData[3]),
-        fileData[4],
-        fileData[5],
-        Long.parseLong(makeNullable(fileData[6])),
-        fileData[7],
-        fileData[8],
-        fileData[9],
-        fileData[10],
-        fileData[11],
-        fileData[12],
-        fileData[13],
-        fileData[14],
-        fileData[15],
-        fileData[16],
-        Long.parseLong(makeNullable(fileData[17])));
-  }
-
-  private static String makeNullable(String string) {
-    return Objects.equals(string, "") ? "0" : string;
-  }
-
-  private static BigDecimal convertStringToBigDecimal(String number) {
-    try {
-      return new BigDecimal(number.replace(',', '.'));
-    } catch (NumberFormatException e) {
-      throw new RuntimeException("Number format can not be parsed to BigDecimal.", e);
-    }
-  }
-
-  private static LocalDate convertStringToLocalDate(String stringDate) {
-    return LocalDate.of(
-        Integer.parseInt(stringDate.substring(6, 10)),
-        Integer.parseInt(stringDate.substring(3, 5)),
-        Integer.parseInt(stringDate.substring(0, 2)));
+    return Transaction.builder()
+        .fioOperationId(Long.parseLong(fileData[0]))
+        .date(convertStringToLocalDate(fileData[1]))
+        .amount(convertStringToBigDecimal(fileData[2]))
+        .currency(Currency.getInstance(fileData[3]))
+        .recipientAccount(fileData[4])
+        .recipientAccountName(fileData[5])
+        .bankCode(Long.parseLong(makeNullable(fileData[6])))
+        .bankName(fileData[7])
+        .constantSymbol(fileData[8])
+        .variableSymbol(fileData[9])
+        .specificSymbol(fileData[10])
+        .transactionNote(fileData[11])
+        .recipientMessage(fileData[12])
+        .transactionType(fileData[13])
+        .carriedOut(fileData[14])
+        .transactionSpecification(fileData[15])
+        .note(fileData[16])
+        .bicCode(fileData[17])
+        .fioInstructionId(Long.parseLong(makeNullable(fileData[18])))
+        .build();
   }
 }

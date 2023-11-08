@@ -1,11 +1,10 @@
 package com.mm.csvparserservice.dto;
 
 import com.mm.csvparserservice.model.EntityParent;
-import com.mm.csvparserservice.model.Transaction;
-
 import java.util.List;
 
 public abstract class DtoParent {
-    public abstract EntityParent toEntity();
-    public abstract List<Object> toData();
+  public abstract EntityParent toEntity();
+
+  public abstract List<Object> toData();
 }

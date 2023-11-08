@@ -11,5 +11,6 @@ public interface TransactionService {
   Transaction persistTransaction(Transaction transaction);
 
   List<TransactionDto> getAllTransactionDtos();
+
   List<List<Object>> getAllTransactionDtosAsData();
 }

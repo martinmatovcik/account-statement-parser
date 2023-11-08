@@ -4,7 +4,6 @@ import com.mm.csvparserservice.dto.TransactionDto;
 import com.mm.csvparserservice.service.ReportService;
 import com.mm.csvparserservice.service.TransactionService;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class TransactionController {
 
   @GetMapping("/generate-report")
   public ResponseEntity<String> generateGoogleSheetsReport() {
-    reportService.generateReport(null);
+    reportService.generateReport();
     return new ResponseEntity<>("Successfully generated", HttpStatus.OK);
   }
 
@@ -36,5 +35,4 @@ public class TransactionController {
     transactionService.parseCSV("filepath"); // Todo: replace with request params or body
     return new ResponseEntity<>("Successfully uploaded", HttpStatus.OK);
   }
-
 }
