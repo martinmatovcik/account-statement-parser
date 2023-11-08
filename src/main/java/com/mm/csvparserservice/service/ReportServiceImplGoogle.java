@@ -45,7 +45,8 @@ public class ReportServiceImplGoogle implements ReportService {
                       "Transaction Specification",
                       "Transaction Note",
                       "BIC Code",
-                      "Fio Instruction Id");
+                      "Fio Instruction Id",
+                      "Main Category");
 
       data.add(0, headerData);
 

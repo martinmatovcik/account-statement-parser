@@ -76,7 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
 
   private List<String> readFileAndGetFileLines(String file) {
     try {
-      return Files.readAllLines(Path.of("file/fio-example.csv")); // dummy value for now
+      return Files.readAllLines(Path.of("file/fio-10-23.csv")); // dummy value for now
       //      return Files.readAllLines(Path.of(file));
     } catch (IOException e) {
       throw new RuntimeException("Something went wrong with reading the file", e);
@@ -86,7 +86,7 @@ public class TransactionServiceImpl implements TransactionService {
   private Transaction getTransactionFromFileLine(String fileLine) {
     fileLine = fileLine.replace("\"", "");
     String[] fileData = fileLine.split(";");
-    return Transaction.builder()
+    Transaction transaction = Transaction.builder()
         .fioOperationId(Long.parseLong(fileData[0]))
         .date(convertStringToLocalDate(fileData[1]))
         .amount(convertStringToBigDecimal(fileData[2]))
@@ -107,5 +107,7 @@ public class TransactionServiceImpl implements TransactionService {
         .bicCode(fileData[17])
         .fioInstructionId(Long.parseLong(makeNullable(fileData[18])))
         .build();
+    transaction.setMainCategory(transaction.findMainCategory());
+    return transaction;
   }
 }

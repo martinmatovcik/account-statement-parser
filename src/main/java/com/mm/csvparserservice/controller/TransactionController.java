@@ -31,8 +31,8 @@ public class TransactionController {
   }
 
   @PostMapping("/upload-statement")
-  public ResponseEntity<String> uploadCSVStatement() {
-    transactionService.parseCSV("filepath"); // Todo: replace with request params or body
-    return new ResponseEntity<>("Successfully uploaded", HttpStatus.OK);
+  public ResponseEntity<List<TransactionDto>> uploadCSVStatement() {
+    // Todo: replace "filepath" with request params or body
+    return new ResponseEntity<>(transactionService.parseCSV("filepath"), HttpStatus.OK);
   }
 }

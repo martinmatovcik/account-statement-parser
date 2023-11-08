@@ -1,5 +1,6 @@
 package com.mm.csvparserservice.dto;
 
+import com.mm.csvparserservice.model.MainCategory;
 import com.mm.csvparserservice.model.Transaction;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
@@ -36,6 +37,7 @@ public class TransactionDto extends DtoParent {
   private String note;
   private String bicCode;
   private Long fioInstructionId;
+  private MainCategory mainCategory;
 
   @Override
   public Transaction toEntity() {
@@ -60,6 +62,7 @@ public class TransactionDto extends DtoParent {
         .note(this.note)
         .bicCode(this.bicCode)
         .fioInstructionId(this.fioInstructionId)
+        .mainCategory(this.mainCategory)
         .build();
   }
 
@@ -85,6 +88,7 @@ public class TransactionDto extends DtoParent {
         this.transactionSpecification,
         this.note,
         this.bicCode,
-        this.fioInstructionId);
+        this.fioInstructionId,
+        this.mainCategory.toString());
   }
 }
