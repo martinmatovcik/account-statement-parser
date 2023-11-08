@@ -1,6 +1,7 @@
 package com.mm.csvparserservice.service;
 
 import com.mm.csvparserservice.dto.TransactionDto;
+import com.mm.csvparserservice.model.MainCategory;
 import com.mm.csvparserservice.model.Transaction;
 import com.mm.csvparserservice.repository.TransactionRepository;
 import java.io.IOException;
@@ -74,6 +75,11 @@ public class TransactionServiceImpl implements TransactionService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public BigDecimal sumAmountOfTransactionsForCategory(MainCategory mainCategory) {
+    return transactionRepository.sumAmountOfTransactionsForCategory(mainCategory);
+  }
+
   private List<String> readFileAndGetFileLines(String file) {
     try {
       return Files.readAllLines(Path.of("file/fio-10-23.csv")); // dummy value for now
@@ -86,27 +92,28 @@ public class TransactionServiceImpl implements TransactionService {
   private Transaction getTransactionFromFileLine(String fileLine) {
     fileLine = fileLine.replace("\"", "");
     String[] fileData = fileLine.split(";");
-    Transaction transaction = Transaction.builder()
-        .fioOperationId(Long.parseLong(fileData[0]))
-        .date(convertStringToLocalDate(fileData[1]))
-        .amount(convertStringToBigDecimal(fileData[2]))
-        .currency(Currency.getInstance(fileData[3]))
-        .recipientAccount(fileData[4])
-        .recipientAccountName(fileData[5])
-        .bankCode(Long.parseLong(makeNullable(fileData[6])))
-        .bankName(fileData[7])
-        .constantSymbol(fileData[8])
-        .variableSymbol(fileData[9])
-        .specificSymbol(fileData[10])
-        .transactionNote(fileData[11])
-        .recipientMessage(fileData[12])
-        .transactionType(fileData[13])
-        .carriedOut(fileData[14])
-        .transactionSpecification(fileData[15])
-        .note(fileData[16])
-        .bicCode(fileData[17])
-        .fioInstructionId(Long.parseLong(makeNullable(fileData[18])))
-        .build();
+    Transaction transaction =
+        Transaction.builder()
+            .fioOperationId(Long.parseLong(fileData[0]))
+            .date(convertStringToLocalDate(fileData[1]))
+            .amount(convertStringToBigDecimal(fileData[2]))
+            .currency(Currency.getInstance(fileData[3]))
+            .recipientAccount(fileData[4])
+            .recipientAccountName(fileData[5])
+            .bankCode(Long.parseLong(makeNullable(fileData[6])))
+            .bankName(fileData[7])
+            .constantSymbol(fileData[8])
+            .variableSymbol(fileData[9])
+            .specificSymbol(fileData[10])
+            .transactionNote(fileData[11])
+            .recipientMessage(fileData[12])
+            .transactionType(fileData[13])
+            .carriedOut(fileData[14])
+            .transactionSpecification(fileData[15])
+            .note(fileData[16])
+            .bicCode(fileData[17])
+            .fioInstructionId(Long.parseLong(makeNullable(fileData[18])))
+            .build();
     transaction.setMainCategory(transaction.findMainCategory());
     return transaction;
   }

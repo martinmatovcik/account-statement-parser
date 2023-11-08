@@ -17,7 +17,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "transactions")
 public class Transaction extends EntityParent {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
