@@ -11,13 +11,13 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.mm.csvparserservice.service.ReportServiceImplGoogle;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Objects;
 
 public class GoogleSheetsConfiguration {
     private static final String APPLICATION_NAME = "Java-learning";
@@ -26,7 +26,7 @@ public class GoogleSheetsConfiguration {
     private static Credential authorize() throws IOException, GeneralSecurityException {
         InputStream in = GoogleSheetsConfiguration.class.getResourceAsStream("/credentials.json");
         GoogleClientSecrets clientSecrets =
-                GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+                GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(in)));
 
         List<String> scopes = List.of(SheetsScopes.SPREADSHEETS);
 
@@ -37,8 +37,7 @@ public class GoogleSheetsConfiguration {
                         .setAccessType("offline")
                         .build();
 
-        String USER_ID = "desktop-user-01";
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize(USER_ID);
+        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("desktop-user-01");
     }
 
     public static Sheets getSheetsService() throws IOException, GeneralSecurityException {

@@ -10,33 +10,32 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
 public class ReportServiceImplExcel implements ReportService{
     private final TransactionRepository transactionRepository;
     @Override
-    public void generateReport(HttpServletResponse response) {
+    public void generateReport(HttpServletResponse httpServletResponse) {
         List<Transaction> transactions = transactionRepository.findAll();
         String[] metaData = {
-                "transactionId",
-                "fioOperationId",
-                "date",
-                "amount",
-                "currency",
-                "recipientAccount",
-                "recipientAccountName",
-                "bankCode",
-                "bankName",
-                "constantSymbol",
-                "variableSymbol",
-                "specificSymbol",
-                "transactionNote",
-                "recipientMessage",
-                "transactionType",
-                "carriedOut",
-                "transactionSpecification",
-                "bicCode",
-                "fioInstructionId"
+                "Transaction Id",
+                "Fio Operation Id",
+                "Date",
+                "Amount",
+                "Currency",
+                "Recipient Account",
+                "Recipient Account Name",
+                "Bank Code",
+                "Bank Name",
+                "Constant Symbol",
+                "Variable Symbol",
+                "Specific Symbol",
+                "Transaction Note",
+                "Recipient Message",
+                "Transaction Type",
+                "Carried Out",
+                "Transaction Specification",
+                "BIC Code",
+                "Fio Instruction Id"
         };
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -50,7 +49,7 @@ public class ReportServiceImplExcel implements ReportService{
 
         ServletOutputStream outputStream = null;
         try {
-            outputStream = response.getOutputStream();
+            outputStream = httpServletResponse.getOutputStream();
             workbook.write(outputStream);
             workbook.close();
             outputStream.close();

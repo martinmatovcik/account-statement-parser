@@ -3,8 +3,6 @@ package com.mm.csvparserservice.service;
 import com.mm.csvparserservice.dto.TransactionDto;
 import com.mm.csvparserservice.model.Transaction;
 import com.mm.csvparserservice.repository.TransactionRepository;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.hssf.usermodel.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,7 +23,7 @@ public class TransactionServiceImpl implements TransactionService {
   private final TransactionRepository transactionRepository;
 
   @Override
-  public List<TransactionDto> getTransactionDtoListFromCSV(String file) {
+  public List<TransactionDto> parseCSV(String file) {
 
     List<String> fileLines = readFileAndGetFileLines(file);
     List<TransactionDto> transactions = new ArrayList<>();
@@ -45,9 +42,16 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public List<TransactionDto> getAllTransactions() {
+  public List<TransactionDto> getAllTransactionDtos() {
     return transactionRepository.findAll().stream()
         .map(Transaction::toDto)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<List<Object>> getAllTransactionDtosAsData() {
+    return getAllTransactionDtos().stream()
+        .map(TransactionDto::toData)
         .collect(Collectors.toList());
   }
 

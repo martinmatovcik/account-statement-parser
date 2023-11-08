@@ -1,6 +1,5 @@
 package com.mm.csvparserservice.model;
 
-import com.mm.csvparserservice.dto.DtoParent;
 import com.mm.csvparserservice.dto.TransactionDto;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -15,6 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "transactions")
 public class Transaction extends EntityParent {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,11 +1,11 @@
 package com.mm.csvparserservice.dto;
 
-import com.mm.csvparserservice.model.EntityParent;
 import com.mm.csvparserservice.model.Transaction;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -59,5 +59,54 @@ public class TransactionDto extends DtoParent {
         .bicCode(this.bicCode)
         .fioInstructionId(this.fioInstructionId)
         .build();
+  }
+
+  @Override
+  public List<Object> toData() {
+    return List.of(
+        this.transactionId,
+        this.fioInstructionId,
+        this.date.toString(),
+        this.amount,
+        this.currency.toString(),
+        this.recipientAccount,
+        this.recipientAccountName,
+        this.bankCode,
+        this.bankName,
+        this.constantSymbol,
+        this.variableSymbol,
+        this.specificSymbol,
+        this.transactionNote,
+        this.recipientMessage,
+        this.transactionType,
+        this.carriedOut,
+        this.transactionSpecification,
+        this.bicCode,
+        this.fioInstructionId);
+  }
+
+  @Override
+  public String toString() {
+    return "TransactionDto{" +
+            "transactionId=" + transactionId +
+            ", fioOperationId=" + fioOperationId +
+            ", date=" + date +
+            ", amount=" + amount +
+            ", currency=" + currency +
+            ", recipientAccount='" + recipientAccount + '\'' +
+            ", recipientAccountName='" + recipientAccountName + '\'' +
+            ", bankCode=" + bankCode +
+            ", bankName='" + bankName + '\'' +
+            ", constantSymbol='" + constantSymbol + '\'' +
+            ", variableSymbol='" + variableSymbol + '\'' +
+            ", specificSymbol='" + specificSymbol + '\'' +
+            ", transactionNote='" + transactionNote + '\'' +
+            ", recipientMessage='" + recipientMessage + '\'' +
+            ", transactionType='" + transactionType + '\'' +
+            ", carriedOut='" + carriedOut + '\'' +
+            ", transactionSpecification='" + transactionSpecification + '\'' +
+            ", bicCode='" + bicCode + '\'' +
+            ", fioInstructionId=" + fioInstructionId +
+            '}';
   }
 }
