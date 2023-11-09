@@ -5,5 +5,5 @@ import com.mm.csvparserservice.dto.TransactionDto;
 import java.util.List;
 
 public interface CSVService {
-    void parseCSV(String filePath);
+  void parseCSV(String filePath);
 }

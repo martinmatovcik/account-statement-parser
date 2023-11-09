@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.transactionMainCategory = :transactionMainCategory")
-    BigDecimal sumAmountOfTransactionsForCategory(TransactionMainCategory transactionMainCategory);
+  @Query(
+      "SELECT SUM(t.amount) FROM Transaction t WHERE t.transactionMainCategory = :transactionMainCategory")
+  BigDecimal sumAmountOfTransactionsForCategory(TransactionMainCategory transactionMainCategory);
 }

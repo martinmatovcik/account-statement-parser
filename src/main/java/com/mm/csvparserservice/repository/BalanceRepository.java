@@ -7,5 +7,5 @@ import java.time.Month;
 import java.util.List;
 
 public interface BalanceRepository extends JpaRepository<Balance, Long> {
-    List<Balance> findAllByMonth(Month month);
+  List<Balance> findAllByMonth(Month month);
 }

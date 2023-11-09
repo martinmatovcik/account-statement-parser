@@ -1,7 +1,7 @@
 package com.mm.csvparserservice.dto;
 
-import com.mm.csvparserservice.entity.TransactionMainCategory;
 import com.mm.csvparserservice.entity.Transaction;
+import com.mm.csvparserservice.entity.TransactionMainCategory;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
