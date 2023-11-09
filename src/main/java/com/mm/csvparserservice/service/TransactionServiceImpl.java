@@ -23,29 +23,17 @@ public class TransactionServiceImpl implements TransactionService {
 
   private final TransactionRepository transactionRepository;
 
-  private static String makeNullable(String string) {
-    return Objects.equals(string, "") ? "0" : string;
-  }
-
-  private static BigDecimal convertStringToBigDecimal(String number) {
-    try {
-      return new BigDecimal(number.replace(',', '.'));
-    } catch (NumberFormatException e) {
-      throw new RuntimeException("Number format can not be parsed to BigDecimal.", e);
-    }
-  }
-
-  private static LocalDate convertStringToLocalDate(String stringDate) {
-    return LocalDate.of(
-        Integer.parseInt(stringDate.substring(6, 10)),
-        Integer.parseInt(stringDate.substring(3, 5)),
-        Integer.parseInt(stringDate.substring(0, 2)));
-  }
-
   @Override
   public List<TransactionDto> parseCSV(String file) {
 
-    List<String> fileLines = readFileAndGetFileLines(file);
+    List<String> fileLines;
+    try {
+      fileLines = Files.readAllLines(Path.of("file/fio-10-23.csv")); // dummy value for now
+      //      return Files.readAllLines(Path.of(file));
+    } catch (IOException e) {
+      throw new RuntimeException("Something went wrong with reading the file", e);
+    }
+
     List<TransactionDto> transactions = new ArrayList<>();
 
     int numberOfHeaderLines = 10;
@@ -80,15 +68,6 @@ public class TransactionServiceImpl implements TransactionService {
     return transactionRepository.sumAmountOfTransactionsForCategory(mainCategory);
   }
 
-  private List<String> readFileAndGetFileLines(String file) {
-    try {
-      return Files.readAllLines(Path.of("file/fio-10-23.csv")); // dummy value for now
-      //      return Files.readAllLines(Path.of(file));
-    } catch (IOException e) {
-      throw new RuntimeException("Something went wrong with reading the file", e);
-    }
-  }
-
   private Transaction getTransactionFromFileLine(String fileLine) {
     fileLine = fileLine.replace("\"", "");
     String[] fileData = fileLine.split(";");
@@ -116,5 +95,25 @@ public class TransactionServiceImpl implements TransactionService {
             .build();
     transaction.setMainCategory(transaction.findMainCategory());
     return transaction;
+  }
+
+  private static String makeNullable(String string) {
+    return Objects.equals(string, "") ? "0" : string;
+  }
+
+  private static BigDecimal convertStringToBigDecimal(String number) {
+    try {
+      if (number.contains(",")) number = number.replace(",", ".");
+      return new BigDecimal(number);
+    } catch (NumberFormatException e) {
+      throw new RuntimeException("Number format can not be parsed to BigDecimal.", e);
+    }
+  }
+
+  private static LocalDate convertStringToLocalDate(String stringDate) {
+    return LocalDate.of(
+        Integer.parseInt(stringDate.substring(6, 10)),
+        Integer.parseInt(stringDate.substring(3, 5)),
+        Integer.parseInt(stringDate.substring(0, 2)));
   }
 }
