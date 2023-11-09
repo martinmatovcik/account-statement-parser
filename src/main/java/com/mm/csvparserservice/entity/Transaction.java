@@ -1,4 +1,4 @@
-package com.mm.csvparserservice.model;
+package com.mm.csvparserservice.entity;
 
 import com.mm.csvparserservice.dto.TransactionDto;
 import jakarta.annotation.Nullable;
@@ -42,7 +42,7 @@ public class Transaction extends EntityParent {
   private String note;
   private String bicCode;
   private Long fioInstructionId;
-  @Nullable private MainCategory mainCategory;
+  @Nullable private TransactionMainCategory transactionMainCategory;
 
   @Override
   public TransactionDto toDto() {
@@ -67,11 +67,11 @@ public class Transaction extends EntityParent {
         .note(this.note)
         .bicCode(this.bicCode)
         .fioInstructionId(this.fioInstructionId)
-        .mainCategory(this.mainCategory)
+        .transactionMainCategory(this.transactionMainCategory)
         .build();
   }
 
-  public MainCategory findMainCategory() {
+  public TransactionMainCategory findMainCategory() {
 
     String[] needsKeywords = {
       "najom",
@@ -121,20 +121,20 @@ public class Transaction extends EntityParent {
     };
 
     if (Objects.requireNonNull(this.amount).compareTo(BigDecimal.ZERO) > 0) {
-      return MainCategory.INCOME;
+      return TransactionMainCategory.INCOME;
     } else if ((stringContainsItemFromList(this.note, needsKeywords))
         || (!this.variableSymbol.isEmpty() && Integer.parseInt(this.variableSymbol) == 45625608)) {
-      return MainCategory.NEEDS;
+      return TransactionMainCategory.NEEDS;
     } else if (stringContainsItemFromList(this.transactionNote, savingsKeywords)
         || stringContainsItemFromList(this.note, savingsKeywords)) {
-      return MainCategory.SAVINGS;
+      return TransactionMainCategory.SAVINGS;
     } else if (stringContainsItemFromList(this.transactionNote, loansKeywords)) {
-      return MainCategory.LOANS;
+      return TransactionMainCategory.LOANS;
     } else if (stringContainsItemFromList(this.note, funKeywords)) {
-      return MainCategory.FUN_WANTS_GIFTS;
+      return TransactionMainCategory.FUN_WANTS_GIFTS;
     }
 
-    return MainCategory.OTHERS;
+    return TransactionMainCategory.OTHERS;
   }
 
   private boolean stringContainsItemFromList(String input, String[] array) {

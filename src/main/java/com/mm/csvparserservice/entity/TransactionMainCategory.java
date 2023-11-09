@@ -1,6 +1,6 @@
-package com.mm.csvparserservice.model;
+package com.mm.csvparserservice.entity;
 
-public enum MainCategory {
+public enum TransactionMainCategory {
     NEEDS,
     LOANS,
     FUN_WANTS_GIFTS,

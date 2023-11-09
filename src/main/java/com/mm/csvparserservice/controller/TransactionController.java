@@ -1,6 +1,7 @@
 package com.mm.csvparserservice.controller;
 
 import com.mm.csvparserservice.dto.TransactionDto;
+import com.mm.csvparserservice.service.CSVService;
 import com.mm.csvparserservice.service.ReportService;
 import com.mm.csvparserservice.service.TransactionService;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TransactionController {
   private final TransactionService transactionService;
   private final ReportService reportService;
+  private final CSVService csvService;
 
   @GetMapping
   public ResponseEntity<List<TransactionDto>> getAllTransactions() {
@@ -31,8 +33,9 @@ public class TransactionController {
   }
 
   @PostMapping("/upload-statement")
-  public ResponseEntity<List<TransactionDto>> uploadCSVStatement() {
+  public ResponseEntity<String> uploadCSVStatement() {
     // Todo: replace "filepath" with request params or body
-    return new ResponseEntity<>(transactionService.parseCSV("filepath"), HttpStatus.OK);
+    csvService.parseCSV("file");
+    return new ResponseEntity<>("Successfully uploaded", HttpStatus.OK);
   }
 }

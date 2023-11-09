@@ -1,4 +1,4 @@
-package com.mm.csvparserservice.model;
+package com.mm.csvparserservice.entity;
 
 import com.mm.csvparserservice.dto.DtoParent;
 
