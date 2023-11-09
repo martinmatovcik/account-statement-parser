@@ -1,5 +1,7 @@
 package com.mm.csvparserservice.service;
 
+import java.time.Month;
+
 public interface ReportService {
-  void generateReport();
+  void generateReport(Month month);
 }

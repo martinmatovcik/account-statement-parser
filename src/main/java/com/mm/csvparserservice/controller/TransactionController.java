@@ -4,6 +4,7 @@ import com.mm.csvparserservice.dto.TransactionDto;
 import com.mm.csvparserservice.service.CSVService;
 import com.mm.csvparserservice.service.ReportService;
 import com.mm.csvparserservice.service.TransactionService;
+import java.time.Month;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class TransactionController {
 
   @GetMapping("/generate-report")
   public ResponseEntity<String> generateGoogleSheetsReport() {
-    reportService.generateReport();
+    reportService.generateReport(Month.OCTOBER);
     return new ResponseEntity<>("Successfully generated", HttpStatus.OK);
   }
 
