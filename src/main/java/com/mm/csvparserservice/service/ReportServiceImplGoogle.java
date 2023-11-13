@@ -49,16 +49,16 @@ public class ReportServiceImplGoogle implements ReportService {
     data.add(
         List.of(
             "Stav účtu k prvému dňu:",
-            cellName(DATA_SHEET_NAME, "B1"),
-            "+/-",
+            cellName(DATA_SHEET_NAME, "B1", false),
+            "'+/-",
             "Plánované náklady na život / mes:",
             "=B24+B30"));
     //    Line 2
     data.add(
         List.of(
             "Stav účtu k poslednému dňu:",
-            cellName(DATA_SHEET_NAME, "B2"),
-            cellName(DATA_SHEET_NAME, "B9"),
+            cellName(DATA_SHEET_NAME, "B2", false),
+            cellName(DATA_SHEET_NAME, "B9", false),
             "Skutočné náklady na život / mes:",
             "=C24+C30"));
     //    Line 3
@@ -79,7 +79,7 @@ public class ReportServiceImplGoogle implements ReportService {
     //    Line 6
     data.add(List.of("Iný príjem", 0.00));
     //    Line 7
-    data.add(List.of("=SUM(B5:B6)"));
+    data.add(List.of("Celkový príjem", "=SUM(B5:B6)"));
     //    Line 8
     data.add(List.of());
     //    Line 9
@@ -98,7 +98,7 @@ public class ReportServiceImplGoogle implements ReportService {
     //    Line 11
     data.add(List.of("Iný príjem", 0.00));
     //    Line 12
-    data.add(List.of(cellName(DATA_SHEET_NAME, "B7")));
+    data.add(List.of("Celkový príjem", cellName(DATA_SHEET_NAME, "B7", false)));
     //    Line 13
     data.add(List.of());
     //    Line 14
@@ -111,7 +111,7 @@ public class ReportServiceImplGoogle implements ReportService {
             "=E9-E4",
             "",
             "Rozdiel zostatok",
-            cellName(DATA_SHEET_NAME, "B9")));
+            cellName(DATA_SHEET_NAME, "B9", false)));
     //    Line 15
     data.add(List.of());
 
@@ -164,29 +164,26 @@ public class ReportServiceImplGoogle implements ReportService {
             .map(ReportItemDto::toData)
             .toList());
 
-    var x = reportItemService.sumPlannedAmountOfReportItemsForCategory(category);
-    var y = reportItemService.sumDifferenceOfReportItemsForCategory(category);
-    var z = cellName(DATA_SHEET_NAME, cell);
-
     section.add(
         List.of(
             "Medzisúčet",
             reportItemService.sumPlannedAmountOfReportItemsForCategory(category),
-            cellName(DATA_SHEET_NAME, cell),
+            cellName(DATA_SHEET_NAME, cell, true),
             reportItemService.sumDifferenceOfReportItemsForCategory(category)));
     section.add(List.of());
 
     return section;
   }
 
-  private String cellName(String dataSheetName, String cell) {
-    return "=" + dataSheetName + "!" + cell;
+  private String cellName(String dataSheetName, String cellIndex, boolean negate) {
+    String cell = dataSheetName + "!" + cellIndex;
+    return "=" + (negate ? "-(" + cell + ")" : cell);
   }
 
   private String expenses(boolean isPlanned) {
     String collumn = "C";
     if (isPlanned) collumn = "B";
-    return "=" + collumn + "24+" + collumn + "30" + collumn + "42" + collumn + "52" + collumn
+    return "=" + collumn + "24+" + collumn + "30+" + collumn + "42+" + collumn + "52+" + collumn
         + "57";
   }
 
