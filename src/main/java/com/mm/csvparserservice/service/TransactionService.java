@@ -4,6 +4,7 @@ import com.mm.csvparserservice.dto.TransactionDto;
 import com.mm.csvparserservice.entity.Transaction;
 import com.mm.csvparserservice.entity.TransactionMainCategory;
 import java.math.BigDecimal;
+import java.time.Month;
 import java.util.List;
 
 public interface TransactionService {
@@ -11,5 +12,5 @@ public interface TransactionService {
 
   List<TransactionDto> getAllTransactionDtos();
 
-  BigDecimal sumAmountOfTransactionsForCategory(TransactionMainCategory transactionMainCategory);
+  BigDecimal sumAmountOfTransactionsForCategoryAndMonth(TransactionMainCategory transactionMainCategory, Month month);
 }

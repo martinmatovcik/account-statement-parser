@@ -29,18 +29,15 @@ public class ReportServiceImplGoogle implements ReportService {
   private final BalanceService balanceService;
   private final ReportItemService reportItemService;
 
-  private static final String DATA_SHEET_NAME =
-      "Data"; // todo: method to generate it, base on month given
-
   @Override
   public void generateReport(Month month) {
-    generateDataSheet();
-    generateReportSheetForGivenMonth(month);
+    generateDataSheet(month);
     generateTemplate(month);
   }
 
   @Override
   public void generateTemplate(Month month) {
+    generateSheetForGivenMonth(month, true);
     List<List<Object>> data = new LinkedList<>();
 
     double plannedIncome = 43270.00;
@@ -49,7 +46,7 @@ public class ReportServiceImplGoogle implements ReportService {
     data.add(
         List.of(
             "Stav účtu k prvému dňu:",
-            cellName(DATA_SHEET_NAME, "B1", false),
+            dataCellName(month, "B1", false),
             "'+/-",
             "Plánované náklady na život / mes:",
             "=B24+B30"));
@@ -57,8 +54,8 @@ public class ReportServiceImplGoogle implements ReportService {
     data.add(
         List.of(
             "Stav účtu k poslednému dňu:",
-            cellName(DATA_SHEET_NAME, "B2", false),
-            cellName(DATA_SHEET_NAME, "B9", false),
+            dataCellName(month, "B2", false),
+            dataCellName(month, "B9", false),
             "Skutočné náklady na život / mes:",
             "=C24+C30"));
     //    Line 3
@@ -98,7 +95,7 @@ public class ReportServiceImplGoogle implements ReportService {
     //    Line 11
     data.add(List.of("Iný príjem", 0.00));
     //    Line 12
-    data.add(List.of("Celkový príjem", cellName(DATA_SHEET_NAME, "B7", false)));
+    data.add(List.of("Celkový príjem", dataCellName(month, "B7", false)));
     //    Line 13
     data.add(List.of());
     //    Line 14
@@ -111,45 +108,45 @@ public class ReportServiceImplGoogle implements ReportService {
             "=E9-E4",
             "",
             "Rozdiel zostatok",
-            cellName(DATA_SHEET_NAME, "B9", false)));
+            dataCellName(month, "B9", false)));
     //    Line 15
     data.add(List.of());
 
     //    SECTIONS
     for (TransactionMainCategory category : TransactionMainCategory.values()) {
-      if (category != TransactionMainCategory.INCOME) data.addAll(generateSection(category));
+      if (category != TransactionMainCategory.INCOME) data.addAll(generateSection(month, category));
     }
 
-    insertDataToSheet(generateSheetNameForGivenMonth(month), data);
+    insertDataToSheet(generateSheetNameForGivenMonth(month, true), data);
   }
 
-  private List<List<Object>> generateSection(TransactionMainCategory category) {
+  private List<List<Object>> generateSection(Month month, TransactionMainCategory category) {
     String sectionHeading;
-    String cell;
+    String dataSheetCellIndex;
     switch (category) {
       default -> {
         sectionHeading = "";
-        cell = "";
+        dataSheetCellIndex = "";
       }
       case NEEDS -> {
         sectionHeading = "BÝVANIE, KOMUNIKÁCIA a INÉ POTREBY";
-        cell = "B3";
+        dataSheetCellIndex = "B3";
       }
       case LOANS -> {
         sectionHeading = "PÔŽIČKY";
-        cell = "B4";
+        dataSheetCellIndex = "B4";
       }
       case FUN_WANTS_GIFTS -> {
         sectionHeading = "RADOSTI, VOĽNÝ ČAS, ZÁBAVA, DARY";
-        cell = "B5";
+        dataSheetCellIndex = "B5";
       }
       case SAVINGS -> {
         sectionHeading = "SPORENIE";
-        cell = "B6";
+        dataSheetCellIndex = "B6";
       }
       case OTHERS -> {
         sectionHeading = "OSTATNÉ";
-        cell = "B8";
+        dataSheetCellIndex = "B8";
       }
     }
 
@@ -168,15 +165,15 @@ public class ReportServiceImplGoogle implements ReportService {
         List.of(
             "Medzisúčet",
             reportItemService.sumPlannedAmountOfReportItemsForCategory(category),
-            cellName(DATA_SHEET_NAME, cell, true),
+            dataCellName(month, dataSheetCellIndex, true),
             reportItemService.sumDifferenceOfReportItemsForCategory(category)));
     section.add(List.of());
 
     return section;
   }
 
-  private String cellName(String dataSheetName, String cellIndex, boolean negate) {
-    String cell = dataSheetName + "!" + cellIndex;
+  private String dataCellName(Month month, String cellIndex, boolean negate) {
+    String cell = generateSheetNameForGivenMonth(month, false) + "!" + cellIndex;
     return "=" + (negate ? "-(" + cell + ")" : cell);
   }
 
@@ -193,20 +190,20 @@ public class ReportServiceImplGoogle implements ReportService {
     return balance;
   }
 
-  private void generateReportSheetForGivenMonth(Month month) {
+  private void generateSheetForGivenMonth(Month month, boolean isReport) {
 
     List<List<Object>> data = List.of(List.of("Something"));
-    String sheetName = generateSheetNameForGivenMonth(month);
+    String sheetName = generateSheetNameForGivenMonth(month, isReport);
 
     insertDataToSheet(sheetName, data);
   }
 
-  private String generateSheetNameForGivenMonth(Month month) {
-    return "Report_" + month.name();
+  private String generateSheetNameForGivenMonth(Month month, boolean isReport) {
+    return (isReport ? "Report_" : "Data_") + month.name();
   }
 
-  private void generateDataSheet() {
-    List<BalanceDto> balanceDtos = balanceService.getAllBalanceDtosForMonth(Month.OCTOBER);
+  private void generateDataSheet(Month month) {
+    List<BalanceDto> balanceDtos = balanceService.getAllBalanceDtosForMonth(month);
 
     List<Object> initialBalance =
         List.of(
@@ -216,12 +213,12 @@ public class ReportServiceImplGoogle implements ReportService {
         List.of(
             "Final balance", getBalanceAmountOrZero(BalanceCategory.FINAL_BALANCE, balanceDtos));
 
-    List<Object> needsSum = createSumForCategoryData(TransactionMainCategory.NEEDS);
-    List<Object> loansSum = createSumForCategoryData(TransactionMainCategory.LOANS);
-    List<Object> funSum = createSumForCategoryData(TransactionMainCategory.FUN_WANTS_GIFTS);
-    List<Object> savingsSum = createSumForCategoryData(TransactionMainCategory.SAVINGS);
-    List<Object> incomeSum = createSumForCategoryData(TransactionMainCategory.INCOME);
-    List<Object> othersSum = createSumForCategoryData(TransactionMainCategory.OTHERS);
+    List<Object> needsSum = createSumForCategoryData(TransactionMainCategory.NEEDS, month);
+    List<Object> loansSum = createSumForCategoryData(TransactionMainCategory.LOANS, month);
+    List<Object> funSum = createSumForCategoryData(TransactionMainCategory.FUN_WANTS_GIFTS, month);
+    List<Object> savingsSum = createSumForCategoryData(TransactionMainCategory.SAVINGS, month);
+    List<Object> incomeSum = createSumForCategoryData(TransactionMainCategory.INCOME, month);
+    List<Object> othersSum = createSumForCategoryData(TransactionMainCategory.OTHERS, month);
 
     List<List<Object>> data =
         transactionService.getAllTransactionDtos().stream()
@@ -263,7 +260,7 @@ public class ReportServiceImplGoogle implements ReportService {
     data.addFirst(finalBalance);
     data.addFirst(initialBalance);
 
-    insertDataToSheet("Data", data);
+    insertDataToSheet(generateSheetNameForGivenMonth(month, false), data);
   }
 
   private void insertDataToSheet(String sheetName, List<List<Object>> data) {
@@ -322,9 +319,11 @@ public class ReportServiceImplGoogle implements ReportService {
     return range;
   }
 
-  private List<Object> createSumForCategoryData(TransactionMainCategory transactionMainCategory) {
+  private List<Object> createSumForCategoryData(
+      TransactionMainCategory transactionMainCategory, Month month) {
     BigDecimal sumValue =
-        transactionService.sumAmountOfTransactionsForCategory(transactionMainCategory);
+        transactionService.sumAmountOfTransactionsForCategoryAndMonth(
+            transactionMainCategory, month);
     if (sumValue == null) sumValue = BigDecimal.ZERO;
     return List.of(transactionMainCategory.toString(), sumValue);
   }

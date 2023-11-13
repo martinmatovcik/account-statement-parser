@@ -9,10 +9,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
@@ -28,8 +25,8 @@ public class TransactionController {
   }
 
   @GetMapping("/generate-report")
-  public ResponseEntity<String> generateGoogleSheetsReport() {
-    reportService.generateReport(Month.OCTOBER);
+  public ResponseEntity<String> generateGoogleSheetsReport(@RequestParam int month) {
+    reportService.generateReport(Month.of(month));
     return new ResponseEntity<>("Successfully generated", HttpStatus.OK);
   }
 
