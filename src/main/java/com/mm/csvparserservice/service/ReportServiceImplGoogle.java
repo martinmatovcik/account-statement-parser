@@ -34,9 +34,62 @@ public class ReportServiceImplGoogle implements ReportService {
     generateTemplate(month);
   }
 
-  @Override
-  public void generateTemplate(Month month) {
-    generateSheetForGivenMonth(month, true);
+  private void generateDataSheet(Month month) {
+    List<Object> initialBalance = getBalanceDataLine(BalanceCategory.INITIAL_BALANCE, month);
+    List<Object> finalBalance = getBalanceDataLine(BalanceCategory.FINAL_BALANCE, month);
+    List<Object> needsSum = getSumForCategoryDataLine(TransactionMainCategory.NEEDS, month);
+    List<Object> loansSum = getSumForCategoryDataLine(TransactionMainCategory.LOANS, month);
+    List<Object> funSum = getSumForCategoryDataLine(TransactionMainCategory.FUN_WANTS_GIFTS, month);
+    List<Object> savingsSum = getSumForCategoryDataLine(TransactionMainCategory.SAVINGS, month);
+    List<Object> incomeSum = getSumForCategoryDataLine(TransactionMainCategory.INCOME, month);
+    List<Object> othersSum = getSumForCategoryDataLine(TransactionMainCategory.OTHERS, month);
+    List<Object> metaData =
+        List.of(
+            "Transaction Id",
+            "Fio Operation Id",
+            "Date",
+            "Amount",
+            "Currency",
+            "Recipient Account",
+            "Recipient Account Name",
+            "Bank Code",
+            "Bank Name",
+            "Constant Symbol",
+            "Variable Symbol",
+            "Specific Symbol",
+            "Transaction Note",
+            "Recipient Message",
+            "Transaction Type",
+            "Carried Out",
+            "Transaction Specification",
+            "Transaction Note",
+            "BIC Code",
+            "Fio Instruction Id",
+            "Main Category");
+
+    List<List<Object>> data =
+        new LinkedList<>(
+            List.of(
+                initialBalance,
+                finalBalance,
+                needsSum,
+                loansSum,
+                funSum,
+                savingsSum,
+                incomeSum,
+                othersSum,
+                List.of("SUM", "=SUM(B3:B8)"),
+                metaData));
+
+    data.addAll(
+        transactionService.getAllTransactionsForMonth(month).stream()
+            .map(t -> t.toDto().toData())
+            .toList());
+
+    insertDataToSheet(generateSheetNameForGivenMonth(month, false), data);
+  }
+
+  private void generateTemplate(Month month) {
     List<List<Object>> data = new LinkedList<>();
 
     double plannedIncome = 43270.00;
@@ -120,41 +173,41 @@ public class ReportServiceImplGoogle implements ReportService {
   }
 
   private List<List<Object>> generateSection(Month month, TransactionMainCategory category) {
-    String sectionHeading;
+    String sectionHeader;
     String dataSheetCellIndex;
     switch (category) {
       default -> {
-        sectionHeading = "";
+        sectionHeader = "";
         dataSheetCellIndex = "";
       }
       case NEEDS -> {
-        sectionHeading = "BÝVANIE, KOMUNIKÁCIA a INÉ POTREBY";
+        sectionHeader = "BÝVANIE, KOMUNIKÁCIA a INÉ POTREBY";
         dataSheetCellIndex = "B3";
       }
       case LOANS -> {
-        sectionHeading = "PÔŽIČKY";
+        sectionHeader = "PÔŽIČKY";
         dataSheetCellIndex = "B4";
       }
       case FUN_WANTS_GIFTS -> {
-        sectionHeading = "RADOSTI, VOĽNÝ ČAS, ZÁBAVA, DARY";
+        sectionHeader = "RADOSTI, VOĽNÝ ČAS, ZÁBAVA, DARY";
         dataSheetCellIndex = "B5";
       }
       case SAVINGS -> {
-        sectionHeading = "SPORENIE";
+        sectionHeader = "SPORENIE";
         dataSheetCellIndex = "B6";
       }
       case OTHERS -> {
-        sectionHeading = "OSTATNÉ";
+        sectionHeader = "OSTATNÉ";
         dataSheetCellIndex = "B8";
       }
     }
 
-    List<Object> sectionHeader =
+    List<Object> sectionMetaData =
         List.of("Položka", "Plánované náklady", "Skutočné náklady", "Rozdiel");
 
     List<List<Object>> section = new LinkedList<>();
-    section.add(List.of(sectionHeading));
-    section.add(sectionHeader);
+    section.add(List.of(sectionHeader));
+    section.add(sectionMetaData);
     section.addAll(
         reportItemService.findReportItemsByCategory(category).stream()
             .map(ReportItemDto::toData)
@@ -189,89 +242,8 @@ public class ReportServiceImplGoogle implements ReportService {
     return balance;
   }
 
-  private void generateSheetForGivenMonth(Month month, boolean isReport) {
-
-    List<List<Object>> data = List.of(List.of("Something"));
-    String sheetName = generateSheetNameForGivenMonth(month, isReport);
-
-    insertDataToSheet(sheetName, data);
-  }
-
   private String generateSheetNameForGivenMonth(Month month, boolean isReport) {
     return (isReport ? "Report_" : "Data_") + month.name();
-  }
-
-  private void generateDataSheet(Month month) {
-    List<Object> initialBalance = getBalanceDataLine(BalanceCategory.INITIAL_BALANCE, month);
-    List<Object> finalBalance = getBalanceDataLine(BalanceCategory.FINAL_BALANCE, month);
-    List<Object> needsSum = createSumForCategoryData(TransactionMainCategory.NEEDS, month);
-    List<Object> loansSum = createSumForCategoryData(TransactionMainCategory.LOANS, month);
-    List<Object> funSum = createSumForCategoryData(TransactionMainCategory.FUN_WANTS_GIFTS, month);
-    List<Object> savingsSum = createSumForCategoryData(TransactionMainCategory.SAVINGS, month);
-    List<Object> incomeSum = createSumForCategoryData(TransactionMainCategory.INCOME, month);
-    List<Object> othersSum = createSumForCategoryData(TransactionMainCategory.OTHERS, month);
-    List<Object> metaData =
-        List.of(
-            "Transaction Id",
-            "Fio Operation Id",
-            "Date",
-            "Amount",
-            "Currency",
-            "Recipient Account",
-            "Recipient Account Name",
-            "Bank Code",
-            "Bank Name",
-            "Constant Symbol",
-            "Variable Symbol",
-            "Specific Symbol",
-            "Transaction Note",
-            "Recipient Message",
-            "Transaction Type",
-            "Carried Out",
-            "Transaction Specification",
-            "Transaction Note",
-            "BIC Code",
-            "Fio Instruction Id",
-            "Main Category");
-
-    List<List<Object>> data =
-        new LinkedList<>(
-            List.of(
-                initialBalance,
-                finalBalance,
-                needsSum,
-                loansSum,
-                funSum,
-                savingsSum,
-                incomeSum,
-                othersSum,
-                List.of("SUM", "=SUM(B3:B8)"),
-                metaData));
-
-    data.addAll(
-        transactionService.getAllTransactionsForMonth(month).stream()
-            .map(t -> t.toDto().toData())
-            .toList());
-
-    insertDataToSheet(generateSheetNameForGivenMonth(month, false), data);
-  }
-
-  private List<Object> getBalanceDataLine(BalanceCategory balanceCategory, Month month) {
-    List<BalanceDto> balanceDtos =
-        balanceService.getAllBalancesForMonth(month).stream().map(Balance::toDto).toList();
-
-    String balanceType = (balanceCategory == BalanceCategory.FINAL_BALANCE ? "Final" : "Initial");
-
-    BigDecimal balanceAmount =
-        balanceDtos.isEmpty()
-            ? BigDecimal.ZERO
-            : balanceDtos.stream()
-                .filter(balanceDto -> balanceDto.getBalanceCategory().equals(balanceCategory))
-                .findFirst()
-                .orElseThrow()
-                .getAmount();
-
-    return List.of(balanceType + " balance", balanceAmount);
   }
 
   private void insertDataToSheet(String sheetName, List<List<Object>> data) {
@@ -292,14 +264,10 @@ public class ReportServiceImplGoogle implements ReportService {
   }
 
   private String createSheetIfDontExist(String sheetName, Sheets sheetsService) throws IOException {
-
     Spreadsheet spreadsheet = sheetsService.spreadsheets().get(SPREADSHEET_ID).execute();
 
     boolean sheetExists =
-        (spreadsheet.getSheets().stream()
-                .map(Sheet::getProperties)
-                .map(SheetProperties::getTitle)
-                .toList())
+        (spreadsheet.getSheets().stream().map(sheet -> sheet.getProperties().getTitle()).toList())
             .contains(sheetName);
 
     String range = sheetName + "!1:1000";
@@ -318,7 +286,25 @@ public class ReportServiceImplGoogle implements ReportService {
     return range;
   }
 
-  private List<Object> createSumForCategoryData(
+  private List<Object> getBalanceDataLine(BalanceCategory balanceCategory, Month month) {
+    List<BalanceDto> balanceDtos =
+        balanceService.getAllBalancesForMonth(month).stream().map(Balance::toDto).toList();
+
+    String balanceType = (balanceCategory == BalanceCategory.FINAL_BALANCE ? "Final" : "Initial");
+
+    BigDecimal balanceAmount =
+        balanceDtos.isEmpty()
+            ? BigDecimal.ZERO
+            : balanceDtos.stream()
+                .filter(balanceDto -> balanceDto.getBalanceCategory().equals(balanceCategory))
+                .findFirst()
+                .orElseThrow()
+                .getAmount();
+
+    return List.of(balanceType + " balance", balanceAmount);
+  }
+
+  private List<Object> getSumForCategoryDataLine(
       TransactionMainCategory transactionMainCategory, Month month) {
     BigDecimal sumValue =
         transactionService.sumAmountOfTransactionsForCategoryAndMonth(

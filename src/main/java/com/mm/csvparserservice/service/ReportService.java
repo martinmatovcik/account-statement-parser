@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface ReportService {
   void generateReport(Month month);
-  void generateTemplate(Month month);
 }
