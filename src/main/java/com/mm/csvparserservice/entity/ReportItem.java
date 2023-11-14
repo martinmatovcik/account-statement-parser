@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import lombok.*;
 
@@ -18,9 +19,8 @@ import lombok.*;
 @NoArgsConstructor
 public class ReportItem extends EntityParent {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Nullable
-  private Long id;
+  @GeneratedValue
+  private UUID id;
 
   private String name;
   private BigDecimal plannedAmount = BigDecimal.ZERO;

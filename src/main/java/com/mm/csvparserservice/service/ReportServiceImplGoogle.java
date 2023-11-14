@@ -6,7 +6,9 @@ import com.mm.csvparserservice.configuration.GoogleSheetsConfiguration;
 import com.mm.csvparserservice.dto.BalanceDto;
 import com.mm.csvparserservice.dto.ReportItemDto;
 import com.mm.csvparserservice.dto.TransactionDto;
+import com.mm.csvparserservice.entity.Balance;
 import com.mm.csvparserservice.entity.BalanceCategory;
+import com.mm.csvparserservice.entity.Transaction;
 import com.mm.csvparserservice.entity.TransactionMainCategory;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -203,7 +205,8 @@ public class ReportServiceImplGoogle implements ReportService {
   }
 
   private void generateDataSheet(Month month) {
-    List<BalanceDto> balanceDtos = balanceService.getAllBalanceDtosForMonth(month);
+    List<BalanceDto> balanceDtos =
+        balanceService.getAllBalancesForMonth(month).stream().map(Balance::toDto).toList();
 
     List<Object> initialBalance =
         List.of(
@@ -221,7 +224,8 @@ public class ReportServiceImplGoogle implements ReportService {
     List<Object> othersSum = createSumForCategoryData(TransactionMainCategory.OTHERS, month);
 
     List<List<Object>> data =
-        transactionService.getAllTransactionDtos().stream()
+        transactionService.getAllTransactions().stream()
+            .map(Transaction::toDto)
             .map(TransactionDto::toData)
             .collect(Collectors.toList());
 

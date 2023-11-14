@@ -2,12 +2,12 @@ package com.mm.csvparserservice.entity;
 
 import com.mm.csvparserservice.dto.BalanceDto;
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.Month;
+import java.util.UUID;
+
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -18,9 +18,8 @@ import lombok.*;
 @AllArgsConstructor
 public class Balance extends EntityParent {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Nullable
-  private Long id;
+  @GeneratedValue
+  private UUID id;
 
   private Month month;
   private BigDecimal amount;

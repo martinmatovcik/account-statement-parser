@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +19,7 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @Builder
 public class TransactionDto extends DtoParent {
-  @Nullable private Long transactionId;
+  @Nullable private UUID transactionId;
   private Long fioOperationId;
   private LocalDate date;
   private BigDecimal amount;

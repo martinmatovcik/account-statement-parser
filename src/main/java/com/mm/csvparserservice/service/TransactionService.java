@@ -1,16 +1,19 @@
 package com.mm.csvparserservice.service;
 
-import com.mm.csvparserservice.dto.TransactionDto;
+import com.mm.csvparserservice.entity.EntityParent;
 import com.mm.csvparserservice.entity.Transaction;
 import com.mm.csvparserservice.entity.TransactionMainCategory;
 import java.math.BigDecimal;
 import java.time.Month;
 import java.util.List;
+import java.util.UUID;
 
 public interface TransactionService {
-  Transaction persistTransaction(Transaction transaction);
-
-  List<TransactionDto> getAllTransactionDtos();
-
+  List<Transaction> getAllTransactions();
+  Transaction getTransactionById(UUID id);
+  Transaction persistTransaction(Transaction transactionToSave);
+  Transaction updateTransaction(UUID id, Transaction updatedTransaction);
+  void deleteTransactionById(UUID id);
   BigDecimal sumAmountOfTransactionsForCategoryAndMonth(TransactionMainCategory transactionMainCategory, Month month);
+
 }

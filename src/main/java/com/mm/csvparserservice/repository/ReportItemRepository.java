@@ -5,12 +5,14 @@ import com.mm.csvparserservice.entity.TransactionMainCategory;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReportItemRepository extends JpaRepository<ReportItem, Long> {
+public interface ReportItemRepository extends JpaRepository<ReportItem, UUID> {
     Optional<ReportItem> findByName(String name);
     List<ReportItem> findAllByReportItemCategory(TransactionMainCategory category);
     @Query(

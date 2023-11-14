@@ -6,6 +6,8 @@ import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.Month;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +17,7 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 public class BalanceDto extends DtoParent {
 
-  @Nullable private Long id;
+  @Nullable private UUID id;
   private Month month;
   private BigDecimal amount;
   private BalanceCategory balanceCategory;

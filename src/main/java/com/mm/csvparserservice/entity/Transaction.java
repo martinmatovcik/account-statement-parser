@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.Objects;
+import java.util.UUID;
+
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -19,9 +21,8 @@ import lombok.*;
 @Builder
 public class Transaction extends EntityParent {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Nullable
-  private Long transactionId;
+  @GeneratedValue
+  private UUID transactionId;
 
   private Long fioOperationId;
   private LocalDate date;
