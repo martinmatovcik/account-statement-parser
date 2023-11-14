@@ -5,10 +5,8 @@ import com.google.api.services.sheets.v4.model.*;
 import com.mm.csvparserservice.configuration.GoogleSheetsConfiguration;
 import com.mm.csvparserservice.dto.BalanceDto;
 import com.mm.csvparserservice.dto.ReportItemDto;
-import com.mm.csvparserservice.dto.TransactionDto;
 import com.mm.csvparserservice.entity.Balance;
 import com.mm.csvparserservice.entity.BalanceCategory;
-import com.mm.csvparserservice.entity.Transaction;
 import com.mm.csvparserservice.entity.TransactionMainCategory;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -17,7 +15,6 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -205,30 +202,14 @@ public class ReportServiceImplGoogle implements ReportService {
   }
 
   private void generateDataSheet(Month month) {
-    List<BalanceDto> balanceDtos =
-        balanceService.getAllBalancesForMonth(month).stream().map(Balance::toDto).toList();
-
-    List<Object> initialBalance =
-        List.of(
-            "Initial balance",
-            getBalanceAmountOrZero(BalanceCategory.INITIAL_BALANCE, balanceDtos));
-    List<Object> finalBalance =
-        List.of(
-            "Final balance", getBalanceAmountOrZero(BalanceCategory.FINAL_BALANCE, balanceDtos));
-
+    List<Object> initialBalance = getBalanceDataLine(BalanceCategory.INITIAL_BALANCE, month);
+    List<Object> finalBalance = getBalanceDataLine(BalanceCategory.FINAL_BALANCE, month);
     List<Object> needsSum = createSumForCategoryData(TransactionMainCategory.NEEDS, month);
     List<Object> loansSum = createSumForCategoryData(TransactionMainCategory.LOANS, month);
     List<Object> funSum = createSumForCategoryData(TransactionMainCategory.FUN_WANTS_GIFTS, month);
     List<Object> savingsSum = createSumForCategoryData(TransactionMainCategory.SAVINGS, month);
     List<Object> incomeSum = createSumForCategoryData(TransactionMainCategory.INCOME, month);
     List<Object> othersSum = createSumForCategoryData(TransactionMainCategory.OTHERS, month);
-
-    List<List<Object>> data =
-        transactionService.getAllTransactions().stream()
-            .map(Transaction::toDto)
-            .map(TransactionDto::toData)
-            .collect(Collectors.toList());
-
     List<Object> metaData =
         List.of(
             "Transaction Id",
@@ -253,18 +234,44 @@ public class ReportServiceImplGoogle implements ReportService {
             "Fio Instruction Id",
             "Main Category");
 
-    data.addFirst(metaData);
-    data.addFirst(List.of("SUM", "=SUM(B3:B8)"));
-    data.addFirst(othersSum);
-    data.addFirst(incomeSum);
-    data.addFirst(savingsSum);
-    data.addFirst(funSum);
-    data.addFirst(loansSum);
-    data.addFirst(needsSum);
-    data.addFirst(finalBalance);
-    data.addFirst(initialBalance);
+    List<List<Object>> data =
+        new LinkedList<>(
+            List.of(
+                initialBalance,
+                finalBalance,
+                needsSum,
+                loansSum,
+                funSum,
+                savingsSum,
+                incomeSum,
+                othersSum,
+                List.of("SUM", "=SUM(B3:B8)"),
+                metaData));
+
+    data.addAll(
+        transactionService.getAllTransactionsForMonth(month).stream()
+            .map(t -> t.toDto().toData())
+            .toList());
 
     insertDataToSheet(generateSheetNameForGivenMonth(month, false), data);
+  }
+
+  private List<Object> getBalanceDataLine(BalanceCategory balanceCategory, Month month) {
+    List<BalanceDto> balanceDtos =
+        balanceService.getAllBalancesForMonth(month).stream().map(Balance::toDto).toList();
+
+    String balanceType = (balanceCategory == BalanceCategory.FINAL_BALANCE ? "Final" : "Initial");
+
+    BigDecimal balanceAmount =
+        balanceDtos.isEmpty()
+            ? BigDecimal.ZERO
+            : balanceDtos.stream()
+                .filter(balanceDto -> balanceDto.getBalanceCategory().equals(balanceCategory))
+                .findFirst()
+                .orElseThrow()
+                .getAmount();
+
+    return List.of(balanceType + " balance", balanceAmount);
   }
 
   private void insertDataToSheet(String sheetName, List<List<Object>> data) {
@@ -284,18 +291,6 @@ public class ReportServiceImplGoogle implements ReportService {
     }
   }
 
-  private BigDecimal getBalanceAmountOrZero(
-      BalanceCategory balanceCategory, List<BalanceDto> balanceDtos) {
-
-    if (balanceDtos.isEmpty()) return BigDecimal.ZERO;
-
-    return balanceDtos.stream()
-        .filter(balanceDto -> balanceDto.getBalanceCategory().equals(balanceCategory))
-        .findFirst()
-        .orElseThrow()
-        .getAmount();
-  }
-
   private String createSheetIfDontExist(String sheetName, Sheets sheetsService) throws IOException {
 
     Spreadsheet spreadsheet = sheetsService.spreadsheets().get(SPREADSHEET_ID).execute();
@@ -307,7 +302,7 @@ public class ReportServiceImplGoogle implements ReportService {
                 .toList())
             .contains(sheetName);
 
-    String range = sheetName + "!A1:Z100";
+    String range = sheetName + "!1:1000";
 
     if (!sheetExists) {
       List<Request> requests = new ArrayList<>();

@@ -38,7 +38,7 @@ public class GoogleSheetsConfiguration {
             .build();
 
     return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver())
-        .authorize("desktop-user-01");
+        .authorize("Desktop client 2");
   }
 
   public static Sheets getSheetsService() throws IOException, GeneralSecurityException {

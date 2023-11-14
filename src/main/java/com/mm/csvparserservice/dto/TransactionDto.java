@@ -71,7 +71,7 @@ public class TransactionDto extends DtoParent {
   @Override
   public List<Object> toData() {
     return List.of(
-        this.transactionId,
+        this.transactionId.toString(),
         this.fioInstructionId,
         this.date.toString(),
         this.amount,

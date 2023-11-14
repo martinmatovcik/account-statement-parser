@@ -2,7 +2,6 @@ package com.mm.csvparserservice.controller;
 
 import com.mm.csvparserservice.dto.TransactionDto;
 import com.mm.csvparserservice.entity.Transaction;
-import com.mm.csvparserservice.service.CSVService;
 import com.mm.csvparserservice.service.TransactionService;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TransactionController {
   private final TransactionService transactionService;
-  private final CSVService csvService;
 
   @GetMapping
   public ResponseEntity<List<TransactionDto>> getAllTransactions() {
@@ -45,16 +43,11 @@ public class TransactionController {
         transactionService.updateTransaction(id, transactionDto.toEntity()).toDto(), HttpStatus.OK);
   }
 
+//  todo: PATCH mapping
+
   @DeleteMapping("/{id}")
   public ResponseEntity<HttpStatus> deleteTransactionById(@PathVariable UUID id) {
     transactionService.deleteTransactionById(id);
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
-
-  @PostMapping("/upload-statement")
-  public ResponseEntity<HttpStatus> uploadCSVStatement() {
-    // Todo: replace "filepath" with request params or body
-    csvService.parseCSV("file");
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }

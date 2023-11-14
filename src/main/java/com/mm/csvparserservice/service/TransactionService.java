@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface TransactionService {
   List<Transaction> getAllTransactions();
+  List<Transaction> getAllTransactionsForMonth(Month month);
   Transaction getTransactionById(UUID id);
   Transaction persistTransaction(Transaction transactionToSave);
   Transaction updateTransaction(UUID id, Transaction updatedTransaction);

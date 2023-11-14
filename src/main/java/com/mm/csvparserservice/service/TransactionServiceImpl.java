@@ -24,6 +24,13 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
+  public List<Transaction> getAllTransactionsForMonth(Month month) {
+    return transactionRepository.findAll().stream()
+        .filter(transaction -> transaction.getDate().getMonth() == month)
+        .toList();
+  }
+
+  @Override
   public Transaction getTransactionById(UUID id) {
     return transactionRepository.findById(id).orElseThrow();
   }
@@ -47,6 +54,7 @@ public class TransactionServiceImpl implements TransactionService {
   public void deleteTransactionById(UUID id) {
     transactionRepository.deleteById(id);
   }
+
   @Override
   public BigDecimal sumAmountOfTransactionsForCategoryAndMonth(
       TransactionMainCategory transactionMainCategory, Month month) {

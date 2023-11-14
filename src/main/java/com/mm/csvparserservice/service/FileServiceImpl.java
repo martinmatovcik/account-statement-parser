@@ -3,8 +3,12 @@ package com.mm.csvparserservice.service;
 import com.mm.csvparserservice.entity.Balance;
 import com.mm.csvparserservice.entity.BalanceCategory;
 import com.mm.csvparserservice.entity.Transaction;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -14,20 +18,20 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-public class CSVServiceImpl implements CSVService {
+public class FileServiceImpl implements FileService {
   private final TransactionService transactionService;
   private final BalanceService balanceService;
 
   @Override
-  public void parseCSV(String file) {
+  public void parseFile(MultipartFile file) {
 
     List<String> fileLines;
     try {
-      fileLines = Files.readAllLines(Path.of("file/fio-10-23.csv")); // dummy value for now
-      //      return Files.readAllLines(Path.of(file));
+      fileLines = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)).lines().toList();
     } catch (IOException e) {
       throw new RuntimeException("Something went wrong with reading the file", e);
     }
