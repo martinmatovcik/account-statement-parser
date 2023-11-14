@@ -4,10 +4,11 @@ import com.mm.csvparserservice.dto.ReportItemDto;
 import com.mm.csvparserservice.entity.ReportItem;
 import com.mm.csvparserservice.entity.TransactionMainCategory;
 import com.mm.csvparserservice.repository.ReportItemRepository;
-
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,13 +17,30 @@ public class ReportItemServiceImpl implements ReportItemService {
   private final ReportItemRepository reportItemRepository;
 
   @Override
+  public List<ReportItem> getAllReportItems() {
+    return reportItemRepository.findAll();
+  }
+
+  @Override
+  public ReportItem getReportItemById(UUID id) {
+    return reportItemRepository.findById(id).orElseThrow();
+  }
+
+  @Override
   public ReportItem persistReportItem(ReportItem reportItem) {
     return reportItemRepository.save(reportItem);
   }
 
   @Override
-  public ReportItem findReportItemByName(String name) {
-    return reportItemRepository.findByName(name).orElseThrow();
+  public ReportItem updateReportItemById(UUID id, ReportItem updatedReportItem) {
+    ReportItem reportItemToUpdate = reportItemRepository.getReferenceById(id);
+    BeanUtils.copyProperties(updatedReportItem, reportItemToUpdate, "id");
+    return reportItemRepository.save(reportItemToUpdate);
+  }
+
+  @Override
+  public void deleteReportItemById(UUID id) {
+    reportItemRepository.deleteById(id);
   }
 
   @Override
@@ -41,6 +59,4 @@ public class ReportItemServiceImpl implements ReportItemService {
   public BigDecimal sumDifferenceOfReportItemsForCategory(TransactionMainCategory category) {
     return reportItemRepository.sumDifferenceOfReportItemsForCategory(category);
   }
-
-
 }

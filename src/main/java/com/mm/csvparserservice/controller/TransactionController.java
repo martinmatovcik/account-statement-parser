@@ -6,7 +6,6 @@ import com.mm.csvparserservice.service.CSVService;
 import com.mm.csvparserservice.service.TransactionService;
 import java.util.List;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +39,8 @@ public class TransactionController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<TransactionDto> updateTransaction(@PathVariable UUID id,
-      @RequestBody TransactionDto transactionDto) {
+  public ResponseEntity<TransactionDto> updateTransactionById(
+      @PathVariable UUID id, @RequestBody TransactionDto transactionDto) {
     return new ResponseEntity<>(
         transactionService.updateTransaction(id, transactionDto.toEntity()).toDto(), HttpStatus.OK);
   }
