@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,25 +19,25 @@ import lombok.EqualsAndHashCode;
 @Builder
 public class TransactionDto extends DtoParent {
   @Nullable private UUID transactionId;
-  private Long fioOperationId;
+  @Nullable private Long fioOperationId;
   private LocalDate date;
   private BigDecimal amount;
   private Currency currency;
-  private String recipientAccount;
-  private String recipientAccountName;
-  private Long bankCode;
-  private String bankName;
-  private String constantSymbol;
-  private String variableSymbol;
-  private String specificSymbol;
-  private String transactionNote;
-  private String recipientMessage;
-  private String transactionType;
-  private String carriedOut;
-  private String transactionSpecification;
-  private String note;
-  private String bicCode;
-  private Long fioInstructionId;
+  @Nullable private String recipientAccount;
+  @Nullable private String recipientAccountName;
+  @Nullable private Long bankCode;
+  @Nullable private String bankName;
+  @Nullable private String constantSymbol;
+  @Nullable private String variableSymbol;
+  @Nullable private String specificSymbol;
+  @Nullable private String transactionNote;
+  @Nullable private String recipientMessage;
+  @Nullable private String transactionType;
+  @Nullable private String carriedOut;
+  @Nullable private String transactionSpecification;
+  @Nullable private String note;
+  @Nullable private String bicCode;
+  @Nullable private Long fioInstructionId;
   private TransactionMainCategory transactionMainCategory;
 
   @Override

@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/transactions")
+@RequestMapping("/api/v1/transactions/")
 @RequiredArgsConstructor
 public class TransactionController {
   private final TransactionService transactionService;
@@ -23,7 +23,7 @@ public class TransactionController {
         HttpStatus.OK);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("{id}")
   public ResponseEntity<TransactionDto> getTransactionById(@PathVariable UUID id) {
     return new ResponseEntity<>(transactionService.getTransactionById(id).toDto(), HttpStatus.OK);
   }
@@ -36,7 +36,7 @@ public class TransactionController {
         HttpStatus.CREATED);
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("{id}")
   public ResponseEntity<TransactionDto> updateTransactionById(
       @PathVariable UUID id, @RequestBody TransactionDto transactionDto) {
     return new ResponseEntity<>(
@@ -45,7 +45,7 @@ public class TransactionController {
 
 //  todo: PATCH mapping
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("{id}")
   public ResponseEntity<HttpStatus> deleteTransactionById(@PathVariable UUID id) {
     transactionService.deleteTransactionById(id);
     return new ResponseEntity<>(HttpStatus.OK);
