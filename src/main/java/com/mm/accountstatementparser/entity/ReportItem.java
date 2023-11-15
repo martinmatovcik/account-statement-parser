@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import java.math.BigDecimal;
 import java.util.UUID;
-
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -16,17 +15,16 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReportItem extends EntityParent {
-  @Id
-  @GeneratedValue
-  private UUID id;
+  @Id @GeneratedValue private UUID id;
 
   private String name;
-  private BigDecimal plannedAmount = BigDecimal.ZERO;
+  private BigDecimal plannedAmount;
   private BigDecimal realAmount = BigDecimal.ZERO;
-  private BigDecimal difference = plannedAmount.subtract(realAmount);
+  private BigDecimal difference = calculateDifference();
   private TransactionMainCategory reportItemCategory;
 
-  public ReportItem(String name, BigDecimal plannedAmount, TransactionMainCategory reportItemCategory) {
+  public ReportItem(
+      String name, BigDecimal plannedAmount, TransactionMainCategory reportItemCategory) {
     this.name = name;
     this.plannedAmount = plannedAmount;
     this.reportItemCategory = reportItemCategory;
@@ -42,5 +40,10 @@ public class ReportItem extends EntityParent {
         .difference(this.difference)
         .reportItemCategory(this.reportItemCategory)
         .build();
+  }
+
+  private BigDecimal calculateDifference() {
+    if (this.plannedAmount == null) this.plannedAmount = BigDecimal.ZERO;
+    return plannedAmount.subtract(realAmount);
   }
 }

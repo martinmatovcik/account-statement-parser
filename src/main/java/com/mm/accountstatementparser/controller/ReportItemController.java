@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/items")
+@RequestMapping("/api/v1/report-items/")
 @RequiredArgsConstructor
 public class ReportItemController {
   private final ReportItemService reportItemService;
@@ -23,7 +23,7 @@ public class ReportItemController {
         HttpStatus.OK);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("{id}")
   public ResponseEntity<ReportItemDto> getReportItemById(@PathVariable UUID id) {
     return new ResponseEntity<>(reportItemService.getReportItemById(id).toDto(), HttpStatus.OK);
   }
@@ -34,7 +34,7 @@ public class ReportItemController {
         reportItemService.persistReportItem(reportItemDto.toEntity()).toDto(), HttpStatus.CREATED);
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("{id}")
   public ResponseEntity<ReportItemDto> updateReportItemById(
       @PathVariable UUID id, @RequestBody ReportItemDto reportItemDto) {
     return new ResponseEntity<>(
@@ -42,7 +42,7 @@ public class ReportItemController {
         HttpStatus.OK);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("{id}")
   public ResponseEntity<HttpStatus> deleteReportItemById(@PathVariable UUID id) {
     reportItemService.deleteReportItemById(id);
     return new ResponseEntity<>(HttpStatus.OK);
