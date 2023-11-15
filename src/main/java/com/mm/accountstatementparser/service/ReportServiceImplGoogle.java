@@ -46,25 +46,12 @@ public class ReportServiceImplGoogle implements ReportService {
     List<Object> metaData =
         List.of(
             "Transaction Id",
-            "Fio Operation Id",
             "Date",
             "Amount",
             "Currency",
-            "Recipient Account",
-            "Recipient Account Name",
-            "Bank Code",
-            "Bank Name",
-            "Constant Symbol",
             "Variable Symbol",
-            "Specific Symbol",
-            "Transaction Note",
             "Recipient Message",
-            "Transaction Type",
-            "Carried Out",
-            "Transaction Specification",
             "Transaction Note",
-            "BIC Code",
-            "Fio Instruction Id",
             "Main Category");
 
     List<List<Object>> data =

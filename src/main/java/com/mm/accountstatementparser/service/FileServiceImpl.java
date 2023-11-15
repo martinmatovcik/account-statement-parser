@@ -64,25 +64,12 @@ public class FileServiceImpl implements FileService {
     String[] fileData = fileLine.split(";");
     Transaction transaction =
         Transaction.builder()
-            .fioOperationId(Long.parseLong(fileData[0]))
             .date(convertStringToLocalDate(fileData[1]))
             .amount(convertStringToBigDecimal(fileData[2]))
             .currency(Currency.getInstance(fileData[3]))
-            .recipientAccount(fileData[4])
-            .recipientAccountName(fileData[5])
-            .bankCode(Long.parseLong(makeNullable(fileData[6])))
-            .bankName(fileData[7])
-            .constantSymbol(fileData[8])
             .variableSymbol(fileData[9])
-            .specificSymbol(fileData[10])
-            .transactionNote(fileData[11])
             .recipientMessage(fileData[12])
-            .transactionType(fileData[13])
-            .carriedOut(fileData[14])
-            .transactionSpecification(fileData[15])
-            .note(fileData[16])
-            .bicCode(fileData[17])
-            .fioInstructionId(Long.parseLong(makeNullable(fileData[18])))
+            .transactionNote(fileData[16])
             .build();
     transaction.setTransactionMainCategory(transaction.findMainCategory());
     return transaction;

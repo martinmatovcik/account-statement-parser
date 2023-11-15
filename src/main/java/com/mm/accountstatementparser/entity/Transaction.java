@@ -1,7 +1,6 @@
 package com.mm.accountstatementparser.entity;
 
 import com.mm.accountstatementparser.dto.TransactionDto;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.text.Normalizer;
@@ -10,7 +9,6 @@ import java.util.Arrays;
 import java.util.Currency;
 import java.util.Objects;
 import java.util.UUID;
-
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -24,50 +22,24 @@ public class Transaction extends EntityParent {
   @GeneratedValue
   private UUID transactionId;
 
-  private Long fioOperationId;
   private LocalDate date;
   private BigDecimal amount;
   private Currency currency;
-  private String recipientAccount;
-  private String recipientAccountName;
-  private Long bankCode;
-  private String bankName;
-  private String constantSymbol;
   private String variableSymbol;
-  private String specificSymbol;
-  private String transactionNote;
   private String recipientMessage;
-  private String transactionType; // Todo: enum
-  private String carriedOut;
-  private String transactionSpecification;
-  private String note;
-  private String bicCode;
-  private Long fioInstructionId;
-  @Nullable private TransactionMainCategory transactionMainCategory;
+  private String transactionNote;
+  private TransactionMainCategory transactionMainCategory;
 
   @Override
   public TransactionDto toDto() {
     return TransactionDto.builder()
         .transactionId(this.transactionId)
-        .fioOperationId(this.fioOperationId)
         .date(this.date)
         .amount(this.amount)
         .currency(this.currency)
-        .recipientAccount(this.recipientAccount)
-        .recipientAccountName(this.recipientAccountName)
-        .bankCode(this.bankCode)
-        .bankName(this.bankName)
-        .constantSymbol(this.constantSymbol)
         .variableSymbol(this.variableSymbol)
-        .specificSymbol(this.specificSymbol)
-        .transactionNote(this.transactionNote)
         .recipientMessage(this.recipientMessage)
-        .transactionType(this.transactionType)
-        .carriedOut(this.carriedOut)
-        .transactionSpecification(this.transactionSpecification)
-        .note(this.note)
-        .bicCode(this.bicCode)
-        .fioInstructionId(this.fioInstructionId)
+        .transactionNote(this.transactionNote)
         .transactionMainCategory(this.transactionMainCategory)
         .build();
   }
@@ -123,15 +95,15 @@ public class Transaction extends EntityParent {
 
     if (Objects.requireNonNull(this.amount).compareTo(BigDecimal.ZERO) > 0) {
       return TransactionMainCategory.INCOME;
-    } else if ((stringContainsItemFromList(this.note, needsKeywords))
+    } else if ((stringContainsItemFromList(this.transactionNote, needsKeywords))
         || (!this.variableSymbol.isEmpty() && Integer.parseInt(this.variableSymbol) == 45625608)) {
       return TransactionMainCategory.NEEDS;
     } else if (stringContainsItemFromList(this.transactionNote, savingsKeywords)
-        || stringContainsItemFromList(this.note, savingsKeywords)) {
+        || stringContainsItemFromList(this.transactionNote, savingsKeywords)) {
       return TransactionMainCategory.SAVINGS;
     } else if (stringContainsItemFromList(this.transactionNote, loansKeywords)) {
       return TransactionMainCategory.LOANS;
-    } else if (stringContainsItemFromList(this.note, funKeywords)) {
+    } else if (stringContainsItemFromList(this.transactionNote, funKeywords)) {
       return TransactionMainCategory.FUN_WANTS_GIFTS;
     }
 

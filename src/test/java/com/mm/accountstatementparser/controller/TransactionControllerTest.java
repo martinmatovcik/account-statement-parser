@@ -102,10 +102,10 @@ public class TransactionControllerTest {
     String transactionUpdateRequest =
         """
     {
-        "fioOperationId": 123456,
         "date": "2023-11-11",
         "amount": 12340.12,
         "currency": "CZK",
+        "transactionNote": "updated-note",
         "transactionMainCategory": "NEEDS"
     }
     """;
@@ -116,7 +116,7 @@ public class TransactionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(transactionUpdateRequest))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.fioOperationId", is(123456)))
+        .andExpect(jsonPath("$.transactionNote", is("updated-note")))
         .andDo(print());
 
     mockMvc
