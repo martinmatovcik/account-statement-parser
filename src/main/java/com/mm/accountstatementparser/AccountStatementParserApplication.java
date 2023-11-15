@@ -35,7 +35,7 @@ public class AccountStatementParserApplication implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    if (false){
+    if (true){
       List<ReportItem> reportItems =
           List.of(
               new ReportItem("Nájom", BigDecimal.valueOf(17300.00), TransactionMainCategory.NEEDS),
