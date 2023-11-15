@@ -87,7 +87,8 @@ public class TransactionControllerTest {
 
     int startIndex = 18;
     UUID transactionId =
-        UUID.fromString(result.getResponse().getContentAsString().substring(startIndex, startIndex + 36));
+        UUID.fromString(
+            result.getResponse().getContentAsString().substring(startIndex, startIndex + 36));
 
     mockMvc
         .perform(get(BASE_URL + transactionId).contentType(MediaType.APPLICATION_JSON))

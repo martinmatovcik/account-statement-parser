@@ -10,11 +10,18 @@ import java.util.UUID;
 
 public interface ReportItemService {
   List<ReportItem> getAllReportItems();
+
   ReportItem getReportItemById(UUID id);
+
   ReportItem persistReportItem(ReportItem reportItem);
+
   ReportItem updateReportItemById(UUID id, ReportItem entity);
+
   void deleteReportItemById(UUID id);
+
   List<ReportItemDto> findReportItemsByCategory(TransactionMainCategory category);
+
   BigDecimal sumPlannedAmountOfReportItemsForCategory(TransactionMainCategory category);
+
   BigDecimal sumDifferenceOfReportItemsForCategory(TransactionMainCategory category);
 }

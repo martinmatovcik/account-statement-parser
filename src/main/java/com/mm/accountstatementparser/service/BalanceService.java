@@ -5,6 +5,7 @@ import java.time.Month;
 import java.util.List;
 
 public interface BalanceService {
-    Balance persistBalance(Balance balance);
-    List<Balance> getAllBalancesForMonth(Month month);
+  Balance persistBalance(Balance balance);
+
+  List<Balance> getAllBalancesForMonth(Month month);
 }

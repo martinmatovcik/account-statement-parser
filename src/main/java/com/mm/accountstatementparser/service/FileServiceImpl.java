@@ -3,7 +3,6 @@ package com.mm.accountstatementparser.service;
 import com.mm.accountstatementparser.entity.Balance;
 import com.mm.accountstatementparser.entity.BalanceCategory;
 import com.mm.accountstatementparser.entity.Transaction;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

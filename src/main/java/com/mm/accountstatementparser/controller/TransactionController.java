@@ -43,7 +43,7 @@ public class TransactionController {
         transactionService.updateTransaction(id, transactionDto.toEntity()).toDto(), HttpStatus.OK);
   }
 
-//  todo: PATCH mapping
+  //  todo: PATCH mapping
 
   @DeleteMapping("{id}")
   public ResponseEntity<HttpStatus> deleteTransactionById(@PathVariable UUID id) {

@@ -18,9 +18,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Transaction extends EntityParent {
-  @Id
-  @GeneratedValue
-  private UUID transactionId;
+  @Id @GeneratedValue private UUID transactionId;
 
   private LocalDate date;
   private BigDecimal amount;

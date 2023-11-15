@@ -52,7 +52,7 @@ public class ReportItemDto extends DtoParent {
     return List.of(this.name, this.plannedAmount, this.realAmount, this.difference);
   }
 
-  private BigDecimal calculateDifference(){
+  private BigDecimal calculateDifference() {
     if (this.plannedAmount == null) this.plannedAmount = BigDecimal.ZERO;
     return plannedAmount.subtract(realAmount);
   }

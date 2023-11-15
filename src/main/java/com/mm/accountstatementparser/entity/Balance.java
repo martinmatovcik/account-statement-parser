@@ -16,9 +16,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Balance extends EntityParent {
-  @Id
-  @GeneratedValue
-  private UUID id;
+  @Id @GeneratedValue private UUID id;
 
   private Month month;
   private BigDecimal amount;

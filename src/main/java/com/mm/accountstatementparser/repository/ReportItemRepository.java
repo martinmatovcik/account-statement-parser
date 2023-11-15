@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReportItemRepository extends JpaRepository<ReportItem, UUID> {
-    List<ReportItem> findAllByReportItemCategory(TransactionMainCategory category);
-    @Query(
-            "SELECT SUM(r.plannedAmount) FROM ReportItem r WHERE r.reportItemCategory = :category")
-    BigDecimal sumPlannedAmountOfReportItemsForCategory(TransactionMainCategory category);
-    @Query(
-            "SELECT SUM(r.difference) FROM ReportItem r WHERE r.reportItemCategory = :category")
-    BigDecimal sumDifferenceOfReportItemsForCategory(TransactionMainCategory category);
+  List<ReportItem> findAllByReportItemCategory(TransactionMainCategory category);
+
+  @Query("SELECT SUM(r.plannedAmount) FROM ReportItem r WHERE r.reportItemCategory = :category")
+  BigDecimal sumPlannedAmountOfReportItemsForCategory(TransactionMainCategory category);
+
+  @Query("SELECT SUM(r.difference) FROM ReportItem r WHERE r.reportItemCategory = :category")
+  BigDecimal sumDifferenceOfReportItemsForCategory(TransactionMainCategory category);
 }
