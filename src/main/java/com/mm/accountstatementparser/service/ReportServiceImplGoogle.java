@@ -30,6 +30,8 @@ public class ReportServiceImplGoogle implements ReportService {
 
   @Override
   public void generateReport(Month month) {
+    reportItemService.createSampleReportItemsWhenNoExisting(); // todo: temporary
+
     generateDataSheet(month);
     generateTemplate(month);
   }
@@ -80,6 +82,7 @@ public class ReportServiceImplGoogle implements ReportService {
     List<List<Object>> data = new LinkedList<>();
 
     double plannedIncome = 43270.00;
+    String finalBalanceDataCell = dataCellName(month, "B2", false);
 
     //    Line 1
     data.add(
@@ -88,15 +91,15 @@ public class ReportServiceImplGoogle implements ReportService {
             dataCellName(month, "B1", false),
             "'+/-",
             "Plánované náklady na život / mes:",
-            "=B24+B30"));
+            reportItemService.sumLivingExpenses(true)));
     //    Line 2
     data.add(
         List.of(
             "Stav účtu k poslednému dňu:",
-            dataCellName(month, "B2", false),
+            finalBalanceDataCell,
             dataCellName(month, "B9", false),
             "Skutočné náklady na život / mes:",
-            "=C24+C30"));
+            dataCellName(month, "B3", true) + "+" + dataCellName(month, "B4", true).substring(1)));
     //    Line 3
     data.add(List.of());
     //    Line 4
@@ -106,7 +109,7 @@ public class ReportServiceImplGoogle implements ReportService {
             "",
             "",
             "Plánované výdaje",
-            expenses(true),
+            reportItemService.sumPlannedAmountOfReportItems(),
             "",
             "Plánovaný zostatok",
             balances(true)));
@@ -125,10 +128,10 @@ public class ReportServiceImplGoogle implements ReportService {
             "",
             "",
             "Skutočné výdaje",
-            expenses(false),
+            realExpenses(month),
             "",
             "Skutočný zostatok",
-            balances(false)));
+            finalBalanceDataCell));
     //    Line 10
     data.add(List.of("Výplata", 0.00));
     //    Line 11
@@ -216,11 +219,9 @@ public class ReportServiceImplGoogle implements ReportService {
     return "=" + (negate ? "-(" + cell + ")" : cell);
   }
 
-  private String expenses(boolean isPlanned) {
-    String collumn = "C";
-    if (isPlanned) collumn = "B";
-    return "=" + collumn + "24+" + collumn + "30+" + collumn + "42+" + collumn + "52+" + collumn
-        + "57";
+  private String realExpenses(Month month) {
+    String cell = generateSheetNameForGivenMonth(month, false) + "!B";
+    return "=-(" + cell + "3+" + cell + "4+" + cell + "5+" + cell + "6+" + cell + "8)";
   }
 
   private String balances(boolean isPlanned) {

@@ -20,7 +20,7 @@ public class ReportItem extends EntityParent {
   private String name;
   private BigDecimal plannedAmount;
   private BigDecimal realAmount = BigDecimal.ZERO;
-  private BigDecimal difference = calculateDifference();
+  private BigDecimal difference;
   private TransactionMainCategory reportItemCategory;
 
   public ReportItem(
@@ -28,6 +28,7 @@ public class ReportItem extends EntityParent {
     this.name = name;
     this.plannedAmount = plannedAmount;
     this.reportItemCategory = reportItemCategory;
+    this.difference = calculateDifference();
   }
 
   @Override

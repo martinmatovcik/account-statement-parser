@@ -21,7 +21,19 @@ public interface ReportItemService {
 
   List<ReportItemDto> findReportItemsByCategory(TransactionMainCategory category);
 
+  BigDecimal sumPlannedAmountOfReportItems();
+
+  BigDecimal sumRealAmountOfReportItems();
+
+  BigDecimal sumDifferenceOfReportItems();
+
   BigDecimal sumPlannedAmountOfReportItemsForCategory(TransactionMainCategory category);
 
+  BigDecimal sumRealAmountOfReportItemsForCategory(TransactionMainCategory category);
+
   BigDecimal sumDifferenceOfReportItemsForCategory(TransactionMainCategory category);
+
+  void createSampleReportItemsWhenNoExisting();
+
+  BigDecimal sumLivingExpenses(boolean isPlanned);
 }
