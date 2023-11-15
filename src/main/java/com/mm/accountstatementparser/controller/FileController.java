@@ -18,7 +18,6 @@ public class FileController {
 
   @PostMapping
   public ResponseEntity<HttpStatus> uploadFile(@RequestParam MultipartFile file) {
-    // Todo: replace "filepath" with request params or body
     fileService.parseFile(file);
     return new ResponseEntity<>(HttpStatus.OK);
   }
