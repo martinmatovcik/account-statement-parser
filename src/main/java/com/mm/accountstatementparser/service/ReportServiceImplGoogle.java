@@ -7,7 +7,8 @@ import com.mm.accountstatementparser.dto.BalanceDto;
 import com.mm.accountstatementparser.dto.ItemDto;
 import com.mm.accountstatementparser.entity.Balance;
 import com.mm.accountstatementparser.entity.BalanceCategory;
-import com.mm.accountstatementparser.entity.TransactionMainCategory;
+import com.mm.accountstatementparser.entity.Category;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
@@ -39,12 +40,12 @@ public class ReportServiceImplGoogle implements ReportService {
   private void generateDataSheet(Month month) {
     List<Object> initialBalance = getBalanceDataLine(BalanceCategory.INITIAL_BALANCE, month);
     List<Object> finalBalance = getBalanceDataLine(BalanceCategory.FINAL_BALANCE, month);
-    List<Object> needsSum = getSumForCategoryDataLine(TransactionMainCategory.NEEDS, month);
-    List<Object> loansSum = getSumForCategoryDataLine(TransactionMainCategory.LOANS, month);
-    List<Object> funSum = getSumForCategoryDataLine(TransactionMainCategory.FUN_WANTS_GIFTS, month);
-    List<Object> savingsSum = getSumForCategoryDataLine(TransactionMainCategory.SAVINGS, month);
-    List<Object> incomeSum = getSumForCategoryDataLine(TransactionMainCategory.INCOME, month);
-    List<Object> othersSum = getSumForCategoryDataLine(TransactionMainCategory.OTHERS, month);
+    List<Object> needsSum = getSumForCategoryDataLine(Category.NEEDS, month);
+    List<Object> loansSum = getSumForCategoryDataLine(Category.LOANS, month);
+    List<Object> funSum = getSumForCategoryDataLine(Category.FUN_WANTS_GIFTS, month);
+    List<Object> savingsSum = getSumForCategoryDataLine(Category.SAVINGS, month);
+    List<Object> incomeSum = getSumForCategoryDataLine(Category.INCOME, month);
+    List<Object> othersSum = getSumForCategoryDataLine(Category.OTHERS, month);
     List<Object> metaData =
         List.of(
             "Transaction Id",
@@ -155,14 +156,14 @@ public class ReportServiceImplGoogle implements ReportService {
     data.add(List.of());
 
     //    SECTIONS
-    for (TransactionMainCategory category : TransactionMainCategory.values()) {
-      if (category != TransactionMainCategory.INCOME) data.addAll(generateSection(month, category));
+    for (Category category : Category.values()) {
+      if (category != Category.INCOME) data.addAll(generateSection(month, category));
     }
 
     insertDataToSheet(generateSheetNameForGivenMonth(month, true), data);
   }
 
-  private List<List<Object>> generateSection(Month month, TransactionMainCategory category) {
+  private List<List<Object>> generateSection(Month month, Category category) {
     String sectionHeader;
     String dataSheetCellIndex;
     switch (category) {
@@ -293,11 +294,11 @@ public class ReportServiceImplGoogle implements ReportService {
   }
 
   private List<Object> getSumForCategoryDataLine(
-      TransactionMainCategory transactionMainCategory, Month month) {
+          Category category, Month month) {
     BigDecimal sumValue =
         transactionService.sumAmountOfTransactionsForCategoryAndMonth(
-            transactionMainCategory, month);
+                category, month);
     if (sumValue == null) sumValue = BigDecimal.ZERO;
-    return List.of(transactionMainCategory.toString(), sumValue);
+    return List.of(category.toString(), sumValue);
   }
 }

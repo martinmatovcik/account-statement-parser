@@ -1,8 +1,8 @@
 package com.mm.accountstatementparser.service;
 
 import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
+import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Transaction;
-import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import com.mm.accountstatementparser.repository.TransactionRepository;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -21,6 +21,7 @@ import org.springframework.util.ReflectionUtils;
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
+  private final ItemService itemService;
   private final TransactionRepository transactionRepository;
 
   @Override
@@ -62,8 +63,8 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public BigDecimal sumAmountOfTransactionsForCategoryAndMonth(
-      TransactionMainCategory transactionMainCategory, Month month) {
-    return transactionRepository.getAllByTransactionMainCategory(transactionMainCategory).stream()
+          Category category, Month month) {
+    return transactionRepository.getAllByTransactionMainCategory(category).stream()
         .filter(transaction -> transaction.getDate().getMonth() == month)
         .map(Transaction::getAmount)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -83,7 +84,9 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Transaction assignReportItemToTransactionById(UUID id, AssignItemCommandDto itemCode) {
+  public Transaction assignItemToTransactionById(AssignItemCommandDto assignItemCommandDto) {
+    Transaction transactionToUpdate = findByIdOrElseThrow(assignItemCommandDto.getTransactionId());
+    transactionToUpdate.setItem(itemService.getItemByCode(assignItemCommandDto.getItemCode()));
     return null;
   }
 

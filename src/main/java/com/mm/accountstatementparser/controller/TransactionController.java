@@ -59,10 +59,9 @@ public class TransactionController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @PutMapping("{id}/assign-item/")
-  public ResponseEntity<TransactionDto> assignReportItemToTransactionById(
-      @PathVariable UUID id, @RequestBody AssignItemCommandDto itemCode) {
+  @PutMapping("assign-item/")
+  public ResponseEntity<TransactionDto> assignItemToTransactionById(@RequestBody AssignItemCommandDto assignItemCommandDto) {
     return new ResponseEntity<>(
-        transactionService.assignReportItemToTransactionById(id, itemCode).toDto(), HttpStatus.OK);
+        transactionService.assignItemToTransactionById(assignItemCommandDto).toDto(), HttpStatus.OK);
   }
 }

@@ -1,8 +1,8 @@
 package com.mm.accountstatementparser.dto;
 
+import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
 import com.mm.accountstatementparser.entity.Transaction;
-import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,7 +26,7 @@ public class TransactionDto extends DtoParent {
   @Nullable private String variableSymbol;
   @Nullable private String recipientMessage;
   @Nullable private String transactionNote;
-  private TransactionMainCategory transactionMainCategory;
+  private Category category;
   private Item item;
 
   @Override
@@ -39,7 +39,7 @@ public class TransactionDto extends DtoParent {
         .variableSymbol(this.variableSymbol)
         .recipientMessage(this.recipientMessage)
         .transactionNote(this.transactionNote)
-        .transactionMainCategory(this.transactionMainCategory)
+        .category(this.category)
         .item(this.item)
         .build();
   }
@@ -54,6 +54,6 @@ public class TransactionDto extends DtoParent {
         this.variableSymbol,
         this.recipientMessage,
         this.transactionNote,
-        this.transactionMainCategory.toString());
+        this.category.toString());
   }
 }

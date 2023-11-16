@@ -1,9 +1,9 @@
 package com.mm.accountstatementparser.service;
 
 import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
-import com.mm.accountstatementparser.entity.EntityParent;
+import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Transaction;
-import com.mm.accountstatementparser.entity.TransactionMainCategory;
+
 import java.math.BigDecimal;
 import java.time.Month;
 import java.util.List;
@@ -24,9 +24,9 @@ public interface TransactionService {
   void deleteTransactionById(UUID id);
 
   BigDecimal sumAmountOfTransactionsForCategoryAndMonth(
-      TransactionMainCategory transactionMainCategory, Month month);
+          Category category, Month month);
 
   Transaction updateFieldsInTransactionById(UUID id, Map<Object, Object> fields);
 
-  Transaction assignReportItemToTransactionById(UUID id, AssignItemCommandDto itemCode);
+  Transaction assignItemToTransactionById(AssignItemCommandDto assignItemCommandDto);
 }

@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.entity;
 
-public enum TransactionMainCategory {
+public enum Category {
   NEEDS,
   LOANS,
   FUN_WANTS_GIFTS,

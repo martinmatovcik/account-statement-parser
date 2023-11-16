@@ -23,13 +23,13 @@ public class Item extends EntityParent {
   private BigDecimal plannedAmount;
   private BigDecimal realAmount = BigDecimal.ZERO;
   private BigDecimal difference;
-  private TransactionMainCategory itemCategory;
+  private Category itemCategory;
 
   @OneToMany(mappedBy = "item")
   private List<Transaction> transactions;
 
   public Item(
-      String name, String code, BigDecimal plannedAmount, TransactionMainCategory itemCategory) {
+      String name, String code, BigDecimal plannedAmount, Category itemCategory) {
     this.name = name;
     this.code = code;
     this.plannedAmount = plannedAmount;

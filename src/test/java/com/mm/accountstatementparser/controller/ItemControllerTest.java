@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.mm.accountstatementparser.dto.ItemDto;
-import com.mm.accountstatementparser.entity.TransactionMainCategory;
+import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.repository.ItemRepository;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -145,6 +145,6 @@ public class ItemControllerTest {
 
   private ItemDto getReportItemDto(int number) {
     return new ItemDto(
-        "name - " + number, BigDecimal.valueOf(number), TransactionMainCategory.NEEDS);
+        "name - " + number, BigDecimal.valueOf(number), Category.NEEDS);
   }
 }

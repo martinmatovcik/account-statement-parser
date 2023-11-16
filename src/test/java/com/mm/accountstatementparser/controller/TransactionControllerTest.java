@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.mm.accountstatementparser.dto.TransactionDto;
-import com.mm.accountstatementparser.entity.TransactionMainCategory;
+import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.repository.TransactionRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -68,7 +68,7 @@ public class TransactionControllerTest {
     "date": "2023-11-11",
     "amount": 12340.12,
     "currency": "CZK",
-    "transactionMainCategory": "NEEDS"
+    "category": "NEEDS"
 }
 """;
 
@@ -81,7 +81,7 @@ public class TransactionControllerTest {
             .andExpect(jsonPath("$.date", is("2023-11-11")))
             .andExpect(jsonPath("$.amount", is(12340.12)))
             .andExpect(jsonPath("$.currency", is("CZK")))
-            .andExpect(jsonPath("$.transactionMainCategory", is("NEEDS")))
+            .andExpect(jsonPath("$.category", is("NEEDS")))
             .andDo(print())
             .andReturn();
 
@@ -97,7 +97,7 @@ public class TransactionControllerTest {
         .andExpect(jsonPath("$.date", is("2023-11-11")))
         .andExpect(jsonPath("$.amount", is(12340.12)))
         .andExpect(jsonPath("$.currency", is("CZK")))
-        .andExpect(jsonPath("$.transactionMainCategory", is("NEEDS")))
+        .andExpect(jsonPath("$.category", is("NEEDS")))
         .andDo(print());
 
     String transactionUpdateRequest =
@@ -107,7 +107,7 @@ public class TransactionControllerTest {
         "amount": 12340.12,
         "currency": "CZK",
         "transactionNote": "updated-note",
-        "transactionMainCategory": "NEEDS"
+        "category": "NEEDS"
     }
     """;
 
@@ -149,7 +149,7 @@ public class TransactionControllerTest {
         .date(LocalDate.parse("2023-11-11"))
         .amount(BigDecimal.valueOf(amount))
         .currency(Currency.getInstance("CZK"))
-        .transactionMainCategory(TransactionMainCategory.NEEDS)
+        .category(Category.NEEDS)
         .build();
   }
 }

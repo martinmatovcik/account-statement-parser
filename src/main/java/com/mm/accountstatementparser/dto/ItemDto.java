@@ -1,8 +1,8 @@
 package com.mm.accountstatementparser.dto;
 
+import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
 import com.mm.accountstatementparser.entity.Transaction;
-import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,11 +22,11 @@ public class ItemDto extends DtoParent {
   private BigDecimal plannedAmount;
   private BigDecimal realAmount = BigDecimal.ZERO;
   private BigDecimal difference = calculateDifference();
-  private TransactionMainCategory itemCategory;
+  private Category itemCategory;
   private List<Transaction> transactions = new ArrayList<>();
 
   public ItemDto(
-      String name, BigDecimal plannedAmount, TransactionMainCategory itemCategory) {
+      String name, BigDecimal plannedAmount, Category itemCategory) {
     this.name = name;
     this.plannedAmount = plannedAmount;
     this.itemCategory = itemCategory;

@@ -70,7 +70,7 @@ public class FileServiceImpl implements FileService {
             .recipientMessage(fileData[12])
             .transactionNote(fileData[16])
             .build();
-    transaction.setTransactionMainCategory(transaction.findMainCategory());
+    transaction.setCategory(transaction.findMainCategory());
     return transaction;
   }
 

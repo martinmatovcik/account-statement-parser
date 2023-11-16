@@ -1,8 +1,8 @@
 package com.mm.accountstatementparser.service;
 
 import com.mm.accountstatementparser.dto.ItemDto;
+import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
-import com.mm.accountstatementparser.entity.TransactionMainCategory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,7 +19,7 @@ public interface ItemService {
 
   void deleteItemById(UUID id);
 
-  List<ItemDto> findItemsByCategory(TransactionMainCategory category);
+  List<ItemDto> findItemsByCategory(Category category);
 
   BigDecimal sumPlannedAmountOfItems();
 
@@ -27,13 +27,15 @@ public interface ItemService {
 
   BigDecimal sumDifferenceOfItems();
 
-  BigDecimal sumPlannedAmountOfItemsForCategory(TransactionMainCategory category);
+  BigDecimal sumPlannedAmountOfItemsForCategory(Category category);
 
-  BigDecimal sumRealAmountOfItemsForCategory(TransactionMainCategory category);
+  BigDecimal sumRealAmountOfItemsForCategory(Category category);
 
-  BigDecimal sumDifferenceOfItemsForCategory(TransactionMainCategory category);
+  BigDecimal sumDifferenceOfItemsForCategory(Category category);
 
   void createSampleItemsWhenNoExisting();
 
   BigDecimal sumLivingExpenses(boolean isPlanned);
+
+  Item getItemByCode(String itemCode);
 }

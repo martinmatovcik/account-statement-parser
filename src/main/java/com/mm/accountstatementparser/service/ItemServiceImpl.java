@@ -1,8 +1,8 @@
 package com.mm.accountstatementparser.service;
 
 import com.mm.accountstatementparser.dto.ItemDto;
+import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
-import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import com.mm.accountstatementparser.repository.ItemRepository;
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,7 +44,7 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
-  public List<ItemDto> findItemsByCategory(TransactionMainCategory category) {
+  public List<ItemDto> findItemsByCategory(Category category) {
     return itemRepository.findAllByItemCategory(category).stream()
         .map(Item::toDto)
         .toList();
@@ -66,17 +66,17 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
-  public BigDecimal sumPlannedAmountOfItemsForCategory(TransactionMainCategory category) {
+  public BigDecimal sumPlannedAmountOfItemsForCategory(Category category) {
     return itemRepository.sumPlannedAmountOfItemsForCategory(category);
   }
 
   @Override
-  public BigDecimal sumRealAmountOfItemsForCategory(TransactionMainCategory category) {
+  public BigDecimal sumRealAmountOfItemsForCategory(Category category) {
     return itemRepository.sumRealAmountOfItemsForCategory(category);
   }
 
   @Override
-  public BigDecimal sumDifferenceOfItemsForCategory(TransactionMainCategory category) {
+  public BigDecimal sumDifferenceOfItemsForCategory(Category category) {
     return itemRepository.sumDifferenceOfItemsForCategory(category);
   }
 
@@ -85,40 +85,40 @@ public class ItemServiceImpl implements ItemService {
     if (getAllItems().isEmpty()) {
       List<Item> items =
           List.of(
-              new Item("Nájom", "rent", BigDecimal.valueOf(17300.00), TransactionMainCategory.NEEDS),
+              new Item("Nájom", "rent", BigDecimal.valueOf(17300.00), Category.NEEDS),
               new Item(
-                  "Elektrina", "energies", BigDecimal.valueOf(1000.00), TransactionMainCategory.NEEDS),
-              new Item("Internet", "internet", BigDecimal.valueOf(300.00), TransactionMainCategory.NEEDS),
-              new Item("Telefóny", "phones", BigDecimal.valueOf(960.00), TransactionMainCategory.NEEDS),
-              new Item("Lítačky", "mhd", BigDecimal.valueOf(680.00), TransactionMainCategory.NEEDS),
-              new Item("Jedlo", "eating", BigDecimal.valueOf(10000.00), TransactionMainCategory.NEEDS),
+                  "Elektrina", "energies", BigDecimal.valueOf(1000.00), Category.NEEDS),
+              new Item("Internet", "internet", BigDecimal.valueOf(300.00), Category.NEEDS),
+              new Item("Telefóny", "phones", BigDecimal.valueOf(960.00), Category.NEEDS),
+              new Item("Lítačky", "mhd", BigDecimal.valueOf(680.00), Category.NEEDS),
+              new Item("Jedlo", "eating", BigDecimal.valueOf(10000.00), Category.NEEDS),
               new Item(
-                  "Greenfox - Mišovci", "greenfox-loan", BigDecimal.valueOf(0.00), TransactionMainCategory.LOANS),
+                  "Greenfox - Mišovci", "greenfox-loan", BigDecimal.valueOf(0.00), Category.LOANS),
               new Item(
-                  "Bývanie - rodičia", "living-loan", BigDecimal.valueOf(2500.00), TransactionMainCategory.LOANS),
+                  "Bývanie - rodičia", "living-loan", BigDecimal.valueOf(2500.00), Category.LOANS),
               new Item(
-                  "Oblečenie", "clother", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Oblečenie", "clother", BigDecimal.valueOf(0.00), Category.FUN_WANTS_GIFTS),
               new Item(
-                  "Netflix", "netflix", BigDecimal.valueOf(120.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Netflix", "netflix", BigDecimal.valueOf(120.00), Category.FUN_WANTS_GIFTS),
               new Item(
-                  "Spotify", "spotify", BigDecimal.valueOf(60.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Spotify", "spotify", BigDecimal.valueOf(60.00), Category.FUN_WANTS_GIFTS),
               new Item(
-                  "Kultúra", "culture", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Kultúra", "culture", BigDecimal.valueOf(0.00), Category.FUN_WANTS_GIFTS),
               new Item(
-                  "Rande", "date", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Rande", "date", BigDecimal.valueOf(0.00), Category.FUN_WANTS_GIFTS),
               new Item(
-                  "Eating out", "eating-out", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Eating out", "eating-out", BigDecimal.valueOf(0.00), Category.FUN_WANTS_GIFTS),
               new Item(
                   "Cestovanie", "traveling",
-                      BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                      BigDecimal.valueOf(0.00), Category.FUN_WANTS_GIFTS),
               new Item(
-                  "Charita", "charity", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
-              new Item("Dôchodok", "pension", BigDecimal.valueOf(0.00), TransactionMainCategory.SAVINGS),
+                  "Charita", "charity", BigDecimal.valueOf(0.00), Category.FUN_WANTS_GIFTS),
+              new Item("Dôchodok", "pension", BigDecimal.valueOf(0.00), Category.SAVINGS),
               new Item(
-                  "Krátkodobé", "short-term", BigDecimal.valueOf(0.00), TransactionMainCategory.SAVINGS),
+                  "Krátkodobé", "short-term", BigDecimal.valueOf(0.00), Category.SAVINGS),
               new Item(
-                  "Finančná rezerva", "reserve", BigDecimal.valueOf(0.00), TransactionMainCategory.SAVINGS),
-              new Item("Neznáme", "other", BigDecimal.valueOf(0.00), TransactionMainCategory.OTHERS));
+                  "Finančná rezerva", "reserve", BigDecimal.valueOf(0.00), Category.SAVINGS),
+              new Item("Neznáme", "other", BigDecimal.valueOf(0.00), Category.OTHERS));
 
       for (Item item : items) {
         persistItem(item);
@@ -129,9 +129,14 @@ public class ItemServiceImpl implements ItemService {
   @Override
   public BigDecimal sumLivingExpenses(boolean isPlanned) {
     return isPlanned
-        ? sumPlannedAmountOfItemsForCategory(TransactionMainCategory.NEEDS)
-            .add(sumPlannedAmountOfItemsForCategory(TransactionMainCategory.LOANS))
-        : sumRealAmountOfItemsForCategory(TransactionMainCategory.NEEDS)
-            .add(sumRealAmountOfItemsForCategory(TransactionMainCategory.LOANS));
+        ? sumPlannedAmountOfItemsForCategory(Category.NEEDS)
+            .add(sumPlannedAmountOfItemsForCategory(Category.LOANS))
+        : sumRealAmountOfItemsForCategory(Category.NEEDS)
+            .add(sumRealAmountOfItemsForCategory(Category.LOANS));
+  }
+
+  @Override
+  public Item getItemByCode(String itemCode) {
+    return itemRepository.findByCode(itemCode).orElseThrow(() -> new RuntimeException("Item wih given CODE does not exist"));
   }
 }
