@@ -3,7 +3,6 @@ package com.mm.accountstatementparser.service;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import com.mm.accountstatementparser.repository.TransactionRepository;
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.Month;
@@ -72,16 +71,19 @@ public class TransactionServiceImpl implements TransactionService {
   @Override
   public Transaction updateFieldsInTransactionById(UUID id, Map<Object, Object> fields) {
     Transaction transactionToUpdate = findByIdOrElseThrow(id);
-    fields.forEach((key, value) -> {
-      Field field = ReflectionUtils.findField(Transaction.class, (String) key);
-      Objects.requireNonNull(field).setAccessible(true);
-      if (key == "amount") value = BigDecimal.valueOf((double) value);
-      ReflectionUtils.setField(field, transactionToUpdate, value);
-    });
+    fields.forEach(
+        (key, value) -> {
+          Field field = ReflectionUtils.findField(Transaction.class, (String) key);
+          Objects.requireNonNull(field).setAccessible(true);
+          if (key == "amount") value = BigDecimal.valueOf((double) value);
+          ReflectionUtils.setField(field, transactionToUpdate, value);
+        });
     return transactionRepository.save(transactionToUpdate);
   }
 
   private Transaction findByIdOrElseThrow(UUID id) {
-    return transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
+    return transactionRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
   }
 }
