@@ -1,9 +1,11 @@
 package com.mm.accountstatementparser.dto;
 
 import com.mm.accountstatementparser.entity.ReportItem;
+import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.*;
@@ -15,11 +17,13 @@ import lombok.*;
 @NoArgsConstructor
 public class ReportItemDto extends DtoParent {
   @Nullable private UUID id;
+  private String code;
   private String name;
   private BigDecimal plannedAmount;
   private BigDecimal realAmount = BigDecimal.ZERO;
   private BigDecimal difference = calculateDifference();
   private TransactionMainCategory reportItemCategory;
+  private List<Transaction> transactions = new ArrayList<>();
 
   public ReportItemDto(
       String name, BigDecimal plannedAmount, TransactionMainCategory reportItemCategory) {
@@ -32,19 +36,13 @@ public class ReportItemDto extends DtoParent {
   public ReportItem toEntity() {
     return new ReportItem(
         this.id,
+        this.code,
         this.name,
         this.plannedAmount,
         this.realAmount,
         calculateDifference(),
-        this.reportItemCategory);
-    //    return ReportItem.builder()
-    //        .id(this.id)
-    //        .name(this.name)
-    //        .plannedAmount(this.plannedAmount)
-    //        .realAmount(this.realAmount)
-    //        .difference(this.difference)
-    //        .reportItemCategory(this.reportItemCategory)
-    //        .build();
+        this.reportItemCategory,
+        this.transactions);
   }
 
   @Override

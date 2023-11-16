@@ -85,41 +85,40 @@ public class ReportItemServiceImpl implements ReportItemService {
     if (getAllReportItems().isEmpty()) {
       List<ReportItem> reportItems =
           List.of(
-              new ReportItem("Nájom", BigDecimal.valueOf(17300.00), TransactionMainCategory.NEEDS),
+              new ReportItem("Nájom", "rent", BigDecimal.valueOf(17300.00), TransactionMainCategory.NEEDS),
               new ReportItem(
-                  "Elektrina", BigDecimal.valueOf(1000.00), TransactionMainCategory.NEEDS),
-              new ReportItem("Internet", BigDecimal.valueOf(300.00), TransactionMainCategory.NEEDS),
-              new ReportItem("Telefóny", BigDecimal.valueOf(960.00), TransactionMainCategory.NEEDS),
-              new ReportItem("Lítačky", BigDecimal.valueOf(680.00), TransactionMainCategory.NEEDS),
-              new ReportItem("Jedlo", BigDecimal.valueOf(10000.00), TransactionMainCategory.NEEDS),
+                  "Elektrina", "energies", BigDecimal.valueOf(1000.00), TransactionMainCategory.NEEDS),
+              new ReportItem("Internet", "internet", BigDecimal.valueOf(300.00), TransactionMainCategory.NEEDS),
+              new ReportItem("Telefóny", "phones", BigDecimal.valueOf(960.00), TransactionMainCategory.NEEDS),
+              new ReportItem("Lítačky", "mhd", BigDecimal.valueOf(680.00), TransactionMainCategory.NEEDS),
+              new ReportItem("Jedlo", "eating", BigDecimal.valueOf(10000.00), TransactionMainCategory.NEEDS),
               new ReportItem(
-                  "Greenfox - Mišovci", BigDecimal.valueOf(0.00), TransactionMainCategory.LOANS),
+                  "Greenfox - Mišovci", "greenfox-loan", BigDecimal.valueOf(0.00), TransactionMainCategory.LOANS),
               new ReportItem(
-                  "Bývanie - rodičia", BigDecimal.valueOf(2500.00), TransactionMainCategory.LOANS),
+                  "Bývanie - rodičia", "living-loan", BigDecimal.valueOf(2500.00), TransactionMainCategory.LOANS),
               new ReportItem(
-                  "Oblečenie", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Oblečenie", "clother", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
               new ReportItem(
-                  "Netflix", BigDecimal.valueOf(120.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Netflix", "netflix", BigDecimal.valueOf(120.00), TransactionMainCategory.FUN_WANTS_GIFTS),
               new ReportItem(
-                  "Spotify", BigDecimal.valueOf(60.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Spotify", "spotify", BigDecimal.valueOf(60.00), TransactionMainCategory.FUN_WANTS_GIFTS),
               new ReportItem(
-                  "Kultúra", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Kultúra", "culture", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
               new ReportItem(
-                  "Rande", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Rande", "date", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
               new ReportItem(
-                  "Eating out", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Eating out", "eating-out", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
               new ReportItem(
-                  "Cesty na slovensko",
-                  BigDecimal.valueOf(0.00),
-                  TransactionMainCategory.FUN_WANTS_GIFTS),
+                  "Cestovanie", "traveling",
+                      BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
               new ReportItem(
-                  "Charita", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
-              new ReportItem("Dôchodok", BigDecimal.valueOf(0.00), TransactionMainCategory.SAVINGS),
+                  "Charita", "charity", BigDecimal.valueOf(0.00), TransactionMainCategory.FUN_WANTS_GIFTS),
+              new ReportItem("Dôchodok", "pension", BigDecimal.valueOf(0.00), TransactionMainCategory.SAVINGS),
               new ReportItem(
-                  "Krátkodobé", BigDecimal.valueOf(0.00), TransactionMainCategory.SAVINGS),
+                  "Krátkodobé", "short-term", BigDecimal.valueOf(0.00), TransactionMainCategory.SAVINGS),
               new ReportItem(
-                  "Finančná rezerva", BigDecimal.valueOf(0.00), TransactionMainCategory.SAVINGS),
-              new ReportItem("Neznáme", BigDecimal.valueOf(0.00), TransactionMainCategory.OTHERS));
+                  "Finančná rezerva", "reserve", BigDecimal.valueOf(0.00), TransactionMainCategory.SAVINGS),
+              new ReportItem("Neznáme", "other", BigDecimal.valueOf(0.00), TransactionMainCategory.OTHERS));
 
       for (ReportItem reportItem : reportItems) {
         persistReportItem(reportItem);

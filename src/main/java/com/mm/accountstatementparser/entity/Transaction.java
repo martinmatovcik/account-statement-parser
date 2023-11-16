@@ -28,6 +28,10 @@ public class Transaction extends EntityParent {
   private String transactionNote;
   private TransactionMainCategory transactionMainCategory;
 
+  @ManyToOne
+  @JoinColumn(name = "reportItem_code", nullable = false)
+  private ReportItem reportItem;
+
   @Override
   public TransactionDto toDto() {
     return TransactionDto.builder()
