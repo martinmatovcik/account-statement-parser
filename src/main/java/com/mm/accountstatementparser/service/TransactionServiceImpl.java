@@ -3,14 +3,19 @@ package com.mm.accountstatementparser.service;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import com.mm.accountstatementparser.repository.TransactionRepository;
+
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.Month;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ReflectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +48,8 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   @Transactional
-  public Transaction updateTransaction(UUID id, Transaction updatedTransaction) {
-    Transaction transactionToUpdate = transactionRepository.getReferenceById(id);
+  public Transaction updateTransactionById(UUID id, Transaction updatedTransaction) {
+    Transaction transactionToUpdate = findByIdOrElseThrow(id);
     BeanUtils.copyProperties(updatedTransaction, transactionToUpdate, "transactionId");
     return transactionRepository.save(transactionToUpdate);
   }
@@ -62,5 +67,21 @@ public class TransactionServiceImpl implements TransactionService {
         .filter(transaction -> transaction.getDate().getMonth() == month)
         .map(Transaction::getAmount)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  @Override
+  public Transaction updateFieldsInTransactionById(UUID id, Map<Object, Object> fields) {
+    Transaction transactionToUpdate = findByIdOrElseThrow(id);
+    fields.forEach((key, value) -> {
+      Field field = ReflectionUtils.findField(Transaction.class, (String) key);
+      Objects.requireNonNull(field).setAccessible(true);
+      if (key == "amount") value = BigDecimal.valueOf((double) value);
+      ReflectionUtils.setField(field, transactionToUpdate, value);
+    });
+    return transactionRepository.save(transactionToUpdate);
+  }
+
+  private Transaction findByIdOrElseThrow(UUID id) {
+    return transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
   }
 }

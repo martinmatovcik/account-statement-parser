@@ -4,6 +4,7 @@ import com.mm.accountstatementparser.dto.TransactionDto;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.service.TransactionService;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,10 +41,13 @@ public class TransactionController {
   public ResponseEntity<TransactionDto> updateTransactionById(
       @PathVariable UUID id, @RequestBody TransactionDto transactionDto) {
     return new ResponseEntity<>(
-        transactionService.updateTransaction(id, transactionDto.toEntity()).toDto(), HttpStatus.OK);
+        transactionService.updateTransactionById(id, transactionDto.toEntity()).toDto(), HttpStatus.OK);
   }
 
-  //  todo: PATCH mapping
+  @PatchMapping("{id}")
+  public ResponseEntity<TransactionDto> updateFieldsInTransactionById(@PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
+    return new ResponseEntity<>(transactionService.updateFieldsInTransactionById(id, fields).toDto(), HttpStatus.OK);
+  }
 
   @DeleteMapping("{id}")
   public ResponseEntity<HttpStatus> deleteTransactionById(@PathVariable UUID id) {

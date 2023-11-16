@@ -1,6 +1,7 @@
 package com.mm.accountstatementparser.entity;
 
 import com.mm.accountstatementparser.dto.TransactionDto;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.text.Normalizer;
@@ -29,7 +30,8 @@ public class Transaction extends EntityParent {
   private TransactionMainCategory transactionMainCategory;
 
   @ManyToOne
-  @JoinColumn(name = "reportItem_code", nullable = false)
+  @JoinColumn(name = "reportItem_code")
+  @Nullable
   private ReportItem reportItem;
 
   @Override
