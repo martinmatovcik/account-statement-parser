@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.dto;
 
-import com.mm.accountstatementparser.entity.ReportItem;
+import com.mm.accountstatementparser.entity.Item;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import jakarta.annotation.Nullable;
@@ -27,7 +27,7 @@ public class TransactionDto extends DtoParent {
   @Nullable private String recipientMessage;
   @Nullable private String transactionNote;
   private TransactionMainCategory transactionMainCategory;
-  private ReportItem reportItem;
+  private Item item;
 
   @Override
   public Transaction toEntity() {
@@ -40,7 +40,7 @@ public class TransactionDto extends DtoParent {
         .recipientMessage(this.recipientMessage)
         .transactionNote(this.transactionNote)
         .transactionMainCategory(this.transactionMainCategory)
-        .reportItem(this.reportItem)
+        .item(this.item)
         .build();
   }
 

@@ -1,6 +1,7 @@
 package com.mm.accountstatementparser.controller;
 
 import com.mm.accountstatementparser.dto.TransactionDto;
+import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.service.TransactionService;
 import java.util.List;
@@ -41,17 +42,27 @@ public class TransactionController {
   public ResponseEntity<TransactionDto> updateTransactionById(
       @PathVariable UUID id, @RequestBody TransactionDto transactionDto) {
     return new ResponseEntity<>(
-        transactionService.updateTransactionById(id, transactionDto.toEntity()).toDto(), HttpStatus.OK);
+        transactionService.updateTransactionById(id, transactionDto.toEntity()).toDto(),
+        HttpStatus.OK);
   }
 
   @PatchMapping("{id}")
-  public ResponseEntity<TransactionDto> updateFieldsInTransactionById(@PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
-    return new ResponseEntity<>(transactionService.updateFieldsInTransactionById(id, fields).toDto(), HttpStatus.OK);
+  public ResponseEntity<TransactionDto> updateFieldsInTransactionById(
+      @PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
+    return new ResponseEntity<>(
+        transactionService.updateFieldsInTransactionById(id, fields).toDto(), HttpStatus.OK);
   }
 
   @DeleteMapping("{id}")
   public ResponseEntity<HttpStatus> deleteTransactionById(@PathVariable UUID id) {
     transactionService.deleteTransactionById(id);
     return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @PutMapping("{id}/assign-item/")
+  public ResponseEntity<TransactionDto> assignReportItemToTransactionById(
+      @PathVariable UUID id, @RequestBody AssignItemCommandDto itemCode) {
+    return new ResponseEntity<>(
+        transactionService.assignReportItemToTransactionById(id, itemCode).toDto(), HttpStatus.OK);
   }
 }

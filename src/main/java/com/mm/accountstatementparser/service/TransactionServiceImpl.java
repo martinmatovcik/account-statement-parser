@@ -1,5 +1,6 @@
 package com.mm.accountstatementparser.service;
 
+import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import com.mm.accountstatementparser.repository.TransactionRepository;
@@ -79,6 +80,11 @@ public class TransactionServiceImpl implements TransactionService {
           ReflectionUtils.setField(field, transactionToUpdate, value);
         });
     return transactionRepository.save(transactionToUpdate);
+  }
+
+  @Override
+  public Transaction assignReportItemToTransactionById(UUID id, AssignItemCommandDto itemCode) {
+    return null;
   }
 
   private Transaction findByIdOrElseThrow(UUID id) {

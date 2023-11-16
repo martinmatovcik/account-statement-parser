@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.dto;
 
-import com.mm.accountstatementparser.entity.ReportItem;
+import com.mm.accountstatementparser.entity.Item;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.entity.TransactionMainCategory;
 import jakarta.annotation.Nullable;
@@ -15,33 +15,33 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReportItemDto extends DtoParent {
+public class ItemDto extends DtoParent {
   @Nullable private UUID id;
   private String code;
   private String name;
   private BigDecimal plannedAmount;
   private BigDecimal realAmount = BigDecimal.ZERO;
   private BigDecimal difference = calculateDifference();
-  private TransactionMainCategory reportItemCategory;
+  private TransactionMainCategory itemCategory;
   private List<Transaction> transactions = new ArrayList<>();
 
-  public ReportItemDto(
-      String name, BigDecimal plannedAmount, TransactionMainCategory reportItemCategory) {
+  public ItemDto(
+      String name, BigDecimal plannedAmount, TransactionMainCategory itemCategory) {
     this.name = name;
     this.plannedAmount = plannedAmount;
-    this.reportItemCategory = reportItemCategory;
+    this.itemCategory = itemCategory;
   }
 
   @Override
-  public ReportItem toEntity() {
-    return new ReportItem(
+  public Item toEntity() {
+    return new Item(
         this.id,
         this.code,
         this.name,
         this.plannedAmount,
         this.realAmount,
         calculateDifference(),
-        this.reportItemCategory,
+        this.itemCategory,
         this.transactions);
   }
 

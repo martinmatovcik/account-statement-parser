@@ -32,7 +32,7 @@ public class Transaction extends EntityParent {
   @ManyToOne
   @JoinColumn(name = "reportItem_code")
   @Nullable
-  private ReportItem reportItem;
+  private Item item;
 
   @Override
   public TransactionDto toDto() {

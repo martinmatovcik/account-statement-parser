@@ -4,7 +4,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
 import com.mm.accountstatementparser.configuration.GoogleSheetsConfiguration;
 import com.mm.accountstatementparser.dto.BalanceDto;
-import com.mm.accountstatementparser.dto.ReportItemDto;
+import com.mm.accountstatementparser.dto.ItemDto;
 import com.mm.accountstatementparser.entity.Balance;
 import com.mm.accountstatementparser.entity.BalanceCategory;
 import com.mm.accountstatementparser.entity.TransactionMainCategory;
@@ -26,11 +26,11 @@ public class ReportServiceImplGoogle implements ReportService {
   //  private static final int DATA_SHEET_ID = 1096477276;
   private final TransactionService transactionService;
   private final BalanceService balanceService;
-  private final ReportItemService reportItemService;
+  private final ItemService itemService;
 
   @Override
   public void generateReport(Month month) {
-    reportItemService.createSampleReportItemsWhenNoExisting(); // todo: temporary
+    itemService.createSampleItemsWhenNoExisting(); // todo: temporary
 
     generateDataSheet(month);
     generateTemplate(month);
@@ -91,7 +91,7 @@ public class ReportServiceImplGoogle implements ReportService {
             dataCellName(month, "B1", false),
             "'+/-",
             "Plánované náklady na život / mes:",
-            reportItemService.sumLivingExpenses(true)));
+            itemService.sumLivingExpenses(true)));
     //    Line 2
     data.add(
         List.of(
@@ -109,7 +109,7 @@ public class ReportServiceImplGoogle implements ReportService {
             "",
             "",
             "Plánované výdaje",
-            reportItemService.sumPlannedAmountOfReportItems(),
+            itemService.sumPlannedAmountOfItems(),
             "",
             "Plánovaný zostatok",
             balances(true)));
@@ -199,16 +199,16 @@ public class ReportServiceImplGoogle implements ReportService {
     section.add(List.of(sectionHeader));
     section.add(sectionMetaData);
     section.addAll(
-        reportItemService.findReportItemsByCategory(category).stream()
-            .map(ReportItemDto::toData)
+        itemService.findItemsByCategory(category).stream()
+            .map(ItemDto::toData)
             .toList());
 
     section.add(
         List.of(
             "Medzisúčet",
-            reportItemService.sumPlannedAmountOfReportItemsForCategory(category),
+            itemService.sumPlannedAmountOfItemsForCategory(category),
             dataCellName(month, dataSheetCellIndex, true),
-            reportItemService.sumDifferenceOfReportItemsForCategory(category)));
+            itemService.sumDifferenceOfItemsForCategory(category)));
     section.add(List.of());
 
     return section;
@@ -230,8 +230,8 @@ public class ReportServiceImplGoogle implements ReportService {
     return balance;
   }
 
-  private String generateSheetNameForGivenMonth(Month month, boolean isReport) {
-    return (isReport ? "Report_" : "Data_") + month.name();
+  private String generateSheetNameForGivenMonth(Month month, boolean is) {
+    return (is ? "_" : "Data_") + month.name();
   }
 
   private void insertDataToSheet(String sheetName, List<List<Object>> data) {

@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.entity;
 
-import com.mm.accountstatementparser.dto.ReportItemDto;
+import com.mm.accountstatementparser.dto.ItemDto;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -15,7 +15,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReportItem extends EntityParent {
+public class Item extends EntityParent {
   @Id @GeneratedValue private UUID id;
 
   private String code;
@@ -23,29 +23,29 @@ public class ReportItem extends EntityParent {
   private BigDecimal plannedAmount;
   private BigDecimal realAmount = BigDecimal.ZERO;
   private BigDecimal difference;
-  private TransactionMainCategory reportItemCategory;
+  private TransactionMainCategory itemCategory;
 
-  @OneToMany(mappedBy = "reportItem")
+  @OneToMany(mappedBy = "item")
   private List<Transaction> transactions;
 
-  public ReportItem(
-      String name, String code, BigDecimal plannedAmount, TransactionMainCategory reportItemCategory) {
+  public Item(
+      String name, String code, BigDecimal plannedAmount, TransactionMainCategory itemCategory) {
     this.name = name;
     this.code = code;
     this.plannedAmount = plannedAmount;
-    this.reportItemCategory = reportItemCategory;
+    this.itemCategory = itemCategory;
     this.difference = calculateDifference();
   }
 
   @Override
-  public ReportItemDto toDto() {
-    return ReportItemDto.builder()
+  public ItemDto toDto() {
+    return ItemDto.builder()
         .id(this.id)
         .name(this.name)
         .plannedAmount(this.plannedAmount)
         .realAmount(this.realAmount)
         .difference(this.difference)
-        .reportItemCategory(this.reportItemCategory)
+        .itemCategory(this.itemCategory)
         .build();
   }
 

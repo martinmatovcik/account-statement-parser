@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.mm.accountstatementparser.dto.ReportItemDto;
+import com.mm.accountstatementparser.dto.ItemDto;
 import com.mm.accountstatementparser.entity.TransactionMainCategory;
-import com.mm.accountstatementparser.repository.ReportItemRepository;
+import com.mm.accountstatementparser.repository.ItemRepository;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
@@ -30,7 +30,7 @@ import org.testcontainers.utility.DockerImageName;
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-public class ReportItemControllerTest {
+public class ItemControllerTest {
   @Container
   private static final PostgreSQLContainer<?> postgresContainer =
       new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"))
@@ -39,7 +39,7 @@ public class ReportItemControllerTest {
           .withDatabaseName("postgres");
 
   @Autowired private MockMvc mockMvc;
-  @Autowired private ReportItemRepository reportItemRepository;
+  @Autowired private ItemRepository itemRepository;
   private static final String BASE_URL = "/api/v1/report-items/";
 
   @DynamicPropertySource
@@ -62,65 +62,65 @@ public class ReportItemControllerTest {
 
   @Test
   public void createGetByIdUpdateDeleteReportItem() throws Exception {
-    String reportItemRequest =
+    String itemRequest =
         """
     {
         "name": "report-item-name",
         "plannedAmount": 10000.00,
-        "reportItemCategory": "NEEDS"
+        "itemCategory": "NEEDS"
     }
         """;
 
     MvcResult result =
         mockMvc
             .perform(
-                post(BASE_URL).contentType(MediaType.APPLICATION_JSON).content(reportItemRequest))
+                post(BASE_URL).contentType(MediaType.APPLICATION_JSON).content(itemRequest))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").isString())
             .andExpect(jsonPath("$.name", is("report-item-name")))
             .andExpect(jsonPath("$.plannedAmount", is(10000.00)))
             .andExpect(jsonPath("$.realAmount", is(0)))
             .andExpect(jsonPath("$.difference", is(10000.00)))
-            .andExpect(jsonPath("$.reportItemCategory", is("NEEDS")))
+            .andExpect(jsonPath("$.itemCategory", is("NEEDS")))
             .andDo(print())
             .andReturn();
 
     int startIndex = 7;
-    UUID reportItemId =
+    UUID itemId =
         UUID.fromString(
             result.getResponse().getContentAsString().substring(startIndex, startIndex + 36));
 
     mockMvc
-        .perform(get(BASE_URL + reportItemId).contentType(MediaType.APPLICATION_JSON))
+        .perform(get(BASE_URL + itemId).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").isString())
         .andExpect(jsonPath("$.name", is("report-item-name")))
         .andExpect(jsonPath("$.plannedAmount", is(10000.00)))
         .andExpect(jsonPath("$.realAmount", is(0.00)))
         .andExpect(jsonPath("$.difference", is(10000.00)))
-        .andExpect(jsonPath("$.reportItemCategory", is("NEEDS")))
+        .andExpect(jsonPath("$.itemCategory", is("NEEDS")))
         .andDo(print());
 
-    String reportItemUpdateRequest =
+    String itemUpdateRequest =
         """
     {
         "name": "UPDATED-report-item-name",
         "plannedAmount": 10000.00,
-        "reportItemCategory": "NEEDS"
+        "itemCategory": "NEEDS"
     }
        """;
 
     mockMvc
         .perform(
-            put(BASE_URL + reportItemId)
+            put(BASE_URL + itemId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(reportItemUpdateRequest))
+                .content(itemUpdateRequest))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name", is("UPDATED-report-item-name")))
         .andDo(print());
 
     mockMvc
-        .perform(delete(BASE_URL + reportItemId).contentType(MediaType.APPLICATION_JSON))
+        .perform(delete(BASE_URL + itemId).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andDo(print());
   }
@@ -129,7 +129,7 @@ public class ReportItemControllerTest {
   public void getAllReportItems_shouldReturnListOfReportItemDtos() throws Exception {
 
     for (int i = 0; i < 5; i++) {
-      reportItemRepository.save(getReportItemDto(i).toEntity());
+      itemRepository.save(getReportItemDto(i).toEntity());
     }
 
     mockMvc
@@ -143,8 +143,8 @@ public class ReportItemControllerTest {
         .andExpect(jsonPath("$[4].plannedAmount", is(4.0)));
   }
 
-  private ReportItemDto getReportItemDto(int number) {
-    return new ReportItemDto(
+  private ItemDto getReportItemDto(int number) {
+    return new ItemDto(
         "name - " + number, BigDecimal.valueOf(number), TransactionMainCategory.NEEDS);
   }
 }

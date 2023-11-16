@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser;
 
-import com.mm.accountstatementparser.service.ReportItemService;
+import com.mm.accountstatementparser.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @RequiredArgsConstructor
 public class AccountStatementParserApplication {
-  private final ReportItemService reportItemService;
+  private final ItemService itemService;
 
   public static void main(String[] args) {
     SpringApplication.run(AccountStatementParserApplication.class, args);

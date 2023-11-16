@@ -1,5 +1,6 @@
 package com.mm.accountstatementparser.service;
 
+import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
 import com.mm.accountstatementparser.entity.EntityParent;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.entity.TransactionMainCategory;
@@ -26,4 +27,6 @@ public interface TransactionService {
       TransactionMainCategory transactionMainCategory, Month month);
 
   Transaction updateFieldsInTransactionById(UUID id, Map<Object, Object> fields);
+
+  Transaction assignReportItemToTransactionById(UUID id, AssignItemCommandDto itemCode);
 }
