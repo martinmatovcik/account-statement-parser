@@ -21,7 +21,7 @@ public class Item extends EntityParent {
   private String code;
   private String name;
   private BigDecimal plannedAmount;
-  private BigDecimal realAmount = BigDecimal.ZERO;
+  @Builder.Default private BigDecimal realAmount = BigDecimal.ZERO;
   private BigDecimal difference;
   private Category itemCategory;
 

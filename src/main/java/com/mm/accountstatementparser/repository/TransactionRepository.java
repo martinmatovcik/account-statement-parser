@@ -10,6 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-  List<Transaction> getAllByTransactionMainCategory(
-      Category category);
+  List<Transaction> getAllByCategory(Category category);
 }

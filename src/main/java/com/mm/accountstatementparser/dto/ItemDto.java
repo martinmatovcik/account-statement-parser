@@ -19,11 +19,11 @@ public class ItemDto extends DtoParent {
   @Nullable private UUID id;
   private String code;
   private String name;
-  private BigDecimal plannedAmount;
-  private BigDecimal realAmount = BigDecimal.ZERO;
-  private BigDecimal difference = calculateDifference();
+  @Builder.Default private BigDecimal plannedAmount = BigDecimal.ZERO;
+  @Builder.Default private BigDecimal realAmount = BigDecimal.ZERO;
+  @Builder.Default private BigDecimal difference = BigDecimal.ZERO;
   private Category itemCategory;
-  private List<Transaction> transactions = new ArrayList<>();
+  @Builder.Default private List<Transaction> transactions = new ArrayList<>();
 
   public ItemDto(
       String name, BigDecimal plannedAmount, Category itemCategory) {
