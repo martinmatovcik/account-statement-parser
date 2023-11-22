@@ -39,7 +39,7 @@ public class TransactionDto extends DtoParent {
         .variableSymbol(this.variableSymbol)
         .recipientMessage(this.recipientMessage)
         .transactionNote(this.transactionNote)
-        .category(this.category)
+        //        .category(this.category)
         .item(this.item)
         .build();
   }
@@ -54,6 +54,7 @@ public class TransactionDto extends DtoParent {
         this.variableSymbol,
         this.recipientMessage,
         this.transactionNote,
-        this.category.toString());
+        this.category,
+        this.item);
   }
 }

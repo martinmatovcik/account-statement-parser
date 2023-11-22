@@ -27,10 +27,11 @@ public class Transaction extends EntityParent {
   private String variableSymbol;
   private String recipientMessage;
   private String transactionNote;
-  private Category category;
+
+//  private Category category;
 
   @ManyToOne
-  @JoinColumn(name = "reportItem_code")
+  @JoinColumn(name = "item_code")
   @Nullable
   private Item item;
 
@@ -44,75 +45,75 @@ public class Transaction extends EntityParent {
         .variableSymbol(this.variableSymbol)
         .recipientMessage(this.recipientMessage)
         .transactionNote(this.transactionNote)
-        .category(this.category)
+//        .category(this.category)
         .build();
   }
 
-  public Category findMainCategory() {
-
-    String[] needsKeywords = {
-      "najom",
-      "lidl",
-      "kaufland",
-      "kaufla",
-      "operator ict",
-      "albert",
-      "lavor",
-      "wc",
-      "lekarna",
-      "dr.max",
-      "elektrina",
-      "pekarna",
-      "krusta",
-      "dm"
-    };
-
-    String[] savingsKeywords = {"portu", "investice"};
-    String[] loansKeywords = {"splatka", "pozicka"};
-
-    String[] funKeywords = {
-      "fruitisimo",
-      "paulhl.n.",
-      "primark",
-      "mcd",
-      "mcdonalds",
-      "forno",
-      "zalando",
-      "geco",
-      "datart",
-      "hm",
-      "hennesmauritz",
-      "pull & bear",
-      "kfc",
-      "kvetinarstvo",
-      "jysk",
-      "qerko",
-      "mad rabbit",
-      "hrad",
-      "dish belgicka",
-      "nyx",
-      "cd.cz",
-      "studentagency.cz",
-      "leoexpress",
-      "stradivarius"
-    };
-
-    if (Objects.requireNonNull(this.amount).compareTo(BigDecimal.ZERO) > 0) {
-      return Category.INCOME;
-    } else if ((stringContainsItemFromList(this.transactionNote, needsKeywords))
-        || (!this.variableSymbol.isEmpty() && Integer.parseInt(this.variableSymbol) == 45625608)) {
-      return Category.NEEDS;
-    } else if (stringContainsItemFromList(this.transactionNote, savingsKeywords)
-        || stringContainsItemFromList(this.transactionNote, savingsKeywords)) {
-      return Category.SAVINGS;
-    } else if (stringContainsItemFromList(this.transactionNote, loansKeywords)) {
-      return Category.LOANS;
-    } else if (stringContainsItemFromList(this.transactionNote, funKeywords)) {
-      return Category.FUN_WANTS_GIFTS;
-    }
-
-    return Category.OTHERS;
-  }
+//  public Category findMainCategory() {
+//
+//    String[] needsKeywords = {
+//      "najom",
+//      "lidl",
+//      "kaufland",
+//      "kaufla",
+//      "operator ict",
+//      "albert",
+//      "lavor",
+//      "wc",
+//      "lekarna",
+//      "dr.max",
+//      "elektrina",
+//      "pekarna",
+//      "krusta",
+//      "dm"
+//    };
+//
+//    String[] savingsKeywords = {"portu", "investice"};
+//    String[] loansKeywords = {"splatka", "pozicka"};
+//
+//    String[] funKeywords = {
+//      "fruitisimo",
+//      "paulhl.n.",
+//      "primark",
+//      "mcd",
+//      "mcdonalds",
+//      "forno",
+//      "zalando",
+//      "geco",
+//      "datart",
+//      "hm",
+//      "hennesmauritz",
+//      "pull & bear",
+//      "kfc",
+//      "kvetinarstvo",
+//      "jysk",
+//      "qerko",
+//      "mad rabbit",
+//      "hrad",
+//      "dish belgicka",
+//      "nyx",
+//      "cd.cz",
+//      "studentagency.cz",
+//      "leoexpress",
+//      "stradivarius"
+//    };
+//
+//    if (Objects.requireNonNull(this.amount).compareTo(BigDecimal.ZERO) > 0) {
+//      return Category.INCOME;
+//    } else if ((stringContainsItemFromList(this.transactionNote, needsKeywords))
+//        || (!this.variableSymbol.isEmpty() && Integer.parseInt(this.variableSymbol) == 45625608)) {
+//      return Category.NEEDS;
+//    } else if (stringContainsItemFromList(this.transactionNote, savingsKeywords)
+//        || stringContainsItemFromList(this.transactionNote, savingsKeywords)) {
+//      return Category.SAVINGS;
+//    } else if (stringContainsItemFromList(this.transactionNote, loansKeywords)) {
+//      return Category.LOANS;
+//    } else if (stringContainsItemFromList(this.transactionNote, funKeywords)) {
+//      return Category.FUN_WANTS_GIFTS;
+//    }
+//
+//    return Category.OTHERS;
+//  }
 
   private boolean stringContainsItemFromList(String input, String[] array) {
     input = input.toLowerCase();

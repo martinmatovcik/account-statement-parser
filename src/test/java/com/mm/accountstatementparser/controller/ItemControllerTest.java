@@ -145,6 +145,6 @@ public class ItemControllerTest {
 
   private ItemDto getReportItemDto(int number) {
     return new ItemDto(
-        "name - " + number, BigDecimal.valueOf(number), Category.NEEDS);
+        "name - " + number, BigDecimal.valueOf(number), new Category());
   }
 }

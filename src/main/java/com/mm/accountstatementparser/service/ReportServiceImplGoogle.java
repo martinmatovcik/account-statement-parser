@@ -16,6 +16,8 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,7 @@ public class ReportServiceImplGoogle implements ReportService {
   private final TransactionService transactionService;
   private final BalanceService balanceService;
   private final ItemService itemService;
+  private final CategoryService categoryService;
 
   @Override
   public void generateReport(Month month) {
@@ -38,14 +41,22 @@ public class ReportServiceImplGoogle implements ReportService {
   }
 
   private void generateDataSheet(Month month) {
+//    List<Object> initialBalance = getBalanceDataLine(BalanceCategory.INITIAL_BALANCE, month);
+//    List<Object> finalBalance = getBalanceDataLine(BalanceCategory.FINAL_BALANCE, month);
+//    List<Object> needsSum = getSumForCategoryDataLine(Category.NEEDS, month);
+//    List<Object> loansSum = getSumForCategoryDataLine(Category.LOANS, month);
+//    List<Object> funSum = getSumForCategoryDataLine(Category.FUN_WANTS_GIFTS, month);
+//    List<Object> savingsSum = getSumForCategoryDataLine(Category.SAVINGS, month);
+//    List<Object> incomeSum = getSumForCategoryDataLine(Category.INCOME, month);
+//    List<Object> othersSum = getSumForCategoryDataLine(Category.OTHERS, month);
     List<Object> initialBalance = getBalanceDataLine(BalanceCategory.INITIAL_BALANCE, month);
     List<Object> finalBalance = getBalanceDataLine(BalanceCategory.FINAL_BALANCE, month);
-    List<Object> needsSum = getSumForCategoryDataLine(Category.NEEDS, month);
-    List<Object> loansSum = getSumForCategoryDataLine(Category.LOANS, month);
-    List<Object> funSum = getSumForCategoryDataLine(Category.FUN_WANTS_GIFTS, month);
-    List<Object> savingsSum = getSumForCategoryDataLine(Category.SAVINGS, month);
-    List<Object> incomeSum = getSumForCategoryDataLine(Category.INCOME, month);
-    List<Object> othersSum = getSumForCategoryDataLine(Category.OTHERS, month);
+    List<Object> needsSum = getSumForCategoryDataLine(categoryService.findCategoryByCode("NEEDS"), month);
+    List<Object> loansSum = getSumForCategoryDataLine(categoryService.findCategoryByCode("LOANS"), month);
+    List<Object> funSum = getSumForCategoryDataLine(categoryService.findCategoryByCode("FUN"), month);
+    List<Object> savingsSum = getSumForCategoryDataLine(categoryService.findCategoryByCode("SAVINGS"), month);
+    List<Object> incomeSum = getSumForCategoryDataLine(categoryService.findCategoryByCode("INCOME"), month);
+    List<Object> othersSum = getSumForCategoryDataLine(categoryService.findCategoryByCode("OTHERS"), month);
     List<Object> metaData =
         List.of(
             "Transaction Id",
@@ -156,42 +167,17 @@ public class ReportServiceImplGoogle implements ReportService {
     data.add(List.of());
 
     //    SECTIONS
-    for (Category category : Category.values()) {
-      if (category != Category.INCOME) data.addAll(generateSection(month, category));
+    for (Category category : categoryService.findAll()) {
+      if (!Objects.equals(category.getCode(), "INCOME")) data.addAll(generateSection(month, category));
     }
 
     insertDataToSheet(generateSheetNameForGivenMonth(month, true), data);
   }
 
   private List<List<Object>> generateSection(Month month, Category category) {
-    String sectionHeader;
-    String dataSheetCellIndex;
-    switch (category) {
-      default -> {
-        sectionHeader = "";
-        dataSheetCellIndex = "";
-      }
-      case NEEDS -> {
-        sectionHeader = "BÝVANIE, KOMUNIKÁCIA a INÉ POTREBY";
-        dataSheetCellIndex = "B3";
-      }
-      case LOANS -> {
-        sectionHeader = "PÔŽIČKY";
-        dataSheetCellIndex = "B4";
-      }
-      case FUN_WANTS_GIFTS -> {
-        sectionHeader = "RADOSTI, VOĽNÝ ČAS, ZÁBAVA, DARY";
-        dataSheetCellIndex = "B5";
-      }
-      case SAVINGS -> {
-        sectionHeader = "SPORENIE";
-        dataSheetCellIndex = "B6";
-      }
-      case OTHERS -> {
-        sectionHeader = "OSTATNÉ";
-        dataSheetCellIndex = "B8";
-      }
-    }
+    String sectionHeader = "Section header";
+    String dataSheetCellIndex = "B2";
+
 
     List<Object> sectionMetaData =
         List.of("Položka", "Plánované náklady", "Skutočné náklady", "Rozdiel");

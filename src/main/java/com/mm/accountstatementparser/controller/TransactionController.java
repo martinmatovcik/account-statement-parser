@@ -59,7 +59,7 @@ public class TransactionController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @PutMapping("assign-item/")
+  @PutMapping("assign-item/") //todo: better mappings e.g. /assign-item
   public ResponseEntity<TransactionDto> assignItemToTransactionById(@RequestBody AssignItemCommandDto assignItemCommandDto) {
     return new ResponseEntity<>(
         transactionService.assignItemToTransactionById(assignItemCommandDto).toDto(), HttpStatus.OK);

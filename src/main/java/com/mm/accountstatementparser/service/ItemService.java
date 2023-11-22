@@ -37,5 +37,9 @@ public interface ItemService {
 
   BigDecimal sumLivingExpenses(boolean isPlanned);
 
-  Item getItemByCode(String itemCode);
+  Item findItemByCode(String itemCode);
+
+  Item findItemForTransactionKeyWords(List<String> transactionKeywords);
+
+  void updateRealAmountAndDifference(Item item);
 }

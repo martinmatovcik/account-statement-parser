@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, UUID> {
-  List<Item> findAllByItemCategory(Category category);
+  List<Item> findAllByCategory(Category category);
 
   @Query("SELECT SUM(i.plannedAmount) FROM Item i")
   BigDecimal sumPlannedAmountOfItems();
@@ -24,14 +24,14 @@ public interface ItemRepository extends JpaRepository<Item, UUID> {
   @Query("SELECT SUM(i.difference) FROM Item i")
   BigDecimal sumDifferenceOfItems();
 
-  @Query("SELECT SUM(i.plannedAmount) FROM Item i WHERE i.itemCategory = :category")
-  BigDecimal sumPlannedAmountOfItemsForCategory(Category category);
-
-  @Query("SELECT SUM(i.realAmount) FROM Item i WHERE i.itemCategory = :category")
-  BigDecimal sumRealAmountOfItemsForCategory(Category category);
-
-  @Query("SELECT SUM(i.difference) FROM Item i WHERE i.itemCategory = :category")
-  BigDecimal sumDifferenceOfItemsForCategory(Category category);
+//  @Query("SELECT SUM(i.plannedAmount) FROM Item i WHERE i.itemCategory = :category")
+//  BigDecimal sumPlannedAmountOfItemsForCategory(Category category);
+//
+//  @Query("SELECT SUM(i.realAmount) FROM Item i WHERE i.itemCategory = :category")
+//  BigDecimal sumRealAmountOfItemsForCategory(Category category);
+//
+//  @Query("SELECT SUM(i.difference) FROM Item i WHERE i.itemCategory = :category")
+//  BigDecimal sumDifferenceOfItemsForCategory(Category category);
 
   Optional<Item> findByCode(String code);
 }
