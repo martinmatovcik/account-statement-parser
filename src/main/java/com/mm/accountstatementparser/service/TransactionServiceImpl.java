@@ -74,6 +74,7 @@ public class TransactionServiceImpl implements TransactionService {
   @Override
   public BigDecimal sumAmountOfTransactionsForCategoryAndMonth(Category category, Month month) {
     return BigDecimal.valueOf(4);
+    // todo: 4
 //    return transactionRepository.getAllByCategory(category).stream()
 //        .filter(transaction -> transaction.getDate().getMonth() == month)
 //        .map(Transaction::getAmount)

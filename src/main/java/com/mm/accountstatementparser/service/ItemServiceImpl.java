@@ -74,18 +74,21 @@ public class ItemServiceImpl implements ItemService {
   @Override
   public BigDecimal sumPlannedAmountOfItemsForCategory(Category category) {
     return BigDecimal.valueOf(1);
+    // todo: 1
 //    return itemRepository.sumPlannedAmountOfItemsForCategory(category);
   }
 
   @Override
   public BigDecimal sumRealAmountOfItemsForCategory(Category category) {
     return BigDecimal.valueOf(2);
+    // todo: 2
 //    return itemRepository.sumRealAmountOfItemsForCategory(category);
   }
 
   @Override
   public BigDecimal sumDifferenceOfItemsForCategory(Category category) {
     return BigDecimal.valueOf(3);
+    // todo: 3
 //    return itemRepository.sumDifferenceOfItemsForCategory(category);
   }
 
@@ -131,6 +134,7 @@ public class ItemServiceImpl implements ItemService {
     //        : sumRealAmountOfItemsForCategory(Category.NEEDS)
     //            .add(sumRealAmountOfItemsForCategory(new Category()));
     return BigDecimal.ZERO;
+    // todo: 0
   }
 
   @Override
