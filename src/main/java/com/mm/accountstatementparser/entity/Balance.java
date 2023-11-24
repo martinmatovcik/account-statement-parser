@@ -2,11 +2,9 @@ package com.mm.accountstatementparser.entity;
 
 import com.mm.accountstatementparser.dto.entityDto.BalanceDto;
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.time.Month;
 import java.util.UUID;
-
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -24,6 +22,11 @@ public class Balance extends EntityParent {
 
   @Override
   public BalanceDto toDto() {
-    return new BalanceDto(this.id, this.month, this.amount, this.balanceCategory);
+    return BalanceDto.builder()
+        .id(this.id)
+        .month(this.month)
+        .amount(this.amount)
+        .balanceCategory(this.balanceCategory)
+        .build();
   }
 }

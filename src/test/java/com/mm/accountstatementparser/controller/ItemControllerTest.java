@@ -143,10 +143,11 @@ public class ItemControllerTest {
   }
 
   private ItemDto getReportItemDto(int number) {
-    return ItemDto.builder()
-        .name("name - " + number)
-        .plannedAmount(BigDecimal.valueOf(number))
-        .category(new Category())
-        .build();
+//    return ItemDto.builder()
+//        .name("name - " + number)
+//        .plannedAmount(BigDecimal.valueOf(number))
+//        .category(new Category().toDto())
+//        .build();
+    return null;
   }
 }

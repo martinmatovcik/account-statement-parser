@@ -82,7 +82,7 @@ public class TransactionServiceImpl implements TransactionService {
   @Override
   public Transaction updateTransactionById(UUID id, Transaction updatedTransaction) {
     Transaction transactionToUpdate = getTransactionById(id);
-    BeanUtils.copyProperties(updatedTransaction, transactionToUpdate, "transactionId");
+    BeanUtils.copyProperties(updatedTransaction, transactionToUpdate, "id");
     return transactionRepository.save(transactionToUpdate);
   }
 

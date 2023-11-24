@@ -1,8 +1,6 @@
 package com.mm.accountstatementparser.dto.entityDto;
 
-import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
-import com.mm.accountstatementparser.entity.Transaction;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.*;
@@ -22,9 +20,9 @@ public class ItemDto extends DtoParent {
   @Builder.Default private BigDecimal difference = BigDecimal.ZERO;
   @Nullable @Builder.Default @ToString.Exclude
   private Set<String> keywords = new HashSet<>();
-  @Nullable @ToString.Exclude private Category category;
+  @Nullable private UUID categoryId;
   @Nullable @Builder.Default @ToString.Exclude
-  private List<Transaction> transactions = new ArrayList<>();
+  private List<TransactionDto> transactions = new ArrayList<>();
 
   @Override
   public Item toEntity() {
@@ -36,8 +34,7 @@ public class ItemDto extends DtoParent {
         .realAmount(this.realAmount)
         .difference(this.difference)
         .keywords(this.keywords)
-        .category(this.category)
-        .transactions(this.transactions)
+        .transactions(this.transactions != null ? this.transactions.stream().map(TransactionDto::toEntity).toList() : null)
         .build();
   }
 

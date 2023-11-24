@@ -7,13 +7,14 @@ import java.math.BigDecimal;
 import java.time.Month;
 import java.util.List;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class BalanceDto extends DtoParent {
 
   @Nullable private UUID id;
@@ -23,7 +24,12 @@ public class BalanceDto extends DtoParent {
 
   @Override
   public Balance toEntity() {
-    return new Balance(this.id, this.month, this.amount, this.balanceCategory);
+    return Balance.builder()
+        .id(this.id)
+        .month(this.month)
+        .amount(this.amount)
+        .balanceCategory(this.balanceCategory)
+        .build();
   }
 
   @Override

@@ -20,7 +20,6 @@ public class Item extends EntityParent {
   @Builder.Default private BigDecimal plannedAmount = BigDecimal.ZERO;
   @Builder.Default private BigDecimal realAmount = BigDecimal.ZERO;
   @Builder.Default private BigDecimal difference = BigDecimal.ZERO;
-
   @ElementCollection @Builder.Default @ToString.Exclude
   private Set<String> keywords = new HashSet<>();
 
@@ -44,8 +43,8 @@ public class Item extends EntityParent {
             .realAmount(this.realAmount)
             .difference(this.difference)
             .keywords(this.keywords)
-            .category(this.category)
-            .transactions(this.transactions)
+            .categoryId(this.category != null ? this.category.getId() : null)
+            .transactions(this.transactions != null ? this.transactions.stream().map(Transaction::toDto).toList() : null)
             .build();
   }
 }

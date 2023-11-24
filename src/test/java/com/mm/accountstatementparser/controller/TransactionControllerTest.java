@@ -149,7 +149,6 @@ public class TransactionControllerTest {
         .date(LocalDate.parse("2023-11-11"))
         .amount(BigDecimal.valueOf(amount))
         .currency(Currency.getInstance("CZK"))
-        .category(new Category())
         .build();
   }
 }

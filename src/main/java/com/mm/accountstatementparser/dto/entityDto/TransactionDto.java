@@ -1,7 +1,5 @@
 package com.mm.accountstatementparser.dto.entityDto;
 
-import com.mm.accountstatementparser.entity.Category;
-import com.mm.accountstatementparser.entity.Item;
 import com.mm.accountstatementparser.entity.Transaction;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
@@ -19,42 +17,39 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @Builder
 public class TransactionDto extends DtoParent {
-  @Nullable private UUID transactionId;
+  @Nullable private UUID id;
   private LocalDate date;
   private BigDecimal amount;
   private Currency currency;
   @Nullable private String variableSymbol;
   @Nullable private String recipientMessage;
-  @Nullable private String transactionNote;
-  @Nullable private Category category;
-  @Nullable private Item item;
+  private String transactionNote;
+  @Nullable private UUID itemId;
 
   @Override
   public Transaction toEntity() {
     return Transaction.builder()
-        .transactionId(this.transactionId)
+        .id(this.id)
         .date(this.date)
         .amount(this.amount)
         .currency(this.currency)
         .variableSymbol(this.variableSymbol)
         .recipientMessage(this.recipientMessage)
         .transactionNote(this.transactionNote)
-        //        .category(this.category)
-        .item(this.item)
         .build();
   }
 
   @Override
   public List<Object> toData() {
     return List.of(
-        this.transactionId.toString(),
+        this.id != null ? this.id.toString() : "",
         this.date.toString(),
         this.amount,
         this.currency.toString(),
-        this.variableSymbol,
-        this.recipientMessage,
-        this.transactionNote,
-        this.category,
-        this.item);
+        this.variableSymbol != null ? this.variableSymbol : "",
+        this.recipientMessage != null ? this.recipientMessage : "",
+        this.transactionNote != null ? this.transactionNote : "",
+        this.itemId != null ? this.itemId.toString() : ""
+    );
   }
 }
