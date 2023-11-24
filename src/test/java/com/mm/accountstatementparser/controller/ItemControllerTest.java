@@ -73,8 +73,7 @@ public class ItemControllerTest {
 
     MvcResult result =
         mockMvc
-            .perform(
-                post(BASE_URL).contentType(MediaType.APPLICATION_JSON).content(itemRequest))
+            .perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON).content(itemRequest))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").isString())
             .andExpect(jsonPath("$.name", is("report-item-name")))
@@ -144,7 +143,10 @@ public class ItemControllerTest {
   }
 
   private ItemDto getReportItemDto(int number) {
-    return new ItemDto(
-        "name - " + number, BigDecimal.valueOf(number), new Category());
+    return ItemDto.builder()
+        .name("name - " + number)
+        .plannedAmount(BigDecimal.valueOf(number))
+        .category(new Category())
+        .build();
   }
 }

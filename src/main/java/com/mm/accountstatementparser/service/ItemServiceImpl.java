@@ -90,36 +90,36 @@ public class ItemServiceImpl implements ItemService {
 
   @Override
   public void createSampleItemsWhenNoExisting() {
-    if (getAllItems().isEmpty()) {
-      List<Item> items =
-          List.of(
-              new Item("Nájom", "rent", BigDecimal.valueOf(17300.00), new Category()),
-              new Item("Elektrina", "energies", BigDecimal.valueOf(1000.00), new Category()),
-              new Item("Internet", "internet", BigDecimal.valueOf(300.00), new Category()),
-              new Item("Telefóny", "phones", BigDecimal.valueOf(960.00), new Category()),
-              new Item("Lítačky", "mhd", BigDecimal.valueOf(680.00), new Category()),
-              new Item("Jedlo", "eating", BigDecimal.valueOf(10000.00), new Category()),
-              new Item(
-                  "Greenfox - Mišovci", "greenfox-loan", BigDecimal.valueOf(0.00), new Category()),
-              new Item(
-                  "Bývanie - rodičia", "living-loan", BigDecimal.valueOf(2500.00), new Category()),
-              new Item("Oblečenie", "clother", BigDecimal.valueOf(0.00), new Category()),
-              new Item("Netflix", "netflix", BigDecimal.valueOf(120.00), new Category()),
-              new Item("Spotify", "spotify", BigDecimal.valueOf(60.00), new Category()),
-              new Item("Kultúra", "culture", BigDecimal.valueOf(0.00), new Category()),
-              new Item("Rande", "date", BigDecimal.valueOf(0.00), new Category()),
-              new Item("Eating out", "eating-out", BigDecimal.valueOf(0.00), new Category()),
-              new Item("Cestovanie", "traveling", BigDecimal.valueOf(0.00), new Category()),
-              new Item("Charita", "charity", BigDecimal.valueOf(0.00), new Category()),
-              new Item("Dôchodok", "pension", BigDecimal.valueOf(0.00), new Category()),
-              new Item("Krátkodobé", "short-term", BigDecimal.valueOf(0.00), new Category()),
-              new Item("Finančná rezerva", "reserve", BigDecimal.valueOf(0.00), new Category()),
-              new Item("Neznáme", "other", BigDecimal.valueOf(0.00), new Category()));
-
-      for (Item item : items) {
-        persistItem(item);
-      }
-    }
+//    if (getAllItems().isEmpty()) {
+//      List<Item> items =
+//          List.of(
+//              new Item("Nájom", "rent", BigDecimal.valueOf(17300.00), new Category()),
+//              new Item("Elektrina", "energies", BigDecimal.valueOf(1000.00), new Category()),
+//              new Item("Internet", "internet", BigDecimal.valueOf(300.00), new Category()),
+//              new Item("Telefóny", "phones", BigDecimal.valueOf(960.00), new Category()),
+//              new Item("Lítačky", "mhd", BigDecimal.valueOf(680.00), new Category()),
+//              new Item("Jedlo", "eating", BigDecimal.valueOf(10000.00), new Category()),
+//              new Item(
+//                  "Greenfox - Mišovci", "greenfox-loan", BigDecimal.valueOf(0.00), new Category()),
+//              new Item(
+//                  "Bývanie - rodičia", "living-loan", BigDecimal.valueOf(2500.00), new Category()),
+//              new Item("Oblečenie", "clother", BigDecimal.valueOf(0.00), new Category()),
+//              new Item("Netflix", "netflix", BigDecimal.valueOf(120.00), new Category()),
+//              new Item("Spotify", "spotify", BigDecimal.valueOf(60.00), new Category()),
+//              new Item("Kultúra", "culture", BigDecimal.valueOf(0.00), new Category()),
+//              new Item("Rande", "date", BigDecimal.valueOf(0.00), new Category()),
+//              new Item("Eating out", "eating-out", BigDecimal.valueOf(0.00), new Category()),
+//              new Item("Cestovanie", "traveling", BigDecimal.valueOf(0.00), new Category()),
+//              new Item("Charita", "charity", BigDecimal.valueOf(0.00), new Category()),
+//              new Item("Dôchodok", "pension", BigDecimal.valueOf(0.00), new Category()),
+//              new Item("Krátkodobé", "short-term", BigDecimal.valueOf(0.00), new Category()),
+//              new Item("Finančná rezerva", "reserve", BigDecimal.valueOf(0.00), new Category()),
+//              new Item("Neznáme", "other", BigDecimal.valueOf(0.00), new Category()));
+//
+//      for (Item item : items) {
+//        persistItem(item);
+//      }
+//    }
   }
 
   @Override
@@ -170,10 +170,11 @@ public class ItemServiceImpl implements ItemService {
         .orElseGet(
             () ->
                 persistItem(
-                    new Item(
-                        "Nezaradané výdavky",
-                        "unassigned",
-                        categoryService.findOrCreateCategoryOthers())));
+                    Item.builder()
+                        .name("Nezaradané výdavky")
+                        .code("unassigned")
+                        .category(categoryService.findOrCreateCategoryOthers())
+                        .build()));
   }
 
   @Override

@@ -5,7 +5,6 @@ import com.mm.accountstatementparser.entity.Item;
 import com.mm.accountstatementparser.entity.Transaction;
 import jakarta.annotation.Nullable;
 import java.math.BigDecimal;
-import java.time.Month;
 import java.util.*;
 import lombok.*;
 
@@ -16,35 +15,30 @@ import lombok.*;
 @NoArgsConstructor
 public class ItemDto extends DtoParent {
   @Nullable private UUID id;
-  @Nullable private String code;
+  private String code;
   private String name;
-  @Nullable private Month month;
   @Builder.Default private BigDecimal plannedAmount = BigDecimal.ZERO;
   @Builder.Default private BigDecimal realAmount = BigDecimal.ZERO;
   @Builder.Default private BigDecimal difference = BigDecimal.ZERO;
-  @Nullable private Category category;
-  @Nullable private List<Transaction> transactions;
-  @Nullable private Set<String> keywords;
-
-  public ItemDto(String name, BigDecimal plannedAmount, Category category) {
-    this.name = name;
-    this.plannedAmount = plannedAmount;
-    this.category = category;
-  }
+  @Nullable @Builder.Default @ToString.Exclude
+  private Set<String> keywords = new HashSet<>();
+  @Nullable @ToString.Exclude private Category category;
+  @Nullable @Builder.Default @ToString.Exclude
+  private List<Transaction> transactions = new ArrayList<>();
 
   @Override
   public Item toEntity() {
-    return new Item(
-        this.id,
-        this.code,
-        this.name,
-        this.month,
-        this.plannedAmount,
-        this.realAmount,
-        this.difference,
-        this.keywords,
-        this.category,
-        this.transactions);
+    return Item.builder()
+        .id(this.id)
+        .code(this.code)
+        .name(this.name)
+        .plannedAmount(this.plannedAmount)
+        .realAmount(this.realAmount)
+        .difference(this.difference)
+        .keywords(this.keywords)
+        .category(this.category)
+        .transactions(this.transactions)
+        .build();
   }
 
   @Override
