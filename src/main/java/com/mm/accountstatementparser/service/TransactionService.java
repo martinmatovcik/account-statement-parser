@@ -30,5 +30,5 @@ public interface TransactionService {
 
   Transaction updateFieldsInTransactionById(UUID id, Map<Object, Object> fields);
 
-  Transaction assignItemToTransactionById(AssignItemCommandDto assignItemCommandDto);
+  List<Transaction> assignItemToTransactionById(AssignItemCommandDto assignItemCommandDto);
 }

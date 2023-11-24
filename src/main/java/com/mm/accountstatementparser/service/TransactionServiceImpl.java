@@ -14,7 +14,6 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
 @Service
@@ -39,8 +38,8 @@ public class TransactionServiceImpl implements TransactionService {
   @Override
   public Transaction getTransactionById(UUID id) {
     return transactionRepository
-            .findById(id)
-            .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
   }
 
   @Override
@@ -115,18 +114,26 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Transaction assignItemToTransactionById(AssignItemCommandDto assignItemCommandDto) {
-    Item item = null;
-    String keyword = assignItemCommandDto.getKeyword();
-    if (keyword != null && !keyword.isEmpty()) item = itemService.findItemByKeywords(List.of(keyword)).orElse(null);
-    if (item == null) {
-      item = itemService.findItemByCode(assignItemCommandDto.getItemCode());
-      item = itemService.updateKeywords(item.getId(), keyword);
+  public List<Transaction> assignItemToTransactionById(AssignItemCommandDto assignItemCommandDto) {
+    List<Transaction> result = new ArrayList<>();
+
+    for (UUID id : assignItemCommandDto.getTransactionIds()) {
+
+      Item item = null;
+      String keyword = assignItemCommandDto.getKeyword();
+      if (keyword != null && !keyword.isEmpty())
+        item = itemService.findItemByKeywords(List.of(keyword)).orElse(null);
+      if (item == null) {
+        item = itemService.findItemByCode(assignItemCommandDto.getItemCode());
+        item = itemService.updateKeywords(item.getId(), keyword);
+      }
+
+      Transaction transactionToUpdate = getTransactionById(id);
+      transactionToUpdate.setItem(item);
+
+      result.add(updateTransactionById(id, transactionToUpdate));
     }
 
-    Transaction transactionToUpdate = getTransactionById(assignItemCommandDto.getTransactionId());
-    transactionToUpdate.setItem(item);
-
-    return updateTransactionById(assignItemCommandDto.getTransactionId(), transactionToUpdate);
+    return result;
   }
 }

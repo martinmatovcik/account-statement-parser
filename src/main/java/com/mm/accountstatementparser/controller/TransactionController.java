@@ -1,11 +1,10 @@
 package com.mm.accountstatementparser.controller;
 
-import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
+import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import com.mm.accountstatementparser.dto.result.TransactionProcessResultDto;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.service.TransactionService;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -66,10 +65,12 @@ public class TransactionController {
   }
 
   @PutMapping("assign-item/") // todo: better mappings e.g. /assign-item
-  public ResponseEntity<TransactionDto> assignItemToTransactionById(
+  public ResponseEntity<List<TransactionDto>> assignItemToTransactionById(
       @RequestBody AssignItemCommandDto assignItemCommandDto) {
     return new ResponseEntity<>(
-        transactionService.assignItemToTransactionById(assignItemCommandDto).toDto(),
+        transactionService.assignItemToTransactionById(assignItemCommandDto).stream()
+            .map(Transaction::toDto)
+            .toList(),
         HttpStatus.OK);
   }
 }

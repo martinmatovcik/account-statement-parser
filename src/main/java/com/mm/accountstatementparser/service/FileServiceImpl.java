@@ -1,5 +1,6 @@
 package com.mm.accountstatementparser.service;
 
+import com.mm.accountstatementparser.dto.result.TransactionProcessResultDto;
 import com.mm.accountstatementparser.entity.Balance;
 import com.mm.accountstatementparser.entity.BalanceCategory;
 import com.mm.accountstatementparser.entity.Transaction;
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +26,7 @@ public class FileServiceImpl implements FileService {
   private final BalanceService balanceService;
 
   @Override
-  public void parseFile(MultipartFile file) {
+  public List<TransactionProcessResultDto> parseFile(MultipartFile file) {
 
     List<String> fileLines;
     try {
@@ -36,10 +38,13 @@ public class FileServiceImpl implements FileService {
     balanceService.persistBalance(getBalanceFromSpecialFileLine(fileLines.get(4)));
     balanceService.persistBalance(getBalanceFromSpecialFileLine(fileLines.get(5)));
 
+    List<TransactionProcessResultDto> result = new ArrayList<>();
     int numberOfHeaderLines = 10;
     for (int i = numberOfHeaderLines; i < fileLines.size(); i++) {
-      transactionService.persistTransaction(getTransactionFromFileLine(fileLines.get(i))).toDto();
+      result.add(transactionService.processTransaction(getTransactionFromFileLine(fileLines.get(i))));
     }
+
+    return result;
   }
 
   private Balance getBalanceFromSpecialFileLine(String fileLine) {
@@ -61,8 +66,7 @@ public class FileServiceImpl implements FileService {
   private Transaction getTransactionFromFileLine(String fileLine) {
     fileLine = fileLine.replace("\"", "");
     String[] fileData = fileLine.split(";");
-    Transaction transaction =
-        Transaction.builder()
+    return Transaction.builder()
             .date(convertStringToLocalDate(fileData[1]))
             .amount(convertStringToBigDecimal(fileData[2]))
             .currency(Currency.getInstance(fileData[3]))
@@ -71,7 +75,6 @@ public class FileServiceImpl implements FileService {
             .transactionNote(fileData[16])
             .build();
 //    transaction.setCategory(transaction.findMainCategory());
-    return transaction;
   }
 
   private static String makeNullable(String string) {

@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignItemCommandDto {
-    private UUID transactionId;
+    private List<UUID> transactionIds;
     @Nullable private String itemCode;
     @Nullable private String keyword;
 }
