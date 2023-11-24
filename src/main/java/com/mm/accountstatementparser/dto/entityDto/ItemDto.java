@@ -1,4 +1,4 @@
-package com.mm.accountstatementparser.dto;
+package com.mm.accountstatementparser.dto.entityDto;
 
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
@@ -16,13 +16,13 @@ import lombok.*;
 @NoArgsConstructor
 public class ItemDto extends DtoParent {
   @Nullable private UUID id;
-  private String code;
+  @Nullable private String code;
   private String name;
-  private Month month;
+  @Nullable private Month month;
   @Builder.Default private BigDecimal plannedAmount = BigDecimal.ZERO;
   @Builder.Default private BigDecimal realAmount = BigDecimal.ZERO;
-  private BigDecimal difference;
-  private Category category;
+  @Builder.Default private BigDecimal difference = BigDecimal.ZERO;
+  @Nullable private Category category;
   @Nullable private List<Transaction> transactions;
   @Nullable private Set<String> keywords;
 

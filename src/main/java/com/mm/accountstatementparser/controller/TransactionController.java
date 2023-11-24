@@ -1,13 +1,17 @@
 package com.mm.accountstatementparser.controller;
 
-import com.mm.accountstatementparser.dto.TransactionDto;
+import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
+import com.mm.accountstatementparser.dto.result.TransactionProcessResultDto;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.service.TransactionService;
+
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +35,15 @@ public class TransactionController {
   }
 
   @PostMapping
-  public ResponseEntity<TransactionDto> createTransaction(
+  public ResponseEntity<TransactionProcessResultDto> createTransaction(
       @RequestBody TransactionDto transactionDto) {
-    return new ResponseEntity<>(
-        transactionService.persistTransaction(transactionDto.toEntity()).toDto(),
-        HttpStatus.CREATED);
+    TransactionProcessResultDto result =
+        transactionService.processTransaction(transactionDto.toEntity());
+
+    HttpStatus httpStatus = HttpStatus.CREATED;
+    if (result.getSavedTransaction() == null) httpStatus = HttpStatus.ACCEPTED;
+
+    return new ResponseEntity<>(result, httpStatus);
   }
 
   @PutMapping("{id}")
@@ -59,9 +67,11 @@ public class TransactionController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @PutMapping("assign-item/") //todo: better mappings e.g. /assign-item
-  public ResponseEntity<TransactionDto> assignItemToTransactionById(@RequestBody AssignItemCommandDto assignItemCommandDto) {
+  @PutMapping("assign-item/") // todo: better mappings e.g. /assign-item
+  public ResponseEntity<TransactionDto> assignItemToTransactionById(
+      @RequestBody AssignItemCommandDto assignItemCommandDto) {
     return new ResponseEntity<>(
-        transactionService.assignItemToTransactionById(assignItemCommandDto).toDto(), HttpStatus.OK);
+        transactionService.assignItemToTransactionById(assignItemCommandDto).toDto(),
+        HttpStatus.OK);
   }
 }

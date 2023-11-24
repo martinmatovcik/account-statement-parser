@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.mm.accountstatementparser.dto.ItemDto;
+import com.mm.accountstatementparser.dto.entityDto.ItemDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.repository.ItemRepository;
 import java.math.BigDecimal;

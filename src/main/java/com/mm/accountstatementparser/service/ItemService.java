@@ -1,11 +1,12 @@
 package com.mm.accountstatementparser.service;
 
-import com.mm.accountstatementparser.dto.ItemDto;
+import com.mm.accountstatementparser.dto.entityDto.ItemDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ItemService {
@@ -39,7 +40,11 @@ public interface ItemService {
 
   Item findItemByCode(String itemCode);
 
-  Item findItemForTransactionKeyWords(List<String> transactionKeywords);
+  Optional<Item> findItemByKeywords(List<String> transactionKeywords);
+
+  Item findOrCreateItemUnassigned();
 
   void updateRealAmountAndDifference(Item item);
+
+    Item updateKeywords(UUID id, String keyword);
 }

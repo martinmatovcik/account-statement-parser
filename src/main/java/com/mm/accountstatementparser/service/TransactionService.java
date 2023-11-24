@@ -1,6 +1,7 @@
 package com.mm.accountstatementparser.service;
 
 import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
+import com.mm.accountstatementparser.dto.result.TransactionProcessResultDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Transaction;
 
@@ -18,6 +19,7 @@ public interface TransactionService {
   Transaction getTransactionById(UUID id);
 
   Transaction persistTransaction(Transaction transactionToSave);
+  TransactionProcessResultDto processTransaction(Transaction transaction);
 
   Transaction updateTransactionById(UUID id, Transaction updatedTransaction);
 

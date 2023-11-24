@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.entity;
 
-import com.mm.accountstatementparser.dto.BalanceDto;
+import com.mm.accountstatementparser.dto.entityDto.BalanceDto;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

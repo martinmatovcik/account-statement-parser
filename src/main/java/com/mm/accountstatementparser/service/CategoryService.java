@@ -15,4 +15,6 @@ public interface CategoryService {
     List<Category> findAll();
 
     void updatePlanedAmountRealAmountAndDifference(Category category);
+
+    Category findOrCreateCategoryOthers();
 }

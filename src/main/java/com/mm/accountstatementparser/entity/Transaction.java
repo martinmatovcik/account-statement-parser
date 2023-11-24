@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.entity;
 
-import com.mm.accountstatementparser.dto.TransactionDto;
+import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -8,7 +8,6 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Currency;
-import java.util.Objects;
 import java.util.UUID;
 import lombok.*;
 
@@ -32,7 +31,7 @@ public class Transaction extends EntityParent {
 
   @ManyToOne
   @JoinColumn(name = "item_code")
-  @Nullable
+  @ToString.Exclude
   private Item item;
 
   @Override
@@ -115,13 +114,4 @@ public class Transaction extends EntityParent {
 //    return Category.OTHERS;
 //  }
 
-  private boolean stringContainsItemFromList(String input, String[] array) {
-    input = input.toLowerCase();
-    boolean stringIsNormalized = Normalizer.isNormalized(input, Normalizer.Form.NFKD);
-    if (!stringIsNormalized) {
-      input = Normalizer.normalize(input, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", "");
-    }
-
-    return Arrays.stream(array).anyMatch(input::contains);
-  }
 }

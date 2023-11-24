@@ -1,4 +1,4 @@
-package com.mm.accountstatementparser.dto;
+package com.mm.accountstatementparser.dto.entityDto;
 
 import com.mm.accountstatementparser.entity.EntityParent;
 import java.util.List;

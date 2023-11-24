@@ -1,7 +1,6 @@
 package com.mm.accountstatementparser.entity;
 
-import com.mm.accountstatementparser.dto.CategoryDto;
-import com.mm.accountstatementparser.dto.DtoParent;
+import com.mm.accountstatementparser.dto.entityDto.CategoryDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -22,11 +21,12 @@ public class Category extends EntityParent {
   @Id @GeneratedValue private UUID id;
   private String code;
   private String headerValue;
-  private BigDecimal plannedAmount;
+  @Builder.Default private BigDecimal plannedAmount = BigDecimal.ZERO;
   @Builder.Default private BigDecimal realAmount = BigDecimal.ZERO;
   @Builder.Default private BigDecimal difference = BigDecimal. ZERO;
 
   @OneToMany(mappedBy = "category")
+  @ToString.Exclude
   private List<Item> items;
 
   @Override

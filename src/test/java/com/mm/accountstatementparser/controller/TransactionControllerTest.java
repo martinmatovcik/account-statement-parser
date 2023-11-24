@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.mm.accountstatementparser.dto.TransactionDto;
+import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.repository.TransactionRepository;
 import java.math.BigDecimal;
@@ -149,7 +149,7 @@ public class TransactionControllerTest {
         .date(LocalDate.parse("2023-11-11"))
         .amount(BigDecimal.valueOf(amount))
         .currency(Currency.getInstance("CZK"))
-        .category(Category.NEEDS)
+        .category(new Category())
         .build();
   }
 }

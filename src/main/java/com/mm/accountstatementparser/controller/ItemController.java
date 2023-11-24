@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.controller;
 
-import com.mm.accountstatementparser.dto.ItemDto;
+import com.mm.accountstatementparser.dto.entityDto.ItemDto;
 import com.mm.accountstatementparser.entity.Item;
 import com.mm.accountstatementparser.service.ItemService;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/report-items/")
+@RequestMapping("/api/v1/items/")
 @RequiredArgsConstructor
 public class ItemController {
   private final ItemService itemService;

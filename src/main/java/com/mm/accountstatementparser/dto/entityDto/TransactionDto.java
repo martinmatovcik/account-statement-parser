@@ -1,4 +1,4 @@
-package com.mm.accountstatementparser.dto;
+package com.mm.accountstatementparser.dto.entityDto;
 
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
@@ -26,8 +26,8 @@ public class TransactionDto extends DtoParent {
   @Nullable private String variableSymbol;
   @Nullable private String recipientMessage;
   @Nullable private String transactionNote;
-  private Category category;
-  private Item item;
+  @Nullable private Category category;
+  @Nullable private Item item;
 
   @Override
   public Transaction toEntity() {

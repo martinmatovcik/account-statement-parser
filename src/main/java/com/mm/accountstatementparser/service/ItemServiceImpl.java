@@ -1,16 +1,15 @@
 package com.mm.accountstatementparser.service;
 
-import com.mm.accountstatementparser.dto.ItemDto;
+import com.mm.accountstatementparser.dto.entityDto.ItemDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
 import com.mm.accountstatementparser.repository.ItemRepository;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,9 @@ public class ItemServiceImpl implements ItemService {
 
   @Override
   public Item getItemById(UUID id) {
-    return itemRepository.findById(id).orElseThrow();
+    return itemRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
   }
 
   @Override
@@ -35,19 +36,14 @@ public class ItemServiceImpl implements ItemService {
 
   @Override
   public Item updateItemById(UUID id, Item updatedItem) {
-    Item itemToUpdate = findByIdOrElseThrow(id);
+    Item itemToUpdate = getItemById(id);
     BeanUtils.copyProperties(updatedItem, itemToUpdate, "id");
     return itemRepository.save(itemToUpdate);
   }
 
-  private Item findByIdOrElseThrow(UUID id) {
-    return itemRepository
-        .findById(id)
-        .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
-  }
-
   @Override
   public void deleteItemById(UUID id) {
+    getItemById(id);
     itemRepository.deleteById(id);
   }
 
@@ -75,21 +71,21 @@ public class ItemServiceImpl implements ItemService {
   public BigDecimal sumPlannedAmountOfItemsForCategory(Category category) {
     return BigDecimal.valueOf(1);
     // todo: 1
-//    return itemRepository.sumPlannedAmountOfItemsForCategory(category);
+    //    return itemRepository.sumPlannedAmountOfItemsForCategory(category);
   }
 
   @Override
   public BigDecimal sumRealAmountOfItemsForCategory(Category category) {
     return BigDecimal.valueOf(2);
     // todo: 2
-//    return itemRepository.sumRealAmountOfItemsForCategory(category);
+    //    return itemRepository.sumRealAmountOfItemsForCategory(category);
   }
 
   @Override
   public BigDecimal sumDifferenceOfItemsForCategory(Category category) {
     return BigDecimal.valueOf(3);
     // todo: 3
-//    return itemRepository.sumDifferenceOfItemsForCategory(category);
+    //    return itemRepository.sumDifferenceOfItemsForCategory(category);
   }
 
   @Override
@@ -145,25 +141,48 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
-  public Item findItemForTransactionKeyWords(List<String> transactionKeywords) {
-    return transactionKeywords.stream()
-        .map(
-            keyword ->
-                itemRepository.findAll().stream()
-                    .filter(item -> item.getKeywords().contains(keyword))
-                    .findFirst())
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .findFirst()
-        .orElse(new Item()); // todo: return item-unassigned
+  public Optional<Item> findItemByKeywords(List<String> transactionKeywords) {
+    List<Item> items = itemRepository.findAll();
+
+    for (Item item : items) {
+      if (item == null) break;
+      for (String keyword : transactionKeywords)
+        if (item.getKeywords().contains(keyword)) return Optional.of(item);
+    }
+    return Optional.empty();
+
+    //    return items.stream()
+    //            .filter(item -> item.getKeywords() != null)
+    //            .filter(item -> !Collections.disjoint(item.getKeywords(), transactionKeywords))
+    //            .findFirst();
+
+    //    List<Item> items = itemRepository.findAll();
+    //
+    //    for (Item item : items) {
+    //      if (item.getKeywords() == null) item.setKeywords(new HashSet<>());
+    //    }
+  }
+
+  @Override
+  public Item findOrCreateItemUnassigned() {
+    return itemRepository
+        .findByCode("unassigned")
+        .orElseGet(
+            () ->
+                persistItem(
+                    new Item(
+                        "Nezaradané výdavky",
+                        "unassigned",
+                        categoryService.findOrCreateCategoryOthers())));
   }
 
   @Override
   public void updateRealAmountAndDifference(Item item) {
-    item.setRealAmount(
-        item.getTransactions().stream()
-            .map(itemTransaction -> itemTransaction.getAmount().abs())
-            .reduce(BigDecimal.ZERO, BigDecimal::add));
+    if (!CollectionUtils.isEmpty(item.getTransactions()))
+      item.setRealAmount(
+          item.getTransactions().stream()
+              .map(itemTransaction -> itemTransaction.getAmount().abs())
+              .reduce(BigDecimal.ZERO, BigDecimal::add));
 
     item.setDifference(item.getPlannedAmount().subtract(item.getRealAmount()));
 
@@ -173,6 +192,14 @@ public class ItemServiceImpl implements ItemService {
 
     Item updatedItem = updateItemById(item.getId(), item);
 
-    categoryService.updatePlanedAmountRealAmountAndDifference(category);
+    if (category != null) categoryService.updatePlanedAmountRealAmountAndDifference(category);
+  }
+
+  @Override
+  public Item updateKeywords(UUID id, String keyword) {
+    Item itemToUpdate = getItemById(id);
+    if (itemToUpdate.getKeywords() == null) itemToUpdate.setKeywords(new HashSet<>());
+    itemToUpdate.getKeywords().add(keyword);
+    return itemRepository.save(itemToUpdate);
   }
 }

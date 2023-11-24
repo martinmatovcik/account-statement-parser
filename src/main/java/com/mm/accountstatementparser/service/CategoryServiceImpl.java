@@ -8,6 +8,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -44,18 +45,29 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void updatePlanedAmountRealAmountAndDifference(Category category) {
-    category.setPlannedAmount(
-        category.getItems().stream()
-            .map(item -> item.getPlannedAmount().abs())
-            .reduce(BigDecimal.ZERO, BigDecimal::add));
+    if (!CollectionUtils.isEmpty(category.getItems())) {
+      category.setPlannedAmount(
+          category.getItems().stream()
+              .map(item -> item.getPlannedAmount().abs())
+              .reduce(BigDecimal.ZERO, BigDecimal::add));
 
-    category.setRealAmount(
-        category.getItems().stream()
-            .map(item -> item.getRealAmount().abs())
-            .reduce(BigDecimal.ZERO, BigDecimal::add));
+      category.setRealAmount(
+          category.getItems().stream()
+              .map(item -> item.getRealAmount().abs())
+              .reduce(BigDecimal.ZERO, BigDecimal::add));
+    }
 
     category.setDifference(category.getPlannedAmount().subtract(category.getRealAmount()));
 
     updateCategoryById(category.getId(), category);
+  }
+
+  @Override
+  public Category findOrCreateCategoryOthers() {
+    return categoryRepository
+        .findByCode("unassigned")
+        .orElseGet(
+            () ->
+                persistCategory(Category.builder().code("others").headerValue("Ostatné").build()));
   }
 }
