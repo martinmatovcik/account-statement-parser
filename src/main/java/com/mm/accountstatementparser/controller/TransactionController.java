@@ -6,12 +6,10 @@ import com.mm.accountstatementparser.dto.result.TransactionProcessResultDto;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.service.TransactionService;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +39,7 @@ public class TransactionController {
         transactionService.processTransaction(transactionDto.toEntity());
 
     HttpStatus httpStatus = HttpStatus.CREATED;
-    if (result.getSavedTransaction() == null) httpStatus = HttpStatus.ACCEPTED;
+    if (result.getSavedTransactionDto() == null) httpStatus = HttpStatus.ACCEPTED;
 
     return new ResponseEntity<>(result, httpStatus);
   }

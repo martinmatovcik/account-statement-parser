@@ -60,8 +60,8 @@ public class TransactionServiceImpl implements TransactionService {
     itemService.updateRealAmountAndDifference(persistedTransaction.getItem());
 
     if (persistedTransaction.getItem().getCode().equals("unassigned"))
-      return new TransactionProcessResultDto(persistedTransaction, transactionKeywords);
-    else return new TransactionProcessResultDto(persistedTransaction);
+      return new TransactionProcessResultDto(persistedTransaction.toDto(), transactionKeywords);
+    else return new TransactionProcessResultDto(persistedTransaction.toDto());
   }
 
   private List<String> parseTransactionNote(String transactionNote) {
