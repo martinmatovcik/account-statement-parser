@@ -40,7 +40,6 @@ public class TransactionServiceImpl implements TransactionService {
     return transactionRepository.save(transaction);
   }
 
-
   @Override
   public TransactionProcessResultDto processTransaction(Transaction transaction) {
     Transaction persistedTransaction = assignItemOrUnassignedToTransactionAndPersist(transaction);
@@ -90,45 +89,35 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Transaction updateFieldsInTransactionById(UUID id, Map<Object, Object> fields) {
-    Transaction transactionToUpdate = getEntityById(id);
-    fields.forEach(
-        (key, value) -> {
-          Field field = ReflectionUtils.findField(Transaction.class, (String) key);
-          Objects.requireNonNull(field).setAccessible(true);
-          if (key == "amount") value = BigDecimal.valueOf((double) value);
-          ReflectionUtils.setField(field, transactionToUpdate, value);
-        });
-    return transactionRepository.save(transactionToUpdate);
-  }
-
-  @Override
-  public List<Transaction> assignTransactionsToCategoryItemsById(
+  public List<Transaction> assignTransactionsToCategoryItems(
       List<AssignCategoryItemCommandDto> assignCategoryItemCommandDtos) {
     List<Transaction> result = new ArrayList<>();
 
-    for (AssignCategoryItemCommandDto assignCategoryItemCommandDto : assignCategoryItemCommandDtos) {
+    for (AssignCategoryItemCommandDto assignCategoryItemCommandDto :
+        assignCategoryItemCommandDtos) {
+
       CategoryItem categoryItem = null;
       String keyword = assignCategoryItemCommandDto.getKeyword();
+
       if (keyword != null && !keyword.isEmpty())
         categoryItem =
             categoryItemService.findCategoryItemByKeywords(List.of(keyword)).orElse(null);
+
       if (categoryItem == null) {
         categoryItem =
-            categoryItemService.findCategoryItemByCode(assignCategoryItemCommandDto.getCategoryItemCode());
+            categoryItemService.findCategoryItemByCode(
+                assignCategoryItemCommandDto.getCategoryItemCode());
         categoryItem =
             categoryItemService.updateCategoryItemKeywords(categoryItem.getId(), keyword);
       }
 
-      UUID id = assignCategoryItemCommandDto.getTransactionId();
-      Transaction transactionToUpdate = getEntityById(id);
-      CategoryItem originalCategoryItem = transactionToUpdate.getCategoryItem();
+      Transaction transactionToUpdate =
+          getEntityById(assignCategoryItemCommandDto.getTransactionId());
+      categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
+          categoryItem, transactionToUpdate);
       transactionToUpdate.setCategoryItem(categoryItem);
 
-      Transaction updatedTransaction = updateEntity(transactionToUpdate);
-
-      categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(originalCategoryItem, updatedTransaction);
-      result.add(updatedTransaction);
+      result.add(updateEntity(transactionToUpdate));
     }
 
     return result;
@@ -154,14 +143,17 @@ public class TransactionServiceImpl implements TransactionService {
     Optional<CategoryItem> matchingItem =
         categoryItemService.findCategoryItemByKeywords(transactionKeywords);
 
-    if (originalCategoryItem != null && originalCategoryItem.getCode().equals("unassigned") && matchingItem.isEmpty())
+    if (originalCategoryItem != null
+        && originalCategoryItem.getCode().equals("unassigned")
+        && matchingItem.isEmpty())
       transaction.setCategoryItem(categoryItemService.findOrCreateCategoryItemUnassigned());
     else {
       matchingItem.ifPresent(transaction::setCategoryItem);
     }
 
     Transaction persistedTransaction = persistEntity(transaction);
-    categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(originalCategoryItem, persistedTransaction);
+    categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
+        originalCategoryItem, persistedTransaction);
     return persistedTransaction;
   }
 

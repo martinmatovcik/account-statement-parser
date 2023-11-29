@@ -8,8 +8,6 @@ import com.mm.accountstatementparser.entity.Transaction;
 import java.math.BigDecimal;
 import java.time.Month;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public interface TransactionService extends CrudEntityService<Transaction> {
   TransactionProcessResultDto processTransaction(Transaction transaction);
@@ -17,9 +15,7 @@ public interface TransactionService extends CrudEntityService<Transaction> {
   BigDecimal sumAmountOfTransactionsForCategoryAndMonth(
           Category category, Month month);
 
-  Transaction updateFieldsInTransactionById(UUID id, Map<Object, Object> fields);
-
-  List<Transaction> assignTransactionsToCategoryItemsById(List<AssignCategoryItemCommandDto> assignCategoryItemCommandDtos);
+  List<Transaction> assignTransactionsToCategoryItems(List<AssignCategoryItemCommandDto> assignCategoryItemCommandDtos);
 
   List<Transaction> reassignAllUnassignedTransactions();
 }

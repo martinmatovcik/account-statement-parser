@@ -48,4 +48,8 @@ public class CategoryItem extends EntityParent<CategoryItemDto> {
             .transactions(this.transactions != null ? this.transactions.stream().map(Transaction::toDto).toList() : null)
             .build();
   }
+
+  public void setCategory(Category category) {
+    this.category = category;
+  }
 }

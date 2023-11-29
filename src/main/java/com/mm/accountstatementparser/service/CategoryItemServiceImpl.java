@@ -155,36 +155,30 @@ public class CategoryItemServiceImpl implements CategoryItemService {
 
   @Override
   public void updateCategoryItemRealAmountAndDifferenceWithTransaction(
-      CategoryItem originalCategoryItem, Transaction transaction) {
+      CategoryItem newCategoryItem, Transaction transaction) {
 
-    CategoryItem actualCategoryItem = transaction.getCategoryItem();
-    BigDecimal transactionAmount = transaction.getAmount().abs();
+    BigDecimal actualTransactionAmount = transaction.getAmount().abs();
+
+    CategoryItem originalCategoryItem = transaction.getCategoryItem();
+    Category actualCategory = null;
 
     if (originalCategoryItem != null) {
-      originalCategoryItem.setRealAmount(
-          originalCategoryItem.getRealAmount().subtract(transactionAmount));
-      originalCategoryItem.setDifference(calculateDifferenceForCategoryItem(originalCategoryItem));
+      BigDecimal originalRealAmount = originalCategoryItem.getRealAmount();
+      originalCategoryItem.setRealAmount(originalRealAmount.subtract(actualTransactionAmount));
+      originalCategoryItem.setDifference(
+          originalCategoryItem.getPlannedAmount().subtract(originalRealAmount));
       updateEntity(originalCategoryItem);
+      actualCategory = originalCategoryItem.getCategory();
     }
 
-    Category actualCategory = actualCategoryItem.getCategory();
+    BigDecimal newRealAmount = newCategoryItem.getRealAmount();
+    newCategoryItem.setRealAmount(newRealAmount.add(actualTransactionAmount));
+    newCategoryItem.setDifference(newCategoryItem.getPlannedAmount().subtract(newRealAmount));
+    categoryService.updatePlanedAmountRealAmountAndDifference(actualCategory, newCategoryItem);
+    if (newCategoryItem.getCategory() == null)
+      newCategoryItem.setCategory(categoryService.findOrCreateCategoryOthers());
 
-    actualCategoryItem.setDifference(calculateDifferenceForCategoryItem(actualCategoryItem));
-    actualCategoryItem.setRealAmount(actualCategoryItem.getRealAmount().add(transactionAmount));
-    if (actualCategory == null)
-      actualCategoryItem.setCategory(categoryService.findOrCreateCategoryOthers());
-
-    CategoryItem persistedCategoryItem = updateEntity(actualCategoryItem);
-
-    categoryService.updatePlanedAmountRealAmountAndDifference(
-        originalCategoryItem != null ? originalCategoryItem.getCategory() : null,
-        actualCategory,
-        persistedCategoryItem);
-  }
-
-  @Override
-  public BigDecimal calculateDifferenceForCategoryItem(CategoryItem categoryItem) {
-    return categoryItem.getPlannedAmount().subtract(categoryItem.getRealAmount());
+    updateEntity(newCategoryItem);
   }
 
   @Override
@@ -197,22 +191,25 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   }
 
   @Override
-  public List<CategoryItem> assignCategoryItemToCategoryById(
+  public List<CategoryItem> assignCategoryItemsToCategories(
       List<AssignCategoryCommandDto> assignCategoryCommandDtos) {
     List<CategoryItem> result = new ArrayList<>();
 
     for (AssignCategoryCommandDto assignCategoryCommandDto : assignCategoryCommandDtos) {
-      CategoryItem categoryItem =
+      CategoryItem categoryItemToUpdate =
           findCategoryItemByCode(assignCategoryCommandDto.getCategoryItemCode());
-      Category originalCategory = categoryItem.getCategory();
 
-      categoryItem.setCategory(
-          categoryService.findCategoryByCode(assignCategoryCommandDto.getCategoryCode()));
+      Category newCategory =
+          categoryService.findCategoryByCode(assignCategoryCommandDto.getCategoryCode());
 
-      CategoryItem persistedCategoryItem = updateEntity(categoryItem);
+      categoryService.updatePlanedAmountRealAmountAndDifference(newCategory, categoryItemToUpdate);
+      categoryItemToUpdate.setCategory(newCategory);
+
+      CategoryItem persistedCategoryItem = updateEntity(categoryItemToUpdate);
 
       categoryService.updatePlanedAmountRealAmountAndDifference(
-          originalCategory, persistedCategoryItem.getCategory(), categoryItem);
+          persistedCategoryItem.getCategory(), categoryItemToUpdate);
+
       result.add(persistedCategoryItem);
     }
 

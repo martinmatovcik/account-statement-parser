@@ -4,12 +4,11 @@ import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
 import com.mm.accountstatementparser.repository.CategoryRepository;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -72,21 +71,28 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void updatePlanedAmountRealAmountAndDifference(
-      @Nullable Category originalCategory, Category newCategory, CategoryItem categoryItem) {
+      Category newCategory, CategoryItem categoryItem) {
+
+    BigDecimal actualPlannedAmount = categoryItem.getPlannedAmount();
+    BigDecimal actualRealAmount = categoryItem.getRealAmount();
+
+    Category originalCategory = categoryItem.getCategory();
 
     if (originalCategory != null) {
-      originalCategory.setPlannedAmount(
-          originalCategory.getPlannedAmount().subtract(categoryItem.getPlannedAmount()));
-      originalCategory.setRealAmount(
-          originalCategory.getRealAmount().subtract(categoryItem.getRealAmount()));
-      originalCategory.setDifference(
-          originalCategory.getPlannedAmount().subtract(originalCategory.getRealAmount()));
+      BigDecimal originalPlannedAmount = originalCategory.getPlannedAmount();
+      BigDecimal originalRealAmount = originalCategory.getRealAmount();
+      originalCategory.setPlannedAmount(originalPlannedAmount.subtract(actualPlannedAmount));
+      originalCategory.setRealAmount(originalRealAmount.subtract(actualRealAmount));
+      originalCategory.setDifference(originalPlannedAmount.subtract(originalRealAmount));
+
+      updateEntity(originalCategory);
     }
 
-    newCategory.setPlannedAmount(
-        newCategory.getPlannedAmount().add(categoryItem.getPlannedAmount()));
-    newCategory.setRealAmount(newCategory.getRealAmount().add(categoryItem.getRealAmount()));
-    newCategory.setDifference(newCategory.getPlannedAmount().subtract(newCategory.getRealAmount()));
+    BigDecimal newPlannedAmount = newCategory.getPlannedAmount();
+    BigDecimal newRealAmount = newCategory.getRealAmount();
+    newCategory.setPlannedAmount(newPlannedAmount.add(actualPlannedAmount));
+    newCategory.setRealAmount(newRealAmount.add(actualRealAmount));
+    newCategory.setDifference(newPlannedAmount.subtract(newRealAmount));
 
     updateEntity(newCategory);
   }

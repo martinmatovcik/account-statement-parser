@@ -35,10 +35,8 @@ public interface CategoryItemService extends CrudEntityService<CategoryItem> {
 
   CategoryItem findOrCreateCategoryItemUnassigned();
 
-  void updateCategoryItemRealAmountAndDifferenceWithTransaction(@Nullable CategoryItem originalCategoryItem, Transaction transaction);
-
-  BigDecimal calculateDifferenceForCategoryItem(CategoryItem categoryItem);
+  void updateCategoryItemRealAmountAndDifferenceWithTransaction(CategoryItem newCategoryItem, Transaction transaction);
 
   CategoryItem updateCategoryItemKeywords(UUID id, String keyword);
-  List<CategoryItem> assignCategoryItemToCategoryById(List<AssignCategoryCommandDto> assignCategoryCommandDtos);
+  List<CategoryItem> assignCategoryItemsToCategories(List<AssignCategoryCommandDto> assignCategoryCommandDtos);
 }

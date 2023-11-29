@@ -71,7 +71,7 @@ public class TransactionController extends CrudEntityController<TransactionDto> 
   public ResponseEntity<List<TransactionDto>> assignTransactionsToCategoryItemsById(
       @RequestBody List<AssignCategoryItemCommandDto> assignCategoryItemCommandDtos) {
     return new ResponseEntity<>(
-        transactionService.assignTransactionsToCategoryItemsById(assignCategoryItemCommandDtos).stream()
+        transactionService.assignTransactionsToCategoryItems(assignCategoryItemCommandDtos).stream()
             .map(Transaction::toDto)
             .toList(),
         HttpStatus.OK);
