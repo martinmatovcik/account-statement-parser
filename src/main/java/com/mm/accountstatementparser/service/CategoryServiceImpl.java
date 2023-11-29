@@ -4,15 +4,15 @@ import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
 import com.mm.accountstatementparser.repository.CategoryRepository;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 @Service
@@ -35,6 +35,11 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   public Category persistEntity(Category entity) {
     return categoryRepository.save(entity);
+  }
+
+  @Override
+  public Category updateEntity(Category updatedEntity) {
+    return updateEntityById(updatedEntity.getId(), updatedEntity);
   }
 
   @Override
@@ -66,32 +71,31 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
-  public void updatePlanedAmountRealAmountAndDifference(Category category) {
-    if (!CollectionUtils.isEmpty(category.getCategoryItems())) {
-      BigDecimal plannedAmount = BigDecimal.ZERO;
-      for (CategoryItem categoryItem : category.getCategoryItems()) {
-        plannedAmount = plannedAmount.add(categoryItem.getPlannedAmount().abs());
-      }
-      category.setPlannedAmount(plannedAmount);
+  public void updatePlanedAmountRealAmountAndDifference(
+      @Nullable Category originalCategory, Category newCategory, CategoryItem categoryItem) {
 
-      BigDecimal realAmount = BigDecimal.ZERO;
-      for (CategoryItem categoryItem : category.getCategoryItems()) {
-        realAmount = realAmount.add(categoryItem.getRealAmount().abs());
-      }
-      category.setRealAmount(realAmount);
+    if (originalCategory != null) {
+      originalCategory.setPlannedAmount(
+          originalCategory.getPlannedAmount().subtract(categoryItem.getPlannedAmount()));
+      originalCategory.setRealAmount(
+          originalCategory.getRealAmount().subtract(categoryItem.getRealAmount()));
+      originalCategory.setDifference(
+          originalCategory.getPlannedAmount().subtract(originalCategory.getRealAmount()));
     }
 
-    category.setDifference(category.getPlannedAmount().subtract(category.getRealAmount()));
+    newCategory.setPlannedAmount(
+        newCategory.getPlannedAmount().add(categoryItem.getPlannedAmount()));
+    newCategory.setRealAmount(newCategory.getRealAmount().add(categoryItem.getRealAmount()));
+    newCategory.setDifference(newCategory.getPlannedAmount().subtract(newCategory.getRealAmount()));
 
-    updateEntityById(category.getId(), category);
+    updateEntity(newCategory);
   }
 
   @Override
   public Category findOrCreateCategoryOthers() {
     return categoryRepository
-        .findByCode("unassigned")
+        .findByCode("others")
         .orElseGet(
-            () ->
-                persistEntity(Category.builder().code("others").headerValue("Ostatné").build()));
+            () -> persistEntity(Category.builder().code("others").headerValue("Ostatné").build()));
   }
 }

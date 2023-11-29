@@ -38,6 +38,11 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   }
 
   @Override
+  public CategoryItem updateEntity(CategoryItem updatedEntity) {
+    return updateEntityById(updatedEntity.getId(), updatedEntity);
+  }
+
+  @Override
   public CategoryItem updateEntityById(UUID id, CategoryItem updatedEntity) {
     CategoryItem entityToUpdate = getEntityById(id);
     BeanUtils.copyProperties(updatedEntity, entityToUpdate, "id");
@@ -150,29 +155,31 @@ public class CategoryItemServiceImpl implements CategoryItemService {
 
   @Override
   public void updateCategoryItemRealAmountAndDifferenceWithTransaction(
-      boolean wasUnassigned, Transaction transaction) {
-    CategoryItem categoryItem = transaction.getCategoryItem();
+      CategoryItem originalCategoryItem, Transaction transaction) {
+
+    CategoryItem actualCategoryItem = transaction.getCategoryItem();
     BigDecimal transactionAmount = transaction.getAmount().abs();
 
-    categoryItem.setRealAmount(categoryItem.getRealAmount().add(transactionAmount));
-
-    if (wasUnassigned) {
-      CategoryItem unassignedCategoryItem = findOrCreateCategoryItemUnassigned();
-      unassignedCategoryItem.setRealAmount(
-          unassignedCategoryItem.getRealAmount().subtract(transactionAmount));
-      unassignedCategoryItem.setDifference(
-          calculateDifferenceForCategoryItem(unassignedCategoryItem));
-
-      updateEntityById(unassignedCategoryItem.getId(), unassignedCategoryItem);
+    if (originalCategoryItem != null) {
+      originalCategoryItem.setRealAmount(
+          originalCategoryItem.getRealAmount().subtract(transactionAmount));
+      originalCategoryItem.setDifference(calculateDifferenceForCategoryItem(originalCategoryItem));
+      updateEntity(originalCategoryItem);
     }
 
-    categoryItem.setDifference(calculateDifferenceForCategoryItem(categoryItem));
+    Category actualCategory = actualCategoryItem.getCategory();
 
-    updateEntityById(categoryItem.getId(), categoryItem);
+    actualCategoryItem.setDifference(calculateDifferenceForCategoryItem(actualCategoryItem));
+    actualCategoryItem.setRealAmount(actualCategoryItem.getRealAmount().add(transactionAmount));
+    if (actualCategory == null)
+      actualCategoryItem.setCategory(categoryService.findOrCreateCategoryOthers());
 
-    Category category = categoryItem.getCategory();
+    CategoryItem persistedCategoryItem = updateEntity(actualCategoryItem);
 
-    if (category != null) categoryService.updatePlanedAmountRealAmountAndDifference(category);
+    categoryService.updatePlanedAmountRealAmountAndDifference(
+        originalCategoryItem != null ? originalCategoryItem.getCategory() : null,
+        actualCategory,
+        persistedCategoryItem);
   }
 
   @Override
@@ -197,11 +204,15 @@ public class CategoryItemServiceImpl implements CategoryItemService {
     for (AssignCategoryCommandDto assignCategoryCommandDto : assignCategoryCommandDtos) {
       CategoryItem categoryItem =
           findCategoryItemByCode(assignCategoryCommandDto.getCategoryItemCode());
+      Category originalCategory = categoryItem.getCategory();
+
       categoryItem.setCategory(
           categoryService.findCategoryByCode(assignCategoryCommandDto.getCategoryCode()));
-      CategoryItem persistedCategoryItem = updateEntityById(categoryItem.getId(), categoryItem);
+
+      CategoryItem persistedCategoryItem = updateEntity(categoryItem);
+
       categoryService.updatePlanedAmountRealAmountAndDifference(
-          persistedCategoryItem.getCategory());
+          originalCategory, persistedCategoryItem.getCategory(), categoryItem);
       result.add(persistedCategoryItem);
     }
 

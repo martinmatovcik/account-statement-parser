@@ -4,12 +4,11 @@ import com.mm.accountstatementparser.dto.command.AssignCategoryCommandDto;
 import com.mm.accountstatementparser.dto.entityDto.CategoryItemDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
-import com.mm.accountstatementparser.entity.EntityParent;
 import com.mm.accountstatementparser.entity.Transaction;
+import jakarta.annotation.Nullable;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +35,7 @@ public interface CategoryItemService extends CrudEntityService<CategoryItem> {
 
   CategoryItem findOrCreateCategoryItemUnassigned();
 
-  void updateCategoryItemRealAmountAndDifferenceWithTransaction(boolean wasUnassigned, Transaction transaction);
+  void updateCategoryItemRealAmountAndDifferenceWithTransaction(@Nullable CategoryItem originalCategoryItem, Transaction transaction);
 
   BigDecimal calculateDifferenceForCategoryItem(CategoryItem categoryItem);
 

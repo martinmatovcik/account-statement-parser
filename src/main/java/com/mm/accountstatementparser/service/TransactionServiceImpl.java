@@ -40,6 +40,7 @@ public class TransactionServiceImpl implements TransactionService {
     return transactionRepository.save(transaction);
   }
 
+
   @Override
   public TransactionProcessResultDto processTransaction(Transaction transaction) {
     Transaction persistedTransaction = assignItemOrUnassignedToTransactionAndPersist(transaction);
@@ -48,6 +49,11 @@ public class TransactionServiceImpl implements TransactionService {
       return new TransactionProcessResultDto(
           persistedTransaction.toDto(), parseTransactionNote(transaction.getTransactionNote()));
     else return new TransactionProcessResultDto(persistedTransaction.toDto());
+  }
+
+  @Override
+  public Transaction updateEntity(Transaction updatedEntity) {
+    return updateEntityById(updatedEntity.getId(), updatedEntity);
   }
 
   @Override
@@ -116,12 +122,12 @@ public class TransactionServiceImpl implements TransactionService {
 
       UUID id = assignCategoryItemCommandDto.getTransactionId();
       Transaction transactionToUpdate = getEntityById(id);
+      CategoryItem originalCategoryItem = transactionToUpdate.getCategoryItem();
       transactionToUpdate.setCategoryItem(categoryItem);
 
-      Transaction updatedTransaction = updateEntityById(id, transactionToUpdate);
+      Transaction updatedTransaction = updateEntity(transactionToUpdate);
 
-      categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
-          true, updatedTransaction);
+      categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(originalCategoryItem, updatedTransaction);
       result.add(updatedTransaction);
     }
 
@@ -142,23 +148,20 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   private Transaction assignItemOrUnassignedToTransactionAndPersist(Transaction transaction) {
-    boolean isOriginalTransactionItemUnassigned =
-        transaction.getCategoryItem() != null
-            && transaction.getCategoryItem().getCode().equals("unassigned");
+    CategoryItem originalCategoryItem = transaction.getCategoryItem();
 
     List<String> transactionKeywords = parseTransactionNote(transaction.getTransactionNote());
     Optional<CategoryItem> matchingItem =
         categoryItemService.findCategoryItemByKeywords(transactionKeywords);
 
-    if (!isOriginalTransactionItemUnassigned && matchingItem.isEmpty())
+    if (originalCategoryItem != null && originalCategoryItem.getCode().equals("unassigned") && matchingItem.isEmpty())
       transaction.setCategoryItem(categoryItemService.findOrCreateCategoryItemUnassigned());
     else {
       matchingItem.ifPresent(transaction::setCategoryItem);
     }
 
     Transaction persistedTransaction = persistEntity(transaction);
-    categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
-        isOriginalTransactionItemUnassigned, persistedTransaction);
+    categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(originalCategoryItem, persistedTransaction);
     return persistedTransaction;
   }
 
