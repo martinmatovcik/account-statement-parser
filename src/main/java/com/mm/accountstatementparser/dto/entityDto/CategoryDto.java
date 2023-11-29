@@ -21,7 +21,7 @@ public class CategoryDto extends DtoParent {
     @Nullable @Builder.Default private BigDecimal realAmount = BigDecimal.ZERO;
     @Nullable @Builder.Default private BigDecimal difference = BigDecimal. ZERO;
     @Nullable @Builder.Default @ToString.Exclude
-    private List<ItemDto> items = new ArrayList<>();
+    private List<CategoryItemDto> items = new ArrayList<>();
 
     @Override
     public Category toEntity() {
@@ -32,7 +32,7 @@ public class CategoryDto extends DtoParent {
                 .plannedAmount(this.plannedAmount)
                 .realAmount(this.realAmount)
                 .difference(this.difference)
-                .items(this.items != null ? this.items.stream().map(ItemDto::toEntity).toList() : null)
+                .categoryItems(this.items != null ? this.items.stream().map(CategoryItemDto::toEntity).toList() : null)
                 .build();
     }
 

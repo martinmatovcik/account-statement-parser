@@ -1,7 +1,6 @@
 package com.mm.accountstatementparser.repository;
 
-import com.mm.accountstatementparser.entity.Category;
-import com.mm.accountstatementparser.entity.Item;
+import com.mm.accountstatementparser.entity.CategoryItem;
 import com.mm.accountstatementparser.entity.Transaction;
 
 import java.util.List;
@@ -11,5 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-    List<Transaction> findAllByItem(Item item);
+    List<Transaction> findAllByItem(CategoryItem categoryItem);
 }

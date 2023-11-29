@@ -27,7 +27,7 @@ public class Transaction extends EntityParent {
   @ManyToOne
   @JoinColumn(name = "item_id")
   @ToString.Exclude
-  private Item item;
+  private CategoryItem categoryItem;
 
   @Override
   public TransactionDto toDto() {
@@ -39,7 +39,7 @@ public class Transaction extends EntityParent {
         .variableSymbol(this.variableSymbol)
         .recipientMessage(this.recipientMessage)
         .transactionNote(this.transactionNote)
-        .itemId(this.item != null ? this.item.getId() : null)
+        .itemId(this.categoryItem != null ? this.categoryItem.getId() : null)
         .build();
   }
 }

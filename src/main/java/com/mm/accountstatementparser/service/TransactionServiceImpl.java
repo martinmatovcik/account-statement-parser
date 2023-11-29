@@ -3,7 +3,7 @@ package com.mm.accountstatementparser.service;
 import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
 import com.mm.accountstatementparser.dto.result.TransactionProcessResultDto;
 import com.mm.accountstatementparser.entity.Category;
-import com.mm.accountstatementparser.entity.Item;
+import com.mm.accountstatementparser.entity.CategoryItem;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.repository.TransactionRepository;
 import java.lang.reflect.Field;
@@ -20,7 +20,7 @@ import org.springframework.util.ReflectionUtils;
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
-  private final ItemService itemService;
+  private final CategoryItemService categoryItemService;
   private final TransactionRepository transactionRepository;
 
   @Override
@@ -51,7 +51,7 @@ public class TransactionServiceImpl implements TransactionService {
   public TransactionProcessResultDto processTransaction(Transaction transaction) {
     Transaction persistedTransaction = assignItemOrUnassignedToTransactionAndPersist(transaction);
 
-    if (persistedTransaction.getItem().getCode().equals("unassigned"))
+    if (persistedTransaction.getCategoryItem().getCode().equals("unassigned"))
       return new TransactionProcessResultDto(
           persistedTransaction.toDto(), parseTransactionNote(transaction.getTransactionNote()));
     else return new TransactionProcessResultDto(persistedTransaction.toDto());
@@ -98,22 +98,22 @@ public class TransactionServiceImpl implements TransactionService {
     List<Transaction> result = new ArrayList<>();
 
     for (AssignItemCommandDto assignItemCommandDto : assignItemCommandDtos) {
-      Item item = null;
+      CategoryItem categoryItem = null;
       String keyword = assignItemCommandDto.getKeyword();
       if (keyword != null && !keyword.isEmpty())
-        item = itemService.findItemByKeywords(List.of(keyword)).orElse(null);
-      if (item == null) {
-        item = itemService.findItemByCode(assignItemCommandDto.getItemCode());
-        item = itemService.updateKeywords(item.getId(), keyword);
+        categoryItem = categoryItemService.findCategoryItemByKeywords(List.of(keyword)).orElse(null);
+      if (categoryItem == null) {
+        categoryItem = categoryItemService.findCategoryItemByCode(assignItemCommandDto.getItemCode());
+        categoryItem = categoryItemService.updateCategoryItemKeywords(categoryItem.getId(), keyword);
       }
 
       UUID id = assignItemCommandDto.getTransactionId();
       Transaction transactionToUpdate = getTransactionById(id);
-      transactionToUpdate.setItem(item);
+      transactionToUpdate.setCategoryItem(categoryItem);
 
       Transaction updatedTransaction = updateTransactionById(id, transactionToUpdate);
 
-      itemService.updateItemRealAmountAndDifferenceWithTransaction(true, updatedTransaction);
+      categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(true, updatedTransaction);
       result.add(updatedTransaction);
     }
 
@@ -122,27 +122,27 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public List<Transaction> reassignAllUnassignedTransactionsToItems() {
-    return transactionRepository.findAllByItem(itemService.findOrCreateItemUnassigned()).stream()
+    return transactionRepository.findAllByItem(categoryItemService.findOrCreateCategoryItemUnassigned()).stream()
         .map(this::assignItemOrUnassignedToTransactionAndPersist)
-        .filter(transaction -> transaction.getItem() != itemService.findItemByCode("unassigned"))
+        .filter(transaction -> transaction.getCategoryItem() != categoryItemService.findCategoryItemByCode("unassigned"))
         .toList();
   }
 
   private Transaction assignItemOrUnassignedToTransactionAndPersist(Transaction transaction) {
     boolean isOriginalTransactionItemUnassigned =
-        transaction.getItem() != null && transaction.getItem().getCode().equals("unassigned");
+        transaction.getCategoryItem() != null && transaction.getCategoryItem().getCode().equals("unassigned");
 
     List<String> transactionKeywords = parseTransactionNote(transaction.getTransactionNote());
-    Optional<Item> matchingItem = itemService.findItemByKeywords(transactionKeywords);
+    Optional<CategoryItem> matchingItem = categoryItemService.findCategoryItemByKeywords(transactionKeywords);
 
     if (!isOriginalTransactionItemUnassigned && matchingItem.isEmpty())
-      transaction.setItem(itemService.findOrCreateItemUnassigned());
+      transaction.setCategoryItem(categoryItemService.findOrCreateCategoryItemUnassigned());
     else {
-      matchingItem.ifPresent(transaction::setItem);
+      matchingItem.ifPresent(transaction::setCategoryItem);
     }
 
     Transaction persistedTransaction = persistTransaction(transaction);
-    itemService.updateItemRealAmountAndDifferenceWithTransaction(
+    categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
         isOriginalTransactionItemUnassigned, persistedTransaction);
     return persistedTransaction;
   }

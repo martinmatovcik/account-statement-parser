@@ -4,7 +4,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
 import com.mm.accountstatementparser.configuration.GoogleSheetsConfiguration;
 import com.mm.accountstatementparser.dto.entityDto.BalanceDto;
-import com.mm.accountstatementparser.dto.entityDto.ItemDto;
+import com.mm.accountstatementparser.dto.entityDto.CategoryItemDto;
 import com.mm.accountstatementparser.entity.Balance;
 import com.mm.accountstatementparser.entity.BalanceCategory;
 import com.mm.accountstatementparser.entity.Category;
@@ -29,12 +29,12 @@ public class ReportServiceImplGoogle implements ReportService {
   //  private static final int DATA_SHEET_ID = 1096477276;
   private final TransactionService transactionService;
   private final BalanceService balanceService;
-  private final ItemService itemService;
+  private final CategoryItemService categoryItemService;
   private final CategoryService categoryService;
 
   @Override
   public void generateReport(Month month) {
-    itemService.createSampleItemsWhenNoExisting(); // todo: temporary
+    categoryItemService.createSampleItemsWhenNoExisting(); // todo: temporary
 
     generateDataSheet(month);
     generateTemplate(month);
@@ -103,7 +103,7 @@ public class ReportServiceImplGoogle implements ReportService {
             dataCellName(month, "B1", false),
             "'+/-",
             "Plánované náklady na život / mes:",
-            itemService.sumLivingExpenses(true)));
+            categoryItemService.sumLivingExpenses(true)));
     //    Line 2
     data.add(
         List.of(
@@ -121,7 +121,7 @@ public class ReportServiceImplGoogle implements ReportService {
             "",
             "",
             "Plánované výdaje",
-            itemService.sumPlannedAmountOfItems(),
+            categoryItemService.sumPlannedAmountOfCategoryItems(),
             "",
             "Plánovaný zostatok",
             balances(true)));
@@ -186,16 +186,16 @@ public class ReportServiceImplGoogle implements ReportService {
     section.add(List.of(sectionHeader));
     section.add(sectionMetaData);
     section.addAll(
-        itemService.findItemsByCategory(category).stream()
-            .map(ItemDto::toData)
+        categoryItemService.findCategoryItemsByCategory(category).stream()
+            .map(CategoryItemDto::toData)
             .toList());
 
     section.add(
         List.of(
             "Medzisúčet",
-            itemService.sumPlannedAmountOfItemsForCategory(category),
+            categoryItemService.sumPlannedAmountOfCategoryItemsForCategory(category),
             dataCellName(month, dataSheetCellIndex, true),
-            itemService.sumDifferenceOfItemsForCategory(category)));
+            categoryItemService.sumDifferenceOfCategoryItemsForCategory(category)));
     section.add(List.of());
 
     return section;

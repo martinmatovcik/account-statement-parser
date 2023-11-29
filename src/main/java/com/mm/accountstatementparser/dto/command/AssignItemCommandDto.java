@@ -14,6 +14,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AssignItemCommandDto {
     private UUID transactionId;
-    @Nullable private String itemCode;
+    @Nullable private String categoryItemCode;
     @Nullable private String keyword;
 }

@@ -1,7 +1,6 @@
 package com.mm.accountstatementparser.entity;
 
 import com.mm.accountstatementparser.dto.entityDto.CategoryDto;
-import com.mm.accountstatementparser.dto.entityDto.ItemDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -29,7 +28,7 @@ public class Category extends EntityParent {
   @OneToMany(mappedBy = "category")
   @Builder.Default
   @ToString.Exclude
-  private List<Item> items = new ArrayList<>();
+  private List<CategoryItem> categoryItems = new ArrayList<>();
 
   @Override
   public CategoryDto toDto() {
@@ -40,7 +39,7 @@ public class Category extends EntityParent {
         .plannedAmount(this.plannedAmount)
         .realAmount(this.realAmount)
         .difference(this.difference)
-        .items(this.items != null ? this.items.stream().map(Item::toDto).toList() : null)
+        .items(this.categoryItems != null ? this.categoryItems.stream().map(CategoryItem::toDto).toList() : null)
         .build();
   }
 }

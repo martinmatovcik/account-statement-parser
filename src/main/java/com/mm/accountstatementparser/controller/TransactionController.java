@@ -64,7 +64,7 @@ public class TransactionController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @PutMapping("assign-item/") // todo: better mappings e.g. /assign-item
+  @PutMapping("assign-item/") // todo: better mappings e.g. /assign-categoryItem
   public ResponseEntity<List<TransactionDto>> assignItemToTransactionById(
       @RequestBody List<AssignItemCommandDto> assignItemCommandDtos) {
     return new ResponseEntity<>(
@@ -74,7 +74,7 @@ public class TransactionController {
         HttpStatus.OK);
   }
 
-  @PutMapping("reassign/") // todo: better mappings e.g. /assign-item
+  @PutMapping("reassign/") // todo: better mappings e.g. /assign-categoryItem
   public ResponseEntity<List<TransactionDto>> reassignUnassignedTransaction() {
     return new ResponseEntity<>(
         transactionService.reassignAllUnassignedTransactionsToItems().stream()

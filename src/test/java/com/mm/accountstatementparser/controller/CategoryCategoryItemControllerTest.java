@@ -6,10 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.mm.accountstatementparser.dto.entityDto.ItemDto;
-import com.mm.accountstatementparser.entity.Category;
-import com.mm.accountstatementparser.repository.ItemRepository;
-import java.math.BigDecimal;
+import com.mm.accountstatementparser.dto.entityDto.CategoryItemDto;
+import com.mm.accountstatementparser.repository.CategoryItemRepository;
+
 import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,7 +29,7 @@ import org.testcontainers.utility.DockerImageName;
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-public class ItemControllerTest {
+public class CategoryCategoryItemControllerTest {
   @Container
   private static final PostgreSQLContainer<?> postgresContainer =
       new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"))
@@ -39,8 +38,8 @@ public class ItemControllerTest {
           .withDatabaseName("postgres");
 
   @Autowired private MockMvc mockMvc;
-  @Autowired private ItemRepository itemRepository;
-  private static final String BASE_URL = "/api/v1/report-items/";
+  @Autowired private CategoryItemRepository categoryItemRepository;
+  private static final String BASE_URL = "/api/v1/report-categoryItems/";
 
   @DynamicPropertySource
   private static void setProperties(DynamicPropertyRegistry dynamicPropertyRegistry) {
@@ -65,7 +64,7 @@ public class ItemControllerTest {
     String itemRequest =
         """
     {
-        "name": "report-item-name",
+        "name": "report-categoryItem-name",
         "plannedAmount": 10000.00,
         "itemCategory": "NEEDS"
     }
@@ -76,7 +75,7 @@ public class ItemControllerTest {
             .perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON).content(itemRequest))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").isString())
-            .andExpect(jsonPath("$.name", is("report-item-name")))
+            .andExpect(jsonPath("$.name", is("report-categoryItem-name")))
             .andExpect(jsonPath("$.plannedAmount", is(10000.00)))
             .andExpect(jsonPath("$.realAmount", is(0)))
             .andExpect(jsonPath("$.difference", is(10000.00)))
@@ -93,7 +92,7 @@ public class ItemControllerTest {
         .perform(get(BASE_URL + itemId).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").isString())
-        .andExpect(jsonPath("$.name", is("report-item-name")))
+        .andExpect(jsonPath("$.name", is("report-categoryItem-name")))
         .andExpect(jsonPath("$.plannedAmount", is(10000.00)))
         .andExpect(jsonPath("$.realAmount", is(0.00)))
         .andExpect(jsonPath("$.difference", is(10000.00)))
@@ -103,7 +102,7 @@ public class ItemControllerTest {
     String itemUpdateRequest =
         """
     {
-        "name": "UPDATED-report-item-name",
+        "name": "UPDATED-report-categoryItem-name",
         "plannedAmount": 10000.00,
         "itemCategory": "NEEDS"
     }
@@ -115,7 +114,7 @@ public class ItemControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(itemUpdateRequest))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name", is("UPDATED-report-item-name")))
+        .andExpect(jsonPath("$.name", is("UPDATED-report-categoryItem-name")))
         .andDo(print());
 
     mockMvc
@@ -128,7 +127,7 @@ public class ItemControllerTest {
   public void getAllReportItems_shouldReturnListOfReportItemDtos() throws Exception {
 
     for (int i = 0; i < 5; i++) {
-      itemRepository.save(getReportItemDto(i).toEntity());
+      categoryItemRepository.save(getReportItemDto(i).toEntity());
     }
 
     mockMvc
@@ -142,8 +141,8 @@ public class ItemControllerTest {
         .andExpect(jsonPath("$[4].plannedAmount", is(4.0)));
   }
 
-  private ItemDto getReportItemDto(int number) {
-//    return ItemDto.builder()
+  private CategoryItemDto getReportItemDto(int number) {
+//    return CategoryItemDto.builder()
 //        .name("name - " + number)
 //        .plannedAmount(BigDecimal.valueOf(number))
 //        .category(new Category().toDto())
