@@ -49,33 +49,12 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public TransactionProcessResultDto processTransaction(Transaction transaction) {
-    List<String> transactionKeywords = parseTransactionNote(transaction.getTransactionNote());
-    Optional<Item> matchingItem = itemService.findItemByKeywords(transactionKeywords);
-
-    if (matchingItem.isEmpty()) transaction.setItem(itemService.findOrCreateItemUnassigned());
-    else transaction.setItem(matchingItem.get());
-
-    Transaction persistedTransaction = persistTransaction(transaction);
-    itemService.updateRealAmountAndDifference(persistedTransaction.getItem());
+    Transaction persistedTransaction = assignItemOrUnassignedToTransactionAndPersist(transaction);
 
     if (persistedTransaction.getItem().getCode().equals("unassigned"))
-      return new TransactionProcessResultDto(persistedTransaction.toDto(), transactionKeywords);
+      return new TransactionProcessResultDto(
+          persistedTransaction.toDto(), parseTransactionNote(transaction.getTransactionNote()));
     else return new TransactionProcessResultDto(persistedTransaction.toDto());
-  }
-
-  private List<String> parseTransactionNote(String transactionNote) {
-    String prefix = "Nákup: ";
-
-    if (transactionNote.contains(prefix)) transactionNote = transactionNote.replace(prefix, "");
-
-    transactionNote = transactionNote.toLowerCase();
-
-    if (!Normalizer.isNormalized(transactionNote, Normalizer.Form.NFKD))
-      transactionNote =
-          Normalizer.normalize(transactionNote, Normalizer.Form.NFKD)
-              .replaceAll("[^\\p{ASCII}]", "");
-
-    return List.of(transactionNote.split(",")[0].split(" "));
   }
 
   @Override
@@ -114,11 +93,11 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public List<Transaction> assignItemToTransactionById(AssignItemCommandDto assignItemCommandDto) {
+  public List<Transaction> assignTransactionToItemById(
+      List<AssignItemCommandDto> assignItemCommandDtos) {
     List<Transaction> result = new ArrayList<>();
 
-    for (UUID id : assignItemCommandDto.getTransactionIds()) {
-
+    for (AssignItemCommandDto assignItemCommandDto : assignItemCommandDtos) {
       Item item = null;
       String keyword = assignItemCommandDto.getKeyword();
       if (keyword != null && !keyword.isEmpty())
@@ -128,12 +107,58 @@ public class TransactionServiceImpl implements TransactionService {
         item = itemService.updateKeywords(item.getId(), keyword);
       }
 
+      UUID id = assignItemCommandDto.getTransactionId();
       Transaction transactionToUpdate = getTransactionById(id);
       transactionToUpdate.setItem(item);
 
-      result.add(updateTransactionById(id, transactionToUpdate));
+      Transaction updatedTransaction = updateTransactionById(id, transactionToUpdate);
+
+      itemService.updateItemRealAmountAndDifferenceWithTransaction(true, updatedTransaction);
+      result.add(updatedTransaction);
     }
 
     return result;
+  }
+
+  @Override
+  public List<Transaction> reassignAllUnassignedTransactionsToItems() {
+    return transactionRepository.findAllByItem(itemService.findOrCreateItemUnassigned()).stream()
+        .map(this::assignItemOrUnassignedToTransactionAndPersist)
+        .filter(transaction -> transaction.getItem() != itemService.findItemByCode("unassigned"))
+        .toList();
+  }
+
+  private Transaction assignItemOrUnassignedToTransactionAndPersist(Transaction transaction) {
+    boolean isOriginalTransactionItemUnassigned =
+        transaction.getItem() != null && transaction.getItem().getCode().equals("unassigned");
+
+    List<String> transactionKeywords = parseTransactionNote(transaction.getTransactionNote());
+    Optional<Item> matchingItem = itemService.findItemByKeywords(transactionKeywords);
+
+    if (!isOriginalTransactionItemUnassigned && matchingItem.isEmpty())
+      transaction.setItem(itemService.findOrCreateItemUnassigned());
+    else {
+      matchingItem.ifPresent(transaction::setItem);
+    }
+
+    Transaction persistedTransaction = persistTransaction(transaction);
+    itemService.updateItemRealAmountAndDifferenceWithTransaction(
+        isOriginalTransactionItemUnassigned, persistedTransaction);
+    return persistedTransaction;
+  }
+
+  private List<String> parseTransactionNote(String transactionNote) {
+    String prefix = "Nákup: ";
+
+    if (transactionNote.contains(prefix)) transactionNote = transactionNote.replace(prefix, "");
+
+    transactionNote = transactionNote.toLowerCase();
+
+    if (!Normalizer.isNormalized(transactionNote, Normalizer.Form.NFKD))
+      transactionNote =
+          Normalizer.normalize(transactionNote, Normalizer.Form.NFKD)
+              .replaceAll("[^\\p{ASCII}]", "");
+
+    return List.of(transactionNote.split(",")[0].split(" "));
   }
 }

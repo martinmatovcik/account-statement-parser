@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignItemCommandDto {
-    private List<UUID> transactionIds;
+    private UUID transactionId;
     @Nullable private String itemCode;
     @Nullable private String keyword;
 }

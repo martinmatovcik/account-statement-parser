@@ -1,6 +1,8 @@
 package com.mm.accountstatementparser.service;
 
 import com.mm.accountstatementparser.entity.Category;
+import com.mm.accountstatementparser.entity.Item;
+import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.repository.CategoryRepository;
 import java.math.BigDecimal;
 import java.util.List;
@@ -46,15 +48,17 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   public void updatePlanedAmountRealAmountAndDifference(Category category) {
     if (!CollectionUtils.isEmpty(category.getItems())) {
-      category.setPlannedAmount(
-          category.getItems().stream()
-              .map(item -> item.getPlannedAmount().abs())
-              .reduce(BigDecimal.ZERO, BigDecimal::add));
+        BigDecimal plannedAmount = BigDecimal.ZERO;
+        for (Item item : category.getItems()) {
+          plannedAmount = plannedAmount.add(item.getPlannedAmount().abs());
+        }
+        category.setPlannedAmount(plannedAmount);
 
-      category.setRealAmount(
-          category.getItems().stream()
-              .map(item -> item.getRealAmount().abs())
-              .reduce(BigDecimal.ZERO, BigDecimal::add));
+      BigDecimal realAmount = BigDecimal.ZERO;
+      for (Item item : category.getItems()) {
+        realAmount = realAmount.add(item.getRealAmount().abs());
+      }
+      category.setRealAmount(realAmount);
     }
 
     category.setDifference(category.getPlannedAmount().subtract(category.getRealAmount()));

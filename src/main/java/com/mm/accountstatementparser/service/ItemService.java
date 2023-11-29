@@ -3,6 +3,7 @@ package com.mm.accountstatementparser.service;
 import com.mm.accountstatementparser.dto.entityDto.ItemDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
+import com.mm.accountstatementparser.entity.Transaction;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,7 +45,11 @@ public interface ItemService {
 
   Item findOrCreateItemUnassigned();
 
-  void updateRealAmountAndDifference(Item item);
+  void updateItemRealAmountAndDifferenceWithTransaction(boolean wasUnassigned, Transaction transaction);
 
-    Item updateKeywords(UUID id, String keyword);
+  BigDecimal calculateAndSetRealAmountForItem(Item item);
+
+  BigDecimal calculateDifferenceForItem(Item item);
+
+  Item updateKeywords(UUID id, String keyword);
 }

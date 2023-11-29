@@ -66,9 +66,18 @@ public class TransactionController {
 
   @PutMapping("assign-item/") // todo: better mappings e.g. /assign-item
   public ResponseEntity<List<TransactionDto>> assignItemToTransactionById(
-      @RequestBody AssignItemCommandDto assignItemCommandDto) {
+      @RequestBody List<AssignItemCommandDto> assignItemCommandDtos) {
     return new ResponseEntity<>(
-        transactionService.assignItemToTransactionById(assignItemCommandDto).stream()
+        transactionService.assignTransactionToItemById(assignItemCommandDtos).stream()
+            .map(Transaction::toDto)
+            .toList(),
+        HttpStatus.OK);
+  }
+
+  @PutMapping("reassign/") // todo: better mappings e.g. /assign-item
+  public ResponseEntity<List<TransactionDto>> reassignUnassignedTransaction() {
+    return new ResponseEntity<>(
+        transactionService.reassignAllUnassignedTransactionsToItems().stream()
             .map(Transaction::toDto)
             .toList(),
         HttpStatus.OK);

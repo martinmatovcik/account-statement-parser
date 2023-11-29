@@ -3,13 +3,13 @@ package com.mm.accountstatementparser.service;
 import com.mm.accountstatementparser.dto.entityDto.ItemDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Item;
+import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.repository.ItemRepository;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -90,36 +90,39 @@ public class ItemServiceImpl implements ItemService {
 
   @Override
   public void createSampleItemsWhenNoExisting() {
-//    if (getAllItems().isEmpty()) {
-//      List<Item> items =
-//          List.of(
-//              new Item("Nájom", "rent", BigDecimal.valueOf(17300.00), new Category()),
-//              new Item("Elektrina", "energies", BigDecimal.valueOf(1000.00), new Category()),
-//              new Item("Internet", "internet", BigDecimal.valueOf(300.00), new Category()),
-//              new Item("Telefóny", "phones", BigDecimal.valueOf(960.00), new Category()),
-//              new Item("Lítačky", "mhd", BigDecimal.valueOf(680.00), new Category()),
-//              new Item("Jedlo", "eating", BigDecimal.valueOf(10000.00), new Category()),
-//              new Item(
-//                  "Greenfox - Mišovci", "greenfox-loan", BigDecimal.valueOf(0.00), new Category()),
-//              new Item(
-//                  "Bývanie - rodičia", "living-loan", BigDecimal.valueOf(2500.00), new Category()),
-//              new Item("Oblečenie", "clother", BigDecimal.valueOf(0.00), new Category()),
-//              new Item("Netflix", "netflix", BigDecimal.valueOf(120.00), new Category()),
-//              new Item("Spotify", "spotify", BigDecimal.valueOf(60.00), new Category()),
-//              new Item("Kultúra", "culture", BigDecimal.valueOf(0.00), new Category()),
-//              new Item("Rande", "date", BigDecimal.valueOf(0.00), new Category()),
-//              new Item("Eating out", "eating-out", BigDecimal.valueOf(0.00), new Category()),
-//              new Item("Cestovanie", "traveling", BigDecimal.valueOf(0.00), new Category()),
-//              new Item("Charita", "charity", BigDecimal.valueOf(0.00), new Category()),
-//              new Item("Dôchodok", "pension", BigDecimal.valueOf(0.00), new Category()),
-//              new Item("Krátkodobé", "short-term", BigDecimal.valueOf(0.00), new Category()),
-//              new Item("Finančná rezerva", "reserve", BigDecimal.valueOf(0.00), new Category()),
-//              new Item("Neznáme", "other", BigDecimal.valueOf(0.00), new Category()));
-//
-//      for (Item item : items) {
-//        persistItem(item);
-//      }
-//    }
+    //    if (getAllItems().isEmpty()) {
+    //      List<Item> items =
+    //          List.of(
+    //              new Item("Nájom", "rent", BigDecimal.valueOf(17300.00), new Category()),
+    //              new Item("Elektrina", "energies", BigDecimal.valueOf(1000.00), new Category()),
+    //              new Item("Internet", "internet", BigDecimal.valueOf(300.00), new Category()),
+    //              new Item("Telefóny", "phones", BigDecimal.valueOf(960.00), new Category()),
+    //              new Item("Lítačky", "mhd", BigDecimal.valueOf(680.00), new Category()),
+    //              new Item("Jedlo", "eating", BigDecimal.valueOf(10000.00), new Category()),
+    //              new Item(
+    //                  "Greenfox - Mišovci", "greenfox-loan", BigDecimal.valueOf(0.00), new
+    // Category()),
+    //              new Item(
+    //                  "Bývanie - rodičia", "living-loan", BigDecimal.valueOf(2500.00), new
+    // Category()),
+    //              new Item("Oblečenie", "clother", BigDecimal.valueOf(0.00), new Category()),
+    //              new Item("Netflix", "netflix", BigDecimal.valueOf(120.00), new Category()),
+    //              new Item("Spotify", "spotify", BigDecimal.valueOf(60.00), new Category()),
+    //              new Item("Kultúra", "culture", BigDecimal.valueOf(0.00), new Category()),
+    //              new Item("Rande", "date", BigDecimal.valueOf(0.00), new Category()),
+    //              new Item("Eating out", "eating-out", BigDecimal.valueOf(0.00), new Category()),
+    //              new Item("Cestovanie", "traveling", BigDecimal.valueOf(0.00), new Category()),
+    //              new Item("Charita", "charity", BigDecimal.valueOf(0.00), new Category()),
+    //              new Item("Dôchodok", "pension", BigDecimal.valueOf(0.00), new Category()),
+    //              new Item("Krátkodobé", "short-term", BigDecimal.valueOf(0.00), new Category()),
+    //              new Item("Finančná rezerva", "reserve", BigDecimal.valueOf(0.00), new
+    // Category()),
+    //              new Item("Neznáme", "other", BigDecimal.valueOf(0.00), new Category()));
+    //
+    //      for (Item item : items) {
+    //        persistItem(item);
+    //      }
+    //    }
   }
 
   @Override
@@ -150,17 +153,6 @@ public class ItemServiceImpl implements ItemService {
         if (item.getKeywords().contains(keyword)) return Optional.of(item);
     }
     return Optional.empty();
-
-    //    return items.stream()
-    //            .filter(item -> item.getKeywords() != null)
-    //            .filter(item -> !Collections.disjoint(item.getKeywords(), transactionKeywords))
-    //            .findFirst();
-
-    //    List<Item> items = itemRepository.findAll();
-    //
-    //    for (Item item : items) {
-    //      if (item.getKeywords() == null) item.setKeywords(new HashSet<>());
-    //    }
   }
 
   @Override
@@ -178,22 +170,45 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
-  public void updateRealAmountAndDifference(Item item) {
-    if (!CollectionUtils.isEmpty(item.getTransactions()))
-      item.setRealAmount(
-          item.getTransactions().stream()
-              .map(itemTransaction -> itemTransaction.getAmount().abs())
-              .reduce(BigDecimal.ZERO, BigDecimal::add));
+  public void updateItemRealAmountAndDifferenceWithTransaction(boolean wasUnassigned, Transaction transaction) {
+    Item item = transaction.getItem();
+    BigDecimal transactionAmount = transaction.getAmount().abs();
 
-    item.setDifference(item.getPlannedAmount().subtract(item.getRealAmount()));
+    item.setRealAmount(item.getRealAmount().add(transactionAmount));
+
+    if (wasUnassigned) {
+      Item unassignedItem = findOrCreateItemUnassigned();
+      unassignedItem.setRealAmount(unassignedItem.getRealAmount().subtract(transactionAmount));
+      unassignedItem.setDifference(calculateDifferenceForItem(unassignedItem));
+
+      updateItemById(unassignedItem.getId(), unassignedItem);
+    }
+
+    item.setDifference(calculateDifferenceForItem(item));
 
     Category category = item.getCategory();
     if (category == null)
       ; // todo: assign category
 
-    Item updatedItem = updateItemById(item.getId(), item);
+    updateItemById(item.getId(), item);
 
     if (category != null) categoryService.updatePlanedAmountRealAmountAndDifference(category);
+  }
+
+  @Override
+  public BigDecimal calculateAndSetRealAmountForItem(Item item) {
+    BigDecimal realAmount = BigDecimal.ZERO;
+    for (Transaction transaction : item.getTransactions()) {
+      realAmount = realAmount.add(transaction.getAmount().abs());
+    }
+    item.setRealAmount(realAmount);
+    updateItemById(item.getId(), item);
+    return realAmount;
+  }
+
+  @Override
+  public BigDecimal calculateDifferenceForItem(Item item) {
+    return item.getPlannedAmount().subtract(item.getRealAmount());
   }
 
   @Override
