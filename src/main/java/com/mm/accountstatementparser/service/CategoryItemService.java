@@ -1,5 +1,6 @@
 package com.mm.accountstatementparser.service;
 
+import com.mm.accountstatementparser.dto.command.AssignCategoryCommandDto;
 import com.mm.accountstatementparser.dto.entityDto.CategoryItemDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
@@ -40,4 +41,5 @@ public interface CategoryItemService extends CrudEntityService<CategoryItem> {
   BigDecimal calculateDifferenceForCategoryItem(CategoryItem categoryItem);
 
   CategoryItem updateCategoryItemKeywords(UUID id, String keyword);
+  List<CategoryItem> assignCategoryItemToCategoryById(List<AssignCategoryCommandDto> assignCategoryCommandDtos);
 }

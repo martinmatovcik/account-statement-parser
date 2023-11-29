@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class TransactionProcessResultDto extends TransactionDto {
-  //  private TransactionDto savedTransactionDto;
   private List<String> transactionKeywords;
 
   public TransactionProcessResultDto(TransactionDto transactionDto) {

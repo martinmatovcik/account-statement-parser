@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.service;
 
-import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
+import com.mm.accountstatementparser.dto.command.AssignCategoryItemCommandDto;
 import com.mm.accountstatementparser.dto.result.TransactionProcessResultDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
@@ -97,24 +97,24 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public List<Transaction> assignTransactionToItemById(
-      List<AssignItemCommandDto> assignItemCommandDtos) {
+  public List<Transaction> assignTransactionsToCategoryItemsById(
+      List<AssignCategoryItemCommandDto> assignCategoryItemCommandDtos) {
     List<Transaction> result = new ArrayList<>();
 
-    for (AssignItemCommandDto assignItemCommandDto : assignItemCommandDtos) {
+    for (AssignCategoryItemCommandDto assignCategoryItemCommandDto : assignCategoryItemCommandDtos) {
       CategoryItem categoryItem = null;
-      String keyword = assignItemCommandDto.getKeyword();
+      String keyword = assignCategoryItemCommandDto.getKeyword();
       if (keyword != null && !keyword.isEmpty())
         categoryItem =
             categoryItemService.findCategoryItemByKeywords(List.of(keyword)).orElse(null);
       if (categoryItem == null) {
         categoryItem =
-            categoryItemService.findCategoryItemByCode(assignItemCommandDto.getCategoryItemCode());
+            categoryItemService.findCategoryItemByCode(assignCategoryItemCommandDto.getCategoryItemCode());
         categoryItem =
             categoryItemService.updateCategoryItemKeywords(categoryItem.getId(), keyword);
       }
 
-      UUID id = assignItemCommandDto.getTransactionId();
+      UUID id = assignCategoryItemCommandDto.getTransactionId();
       Transaction transactionToUpdate = getEntityById(id);
       transactionToUpdate.setCategoryItem(categoryItem);
 
@@ -129,7 +129,7 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public List<Transaction> reassignAllUnassignedTransactionsToItems() {
+  public List<Transaction> reassignAllUnassignedTransactions() {
     return transactionRepository
         .findAllByCategoryItem(categoryItemService.findOrCreateCategoryItemUnassigned())
         .stream()

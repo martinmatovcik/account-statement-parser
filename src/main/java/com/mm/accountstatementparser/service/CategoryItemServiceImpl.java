@@ -1,11 +1,11 @@
 package com.mm.accountstatementparser.service;
 
+import com.mm.accountstatementparser.dto.command.AssignCategoryCommandDto;
 import com.mm.accountstatementparser.dto.entityDto.CategoryItemDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.repository.CategoryItemRepository;
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.*;
@@ -28,8 +28,8 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   @Override
   public CategoryItem getEntityById(UUID id) {
     return categoryItemRepository
-            .findById(id)
-            .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
   }
 
   @Override
@@ -48,10 +48,10 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   public CategoryItem updateEntityFieldsById(UUID id, Map<Object, Object> fields) {
     CategoryItem entityToUpdate = getEntityById(id);
     fields.forEach(
-            (key, value) -> {
-              Field field = ReflectionUtils.findField(Category.class, (String) key);
-              Objects.requireNonNull(field).setAccessible(true);
-            });
+        (key, value) -> {
+          Field field = ReflectionUtils.findField(Category.class, (String) key);
+          Objects.requireNonNull(field).setAccessible(true);
+        });
     return categoryItemRepository.save(entityToUpdate);
   }
 
@@ -63,7 +63,9 @@ public class CategoryItemServiceImpl implements CategoryItemService {
 
   @Override
   public List<CategoryItemDto> findCategoryItemsByCategory(Category category) {
-    return categoryItemRepository.findAllByCategory(category).stream().map(CategoryItem::toDto).toList();
+    return categoryItemRepository.findAllByCategory(category).stream()
+        .map(CategoryItem::toDto)
+        .toList();
   }
 
   @Override
@@ -147,7 +149,8 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   }
 
   @Override
-  public void updateCategoryItemRealAmountAndDifferenceWithTransaction(boolean wasUnassigned, Transaction transaction) {
+  public void updateCategoryItemRealAmountAndDifferenceWithTransaction(
+      boolean wasUnassigned, Transaction transaction) {
     CategoryItem categoryItem = transaction.getCategoryItem();
     BigDecimal transactionAmount = transaction.getAmount().abs();
 
@@ -155,19 +158,19 @@ public class CategoryItemServiceImpl implements CategoryItemService {
 
     if (wasUnassigned) {
       CategoryItem unassignedCategoryItem = findOrCreateCategoryItemUnassigned();
-      unassignedCategoryItem.setRealAmount(unassignedCategoryItem.getRealAmount().subtract(transactionAmount));
-      unassignedCategoryItem.setDifference(calculateDifferenceForCategoryItem(unassignedCategoryItem));
+      unassignedCategoryItem.setRealAmount(
+          unassignedCategoryItem.getRealAmount().subtract(transactionAmount));
+      unassignedCategoryItem.setDifference(
+          calculateDifferenceForCategoryItem(unassignedCategoryItem));
 
       updateEntityById(unassignedCategoryItem.getId(), unassignedCategoryItem);
     }
 
     categoryItem.setDifference(calculateDifferenceForCategoryItem(categoryItem));
 
-    Category category = categoryItem.getCategory();
-    if (category == null)
-      ; // todo: assign category
-
     updateEntityById(categoryItem.getId(), categoryItem);
+
+    Category category = categoryItem.getCategory();
 
     if (category != null) categoryService.updatePlanedAmountRealAmountAndDifference(category);
   }
@@ -180,8 +183,28 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   @Override
   public CategoryItem updateCategoryItemKeywords(UUID id, String keyword) {
     CategoryItem categoryItemToUpdate = getEntityById(id);
-    if (categoryItemToUpdate.getKeywords() == null) categoryItemToUpdate.setKeywords(new HashSet<>());
+    if (categoryItemToUpdate.getKeywords() == null)
+      categoryItemToUpdate.setKeywords(new HashSet<>());
     categoryItemToUpdate.getKeywords().add(keyword);
     return categoryItemRepository.save(categoryItemToUpdate);
+  }
+
+  @Override
+  public List<CategoryItem> assignCategoryItemToCategoryById(
+      List<AssignCategoryCommandDto> assignCategoryCommandDtos) {
+    List<CategoryItem> result = new ArrayList<>();
+
+    for (AssignCategoryCommandDto assignCategoryCommandDto : assignCategoryCommandDtos) {
+      CategoryItem categoryItem =
+          findCategoryItemByCode(assignCategoryCommandDto.getCategoryItemCode());
+      categoryItem.setCategory(
+          categoryService.findCategoryByCode(assignCategoryCommandDto.getCategoryCode()));
+      CategoryItem persistedCategoryItem = updateEntityById(categoryItem.getId(), categoryItem);
+      categoryService.updatePlanedAmountRealAmountAndDifference(
+          persistedCategoryItem.getCategory());
+      result.add(persistedCategoryItem);
+    }
+
+    return result;
   }
 }

@@ -1,7 +1,11 @@
 package com.mm.accountstatementparser.controller;
 
+import com.mm.accountstatementparser.dto.command.AssignCategoryCommandDto;
+import com.mm.accountstatementparser.dto.command.AssignCategoryItemCommandDto;
 import com.mm.accountstatementparser.dto.entityDto.CategoryItemDto;
+import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import com.mm.accountstatementparser.entity.CategoryItem;
+import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.service.CategoryItemService;
 import java.util.List;
 import java.util.Map;
@@ -58,5 +62,15 @@ public class CategoryItemController extends CrudEntityController<CategoryItemDto
   public ResponseEntity<HttpStatus> deleteEntityById(@PathVariable UUID id) {
     categoryItemService.deleteEntityById(id);
     return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @PutMapping("/assign")
+  public ResponseEntity<List<CategoryItemDto>> assignCategoryItemToCategoryById(
+          @RequestBody List<AssignCategoryCommandDto> assignCategoryCommandDtos) {
+    return new ResponseEntity<>(
+            categoryItemService.assignCategoryItemToCategoryById(assignCategoryCommandDtos).stream()
+                    .map(CategoryItem::toDto)
+                    .toList(),
+            HttpStatus.OK);
   }
 }

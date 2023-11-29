@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.service;
 
-import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
+import com.mm.accountstatementparser.dto.command.AssignCategoryItemCommandDto;
 import com.mm.accountstatementparser.dto.result.TransactionProcessResultDto;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.Transaction;
@@ -19,7 +19,7 @@ public interface TransactionService extends CrudEntityService<Transaction> {
 
   Transaction updateFieldsInTransactionById(UUID id, Map<Object, Object> fields);
 
-  List<Transaction> assignTransactionToItemById(List<AssignItemCommandDto> assignItemCommandDtos);
+  List<Transaction> assignTransactionsToCategoryItemsById(List<AssignCategoryItemCommandDto> assignCategoryItemCommandDtos);
 
-  List<Transaction> reassignAllUnassignedTransactionsToItems();
+  List<Transaction> reassignAllUnassignedTransactions();
 }

@@ -1,6 +1,6 @@
 package com.mm.accountstatementparser.controller;
 
-import com.mm.accountstatementparser.dto.command.AssignItemCommandDto;
+import com.mm.accountstatementparser.dto.command.AssignCategoryItemCommandDto;
 import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import com.mm.accountstatementparser.dto.result.TransactionProcessResultDto;
 import com.mm.accountstatementparser.entity.Transaction;
@@ -68,10 +68,10 @@ public class TransactionController extends CrudEntityController<TransactionDto> 
   }
 
   @PutMapping("/assign")
-  public ResponseEntity<List<TransactionDto>> assignCategoryItemToTransactionById(
-      @RequestBody List<AssignItemCommandDto> assignItemCommandDtos) {
+  public ResponseEntity<List<TransactionDto>> assignTransactionsToCategoryItemsById(
+      @RequestBody List<AssignCategoryItemCommandDto> assignCategoryItemCommandDtos) {
     return new ResponseEntity<>(
-        transactionService.assignTransactionToItemById(assignItemCommandDtos).stream()
+        transactionService.assignTransactionsToCategoryItemsById(assignCategoryItemCommandDtos).stream()
             .map(Transaction::toDto)
             .toList(),
         HttpStatus.OK);
@@ -80,7 +80,7 @@ public class TransactionController extends CrudEntityController<TransactionDto> 
   @PutMapping("/re-assign")
   public ResponseEntity<List<TransactionDto>> reassignUnassignedTransactions() {
     return new ResponseEntity<>(
-        transactionService.reassignAllUnassignedTransactionsToItems().stream()
+        transactionService.reassignAllUnassignedTransactions().stream()
             .map(Transaction::toDto)
             .toList(),
         HttpStatus.OK);
