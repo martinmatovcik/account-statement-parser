@@ -2,19 +2,36 @@ package com.mm.accountstatementparser.service;
 
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
+import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.repository.CategoryRepository;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
   private final CategoryRepository categoryRepository;
+
+  @Override
+  public List<Category> getAllCategories() {
+    return categoryRepository.findAll();
+  }
+
+  @Override
+  public Category getCategoryById(UUID id) {
+    return categoryRepository
+            .findById(id)
+            .orElseThrow(() -> new RuntimeException("Category with given ID does not exist"));
+  }
 
   @Override
   public Category persistCategory(Category category) {
@@ -26,6 +43,22 @@ public class CategoryServiceImpl implements CategoryService {
     Category categoryToUpdate = findByIdOrElseThrow(id);
     BeanUtils.copyProperties(updatedCategory, categoryToUpdate, "id");
     return categoryRepository.save(categoryToUpdate);
+  }
+
+  @Override
+  public Category updateFieldsInCategoryById(UUID id, Map<Object, Object> fields) {
+    Category categoryToUpdate = getCategoryById(id);
+    fields.forEach(
+            (key, value) -> {
+              Field field = ReflectionUtils.findField(Transaction.class, (String) key);
+              Objects.requireNonNull(field).setAccessible(true);
+            });
+    return categoryRepository.save(categoryToUpdate);
+  }
+
+  @Override
+  public void deleteCategoryById(UUID id) {
+
   }
 
   private Category findByIdOrElseThrow(UUID id) {

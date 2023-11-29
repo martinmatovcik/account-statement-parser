@@ -1,20 +1,31 @@
 package com.mm.accountstatementparser.service;
 
 import com.mm.accountstatementparser.entity.Category;
+import com.mm.accountstatementparser.entity.EntityParent;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface CategoryService {
-    Category persistCategory(Category category);
+  List<Category> getAllCategories();
 
-    Category updateCategoryById(UUID id, Category updatedCategory);
+  Category getCategoryById(UUID id);
 
-    Category findCategoryByCode(String categoryCode);
+  Category persistCategory(Category category);
 
-    List<Category> findAll();
+  Category updateCategoryById(UUID id, Category updatedCategory);
 
-    void updatePlanedAmountRealAmountAndDifference(Category category);
+  Category updateFieldsInCategoryById(UUID id, Map<Object, Object> fields);
 
-    Category findOrCreateCategoryOthers();
+  void deleteCategoryById(UUID id);
+
+  Category findCategoryByCode(String categoryCode);
+
+  List<Category> findAll();
+
+  void updatePlanedAmountRealAmountAndDifference(Category category);
+
+  Category findOrCreateCategoryOthers();
 }

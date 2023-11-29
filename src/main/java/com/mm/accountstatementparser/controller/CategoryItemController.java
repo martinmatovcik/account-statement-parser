@@ -1,9 +1,11 @@
 package com.mm.accountstatementparser.controller;
 
 import com.mm.accountstatementparser.dto.entityDto.CategoryItemDto;
+import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import com.mm.accountstatementparser.entity.CategoryItem;
 import com.mm.accountstatementparser.service.CategoryItemService;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,13 @@ public class CategoryItemController {
     return new ResponseEntity<>(
         categoryItemService.updateCategoryItemById(id, categoryItemDto.toEntity()).toDto(),
         HttpStatus.OK);
+  }
+
+  @PatchMapping("/{id}")
+  public ResponseEntity<CategoryItemDto> updateFieldsInCategoryItemById(
+          @PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
+    return new ResponseEntity<>(
+            categoryItemService.updateFieldsInCategoryItemById(id, fields).toDto(), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")

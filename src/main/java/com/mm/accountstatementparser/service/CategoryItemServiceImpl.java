@@ -5,11 +5,14 @@ import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.repository.CategoryItemRepository;
+
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +41,17 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   public CategoryItem updateCategoryItemById(UUID id, CategoryItem categoryItem) {
     CategoryItem categoryItemToUpdate = getCategoryItemById(id);
     BeanUtils.copyProperties(categoryItem, categoryItemToUpdate, "id");
+    return categoryItemRepository.save(categoryItemToUpdate);
+  }
+
+  @Override
+  public CategoryItem updateFieldsInCategoryItemById(UUID id, Map<Object, Object> fields) {
+    CategoryItem categoryItemToUpdate = getCategoryItemById(id);
+    fields.forEach(
+            (key, value) -> {
+              Field field = ReflectionUtils.findField(Transaction.class, (String) key);
+              Objects.requireNonNull(field).setAccessible(true);
+            });
     return categoryItemRepository.save(categoryItemToUpdate);
   }
 
