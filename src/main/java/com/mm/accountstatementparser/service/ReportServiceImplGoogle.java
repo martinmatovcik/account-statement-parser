@@ -34,8 +34,6 @@ public class ReportServiceImplGoogle implements ReportService {
 
   @Override
   public void generateReport(Month month) {
-    categoryItemService.createSampleItemsWhenNoExisting(); // todo: temporary
-
     generateDataSheet(month);
     generateTemplate(month);
   }

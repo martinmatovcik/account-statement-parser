@@ -25,7 +25,7 @@ public class Transaction extends EntityParent {
   private String transactionNote;
 
   @ManyToOne
-  @JoinColumn(name = "item_id")
+  @JoinColumn(name = "categoryItem_id")
   @ToString.Exclude
   private CategoryItem categoryItem;
 

@@ -103,7 +103,7 @@ public class TransactionServiceImpl implements TransactionService {
       if (keyword != null && !keyword.isEmpty())
         categoryItem = categoryItemService.findCategoryItemByKeywords(List.of(keyword)).orElse(null);
       if (categoryItem == null) {
-        categoryItem = categoryItemService.findCategoryItemByCode(assignItemCommandDto.getItemCode());
+        categoryItem = categoryItemService.findCategoryItemByCode(assignItemCommandDto.getCategoryItemCode());
         categoryItem = categoryItemService.updateCategoryItemKeywords(categoryItem.getId(), keyword);
       }
 
@@ -122,7 +122,7 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public List<Transaction> reassignAllUnassignedTransactionsToItems() {
-    return transactionRepository.findAllByItem(categoryItemService.findOrCreateCategoryItemUnassigned()).stream()
+    return transactionRepository.findAllByCategoryItem(categoryItemService.findOrCreateCategoryItemUnassigned()).stream()
         .map(this::assignItemOrUnassignedToTransactionAndPersist)
         .filter(transaction -> transaction.getCategoryItem() != categoryItemService.findCategoryItemByCode("unassigned"))
         .toList();

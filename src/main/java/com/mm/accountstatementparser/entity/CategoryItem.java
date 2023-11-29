@@ -28,7 +28,7 @@ public class CategoryItem extends EntityParent {
   @ToString.Exclude
   private Category category;
 
-  @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "categoryItem", fetch = FetchType.LAZY)
   @Builder.Default
   @ToString.Exclude
   private List<Transaction> transactions = new ArrayList<>();
