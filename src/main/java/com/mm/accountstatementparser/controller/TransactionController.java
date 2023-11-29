@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/transactions/")
+@RequestMapping("/api/v1/transaction")
 @RequiredArgsConstructor
 public class TransactionController {
   private final TransactionService transactionService;
@@ -26,7 +26,7 @@ public class TransactionController {
         HttpStatus.OK);
   }
 
-  @GetMapping("{id}")
+  @GetMapping("/{id}")
   public ResponseEntity<TransactionDto> getTransactionById(@PathVariable UUID id) {
     return new ResponseEntity<>(transactionService.getTransactionById(id).toDto(), HttpStatus.OK);
   }
@@ -43,7 +43,7 @@ public class TransactionController {
     return new ResponseEntity<>(result, httpStatus);
   }
 
-  @PutMapping("{id}")
+  @PutMapping("/{id}")
   public ResponseEntity<TransactionDto> updateTransactionById(
       @PathVariable UUID id, @RequestBody TransactionDto transactionDto) {
     return new ResponseEntity<>(
@@ -51,20 +51,20 @@ public class TransactionController {
         HttpStatus.OK);
   }
 
-  @PatchMapping("{id}")
+  @PatchMapping("/{id}")
   public ResponseEntity<TransactionDto> updateFieldsInTransactionById(
       @PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
     return new ResponseEntity<>(
         transactionService.updateFieldsInTransactionById(id, fields).toDto(), HttpStatus.OK);
   }
 
-  @DeleteMapping("{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<HttpStatus> deleteTransactionById(@PathVariable UUID id) {
     transactionService.deleteTransactionById(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @PutMapping("assign-item/") // todo: better mappings e.g. /assign-categoryItem
+  @PutMapping("/assign-category-item")
   public ResponseEntity<List<TransactionDto>> assignItemToTransactionById(
       @RequestBody List<AssignItemCommandDto> assignItemCommandDtos) {
     return new ResponseEntity<>(
@@ -74,7 +74,7 @@ public class TransactionController {
         HttpStatus.OK);
   }
 
-  @PutMapping("reassign/") // todo: better mappings e.g. /assign-categoryItem
+  @PutMapping("/reassign")
   public ResponseEntity<List<TransactionDto>> reassignUnassignedTransaction() {
     return new ResponseEntity<>(
         transactionService.reassignAllUnassignedTransactionsToItems().stream()

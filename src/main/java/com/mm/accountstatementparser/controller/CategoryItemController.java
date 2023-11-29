@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/category-items/")
+@RequestMapping("/api/v1/category-item")
 @RequiredArgsConstructor
 public class CategoryItemController {
   private final CategoryItemService categoryItemService;
@@ -23,7 +23,7 @@ public class CategoryItemController {
         HttpStatus.OK);
   }
 
-  @GetMapping("{id}")
+  @GetMapping("/{id}")
   public ResponseEntity<CategoryItemDto> getCategoryItemById(@PathVariable UUID id) {
     return new ResponseEntity<>(categoryItemService.getCategoryItemById(id).toDto(), HttpStatus.OK);
   }
@@ -34,7 +34,7 @@ public class CategoryItemController {
         categoryItemService.persistCategoryItem(categoryItemDto.toEntity()).toDto(), HttpStatus.CREATED);
   }
 
-  @PutMapping("{id}")
+  @PutMapping("/{id}")
   public ResponseEntity<CategoryItemDto> updateCategoryItemById(
       @PathVariable UUID id, @RequestBody CategoryItemDto categoryItemDto) {
     return new ResponseEntity<>(
@@ -42,7 +42,7 @@ public class CategoryItemController {
         HttpStatus.OK);
   }
 
-  @DeleteMapping("{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<HttpStatus> deleteCategoryItemById(@PathVariable UUID id) {
     categoryItemService.deleteCategoryItemById(id);
     return new ResponseEntity<>(HttpStatus.OK);
