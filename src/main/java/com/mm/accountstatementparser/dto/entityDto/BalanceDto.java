@@ -15,7 +15,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BalanceDto extends DtoParent {
+public class BalanceDto extends DtoParent<Balance> {
 
   @Nullable private UUID id;
   private Month month;

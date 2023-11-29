@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryDto extends DtoParent {
+public class CategoryDto extends DtoParent<Category> {
     @Nullable private UUID id;
     private String code;
     private String headerValue;

@@ -1,6 +1,7 @@
 package com.mm.accountstatementparser.entity;
 
 import com.mm.accountstatementparser.dto.entityDto.CategoryItemDto;
+import com.mm.accountstatementparser.dto.entityDto.DtoParent;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -12,7 +13,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryItem extends EntityParent {
+public class CategoryItem extends EntityParent<CategoryItemDto> {
   @Id @GeneratedValue private UUID id;
 
   private String code;

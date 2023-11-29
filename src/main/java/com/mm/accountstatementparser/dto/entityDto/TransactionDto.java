@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @AllArgsConstructor
 @Builder
-public class TransactionDto extends DtoParent {
+public class TransactionDto extends DtoParent<Transaction> {
   @Nullable private UUID id;
   private LocalDate date;
   private BigDecimal amount;

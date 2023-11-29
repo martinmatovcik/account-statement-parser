@@ -1,5 +1,6 @@
 package com.mm.accountstatementparser.entity;
 
+import com.mm.accountstatementparser.dto.entityDto.DtoParent;
 import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Transaction extends EntityParent {
+public class Transaction extends EntityParent<TransactionDto> {
   @Id @GeneratedValue private UUID id;
 
   private LocalDate date;

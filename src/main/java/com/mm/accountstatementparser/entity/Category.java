@@ -1,6 +1,7 @@
 package com.mm.accountstatementparser.entity;
 
 import com.mm.accountstatementparser.dto.entityDto.CategoryDto;
+import com.mm.accountstatementparser.dto.entityDto.DtoParent;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -17,7 +18,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category extends EntityParent {
+public class Category extends EntityParent<CategoryDto> {
   @Id @GeneratedValue private UUID id;
   private String code;
   private String headerValue;

@@ -1,6 +1,7 @@
 package com.mm.accountstatementparser.entity;
 
 import com.mm.accountstatementparser.dto.entityDto.BalanceDto;
+import com.mm.accountstatementparser.dto.entityDto.DtoParent;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Month;
@@ -13,7 +14,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Balance extends EntityParent {
+public class Balance extends EntityParent<BalanceDto> {
   @Id @GeneratedValue private UUID id;
 
   private Month month;
