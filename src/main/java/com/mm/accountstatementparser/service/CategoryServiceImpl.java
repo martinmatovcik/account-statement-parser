@@ -2,7 +2,6 @@ package com.mm.accountstatementparser.service;
 
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
-import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.repository.CategoryRepository;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -22,49 +21,43 @@ public class CategoryServiceImpl implements CategoryService {
   private final CategoryRepository categoryRepository;
 
   @Override
-  public List<Category> getAllCategories() {
+  public List<Category> getAll() {
     return categoryRepository.findAll();
   }
 
   @Override
-  public Category getCategoryById(UUID id) {
-    return categoryRepository
-            .findById(id)
-            .orElseThrow(() -> new RuntimeException("Category with given ID does not exist"));
-  }
-
-  @Override
-  public Category persistCategory(Category category) {
-    return categoryRepository.save(category);
-  }
-
-  @Override
-  public Category updateCategoryById(UUID id, Category updatedCategory) {
-    Category categoryToUpdate = findByIdOrElseThrow(id);
-    BeanUtils.copyProperties(updatedCategory, categoryToUpdate, "id");
-    return categoryRepository.save(categoryToUpdate);
-  }
-
-  @Override
-  public Category updateFieldsInCategoryById(UUID id, Map<Object, Object> fields) {
-    Category categoryToUpdate = getCategoryById(id);
-    fields.forEach(
-            (key, value) -> {
-              Field field = ReflectionUtils.findField(Transaction.class, (String) key);
-              Objects.requireNonNull(field).setAccessible(true);
-            });
-    return categoryRepository.save(categoryToUpdate);
-  }
-
-  @Override
-  public void deleteCategoryById(UUID id) {
-
-  }
-
-  private Category findByIdOrElseThrow(UUID id) {
+  public Category getEntityById(UUID id) {
     return categoryRepository
         .findById(id)
-        .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
+        .orElseThrow(() -> new RuntimeException("Category with given ID does not exist"));
+  }
+
+  @Override
+  public Category persistEntity(Category entity) {
+    return categoryRepository.save(entity);
+  }
+
+  @Override
+  public Category updateEntityById(UUID id, Category updatedEntity) {
+    Category entityToUpdate = getEntityById(id);
+    BeanUtils.copyProperties(updatedEntity, entityToUpdate, "id");
+    return categoryRepository.save(entityToUpdate);
+  }
+
+  @Override
+  public Category updateFieldsInEntityById(UUID id, Map<Object, Object> fields) {
+    Category entityToUpdate = getEntityById(id);
+    fields.forEach(
+        (key, value) -> {
+          Field field = ReflectionUtils.findField(Category.class, (String) key);
+          Objects.requireNonNull(field).setAccessible(true);
+        });
+    return categoryRepository.save(entityToUpdate);
+  }
+
+  @Override
+  public void deleteEntityById(UUID id) {
+    categoryRepository.deleteById(id);
   }
 
   @Override
@@ -73,18 +66,13 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
-  public List<Category> findAll() {
-    return categoryRepository.findAll();
-  }
-
-  @Override
   public void updatePlanedAmountRealAmountAndDifference(Category category) {
     if (!CollectionUtils.isEmpty(category.getCategoryItems())) {
-        BigDecimal plannedAmount = BigDecimal.ZERO;
-        for (CategoryItem categoryItem : category.getCategoryItems()) {
-          plannedAmount = plannedAmount.add(categoryItem.getPlannedAmount().abs());
-        }
-        category.setPlannedAmount(plannedAmount);
+      BigDecimal plannedAmount = BigDecimal.ZERO;
+      for (CategoryItem categoryItem : category.getCategoryItems()) {
+        plannedAmount = plannedAmount.add(categoryItem.getPlannedAmount().abs());
+      }
+      category.setPlannedAmount(plannedAmount);
 
       BigDecimal realAmount = BigDecimal.ZERO;
       for (CategoryItem categoryItem : category.getCategoryItems()) {
@@ -95,7 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     category.setDifference(category.getPlannedAmount().subtract(category.getRealAmount()));
 
-    updateCategoryById(category.getId(), category);
+    updateEntityById(category.getId(), category);
   }
 
   @Override
@@ -104,6 +92,6 @@ public class CategoryServiceImpl implements CategoryService {
         .findByCode("unassigned")
         .orElseGet(
             () ->
-                persistCategory(Category.builder().code("others").headerValue("Ostatné").build()));
+                persistEntity(Category.builder().code("others").headerValue("Ostatné").build()));
   }
 }

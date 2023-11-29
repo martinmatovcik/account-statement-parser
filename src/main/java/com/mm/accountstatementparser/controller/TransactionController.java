@@ -22,13 +22,13 @@ public class TransactionController {
   @GetMapping
   public ResponseEntity<List<TransactionDto>> getAllTransactions() {
     return new ResponseEntity<>(
-        transactionService.getAllTransactions().stream().map(Transaction::toDto).toList(),
+        transactionService.getAll().stream().map(Transaction::toDto).toList(),
         HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<TransactionDto> getTransactionById(@PathVariable UUID id) {
-    return new ResponseEntity<>(transactionService.getTransactionById(id).toDto(), HttpStatus.OK);
+    return new ResponseEntity<>(transactionService.getEntityById(id).toDto(), HttpStatus.OK);
   }
 
   @PostMapping
@@ -47,7 +47,7 @@ public class TransactionController {
   public ResponseEntity<TransactionDto> updateTransactionById(
       @PathVariable UUID id, @RequestBody TransactionDto transactionDto) {
     return new ResponseEntity<>(
-        transactionService.updateTransactionById(id, transactionDto.toEntity()).toDto(),
+        transactionService.updateEntityById(id, transactionDto.toEntity()).toDto(),
         HttpStatus.OK);
   }
 
@@ -55,12 +55,12 @@ public class TransactionController {
   public ResponseEntity<TransactionDto> updateFieldsInTransactionById(
       @PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
     return new ResponseEntity<>(
-        transactionService.updateFieldsInTransactionById(id, fields).toDto(), HttpStatus.OK);
+        transactionService.updateFieldsInEntityById(id, fields).toDto(), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<HttpStatus> deleteTransactionById(@PathVariable UUID id) {
-    transactionService.deleteTransactionById(id);
+    transactionService.deleteEntityById(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

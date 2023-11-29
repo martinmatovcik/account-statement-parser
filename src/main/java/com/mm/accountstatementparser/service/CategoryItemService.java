@@ -12,19 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CategoryItemService {
-  List<CategoryItem> getAllCategoryItems();
-
-  CategoryItem getCategoryItemById(UUID id);
-
-  CategoryItem persistCategoryItem(CategoryItem categoryItem);
-
-  CategoryItem updateCategoryItemById(UUID id, CategoryItem categoryItem);
-
-  CategoryItem updateFieldsInCategoryItemById(UUID id, Map<Object, Object> fields);
-
-  void deleteCategoryItemById(UUID id);
-
+public interface CategoryItemService extends CrudEntityService<CategoryItem> {
   List<CategoryItemDto> findCategoryItemsByCategory(Category category); //todo
 
   BigDecimal sumPlannedAmountOfCategoryItems();

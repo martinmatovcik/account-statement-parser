@@ -11,19 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public interface TransactionService {
-  List<Transaction> getAllTransactions();
-
-  List<Transaction> getAllTransactionsForMonth(Month month);
-
-  Transaction getTransactionById(UUID id);
-
-  Transaction persistTransaction(Transaction transactionToSave);
+public interface TransactionService extends CrudEntityService<Transaction> {
   TransactionProcessResultDto processTransaction(Transaction transaction);
-
-  Transaction updateTransactionById(UUID id, Transaction updatedTransaction);
-
-  void deleteTransactionById(UUID id);
 
   BigDecimal sumAmountOfTransactionsForCategoryAndMonth(
           Category category, Month month);

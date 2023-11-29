@@ -20,37 +20,37 @@ public class CategoryController {
   @GetMapping
   public ResponseEntity<List<CategoryDto>> getAllCategories() {
     return new ResponseEntity<>(
-        categoryService.getAllCategories().stream().map(Category::toDto).toList(), HttpStatus.OK);
+        categoryService.getAll().stream().map(Category::toDto).toList(), HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<CategoryDto> getCategoryById(@PathVariable UUID id) {
-    return new ResponseEntity<>(categoryService.getCategoryById(id).toDto(), HttpStatus.OK);
+    return new ResponseEntity<>(categoryService.getEntityById(id).toDto(), HttpStatus.OK);
   }
 
   @PostMapping
   public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto) {
     return new ResponseEntity<>(
-        categoryService.persistCategory(categoryDto.toEntity()).toDto(), HttpStatus.CREATED);
+        categoryService.persistEntity(categoryDto.toEntity()).toDto(), HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<CategoryDto> updateCategoryById(
       @PathVariable UUID id, @RequestBody CategoryDto categoryDto) {
     return new ResponseEntity<>(
-        categoryService.updateCategoryById(id, categoryDto.toEntity()).toDto(), HttpStatus.OK);
+        categoryService.updateEntityById(id, categoryDto.toEntity()).toDto(), HttpStatus.OK);
   }
 
   @PatchMapping("/{id}")
   public ResponseEntity<CategoryDto> updateFieldsInCategoryById(
       @PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
     return new ResponseEntity<>(
-        categoryService.updateFieldsInCategoryById(id, fields).toDto(), HttpStatus.OK);
+        categoryService.updateFieldsInEntityById(id, fields).toDto(), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<HttpStatus> deleteCategoryById(@PathVariable UUID id) {
-    categoryService.deleteCategoryById(id);
+    categoryService.deleteEntityById(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }

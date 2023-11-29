@@ -21,43 +21,43 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   private final CategoryService categoryService;
 
   @Override
-  public List<CategoryItem> getAllCategoryItems() {
+  public List<CategoryItem> getAll() {
     return categoryItemRepository.findAll();
   }
 
   @Override
-  public CategoryItem getCategoryItemById(UUID id) {
+  public CategoryItem getEntityById(UUID id) {
     return categoryItemRepository
-        .findById(id)
-        .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
+            .findById(id)
+            .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
   }
 
   @Override
-  public CategoryItem persistCategoryItem(CategoryItem categoryItem) {
-    return categoryItemRepository.save(categoryItem);
+  public CategoryItem persistEntity(CategoryItem entity) {
+    return categoryItemRepository.save(entity);
   }
 
   @Override
-  public CategoryItem updateCategoryItemById(UUID id, CategoryItem categoryItem) {
-    CategoryItem categoryItemToUpdate = getCategoryItemById(id);
-    BeanUtils.copyProperties(categoryItem, categoryItemToUpdate, "id");
-    return categoryItemRepository.save(categoryItemToUpdate);
+  public CategoryItem updateEntityById(UUID id, CategoryItem updatedEntity) {
+    CategoryItem entityToUpdate = getEntityById(id);
+    BeanUtils.copyProperties(updatedEntity, entityToUpdate, "id");
+    return categoryItemRepository.save(entityToUpdate);
   }
 
   @Override
-  public CategoryItem updateFieldsInCategoryItemById(UUID id, Map<Object, Object> fields) {
-    CategoryItem categoryItemToUpdate = getCategoryItemById(id);
+  public CategoryItem updateFieldsInEntityById(UUID id, Map<Object, Object> fields) {
+    CategoryItem entityToUpdate = getEntityById(id);
     fields.forEach(
             (key, value) -> {
-              Field field = ReflectionUtils.findField(Transaction.class, (String) key);
+              Field field = ReflectionUtils.findField(Category.class, (String) key);
               Objects.requireNonNull(field).setAccessible(true);
             });
-    return categoryItemRepository.save(categoryItemToUpdate);
+    return categoryItemRepository.save(entityToUpdate);
   }
 
   @Override
-  public void deleteCategoryItemById(UUID id) {
-    getCategoryItemById(id);
+  public void deleteEntityById(UUID id) {
+    getEntityById(id);
     categoryItemRepository.deleteById(id);
   }
 
@@ -138,7 +138,7 @@ public class CategoryItemServiceImpl implements CategoryItemService {
         .findByCode("unassigned")
         .orElseGet(
             () ->
-                persistCategoryItem(
+                persistEntity(
                     CategoryItem.builder()
                         .name("Nezaradané výdavky")
                         .code("unassigned")
@@ -158,7 +158,7 @@ public class CategoryItemServiceImpl implements CategoryItemService {
       unassignedCategoryItem.setRealAmount(unassignedCategoryItem.getRealAmount().subtract(transactionAmount));
       unassignedCategoryItem.setDifference(calculateDifferenceForCategoryItem(unassignedCategoryItem));
 
-      updateCategoryItemById(unassignedCategoryItem.getId(), unassignedCategoryItem);
+      updateEntityById(unassignedCategoryItem.getId(), unassignedCategoryItem);
     }
 
     categoryItem.setDifference(calculateDifferenceForCategoryItem(categoryItem));
@@ -167,7 +167,7 @@ public class CategoryItemServiceImpl implements CategoryItemService {
     if (category == null)
       ; // todo: assign category
 
-    updateCategoryItemById(categoryItem.getId(), categoryItem);
+    updateEntityById(categoryItem.getId(), categoryItem);
 
     if (category != null) categoryService.updatePlanedAmountRealAmountAndDifference(category);
   }
@@ -179,7 +179,7 @@ public class CategoryItemServiceImpl implements CategoryItemService {
 
   @Override
   public CategoryItem updateCategoryItemKeywords(UUID id, String keyword) {
-    CategoryItem categoryItemToUpdate = getCategoryItemById(id);
+    CategoryItem categoryItemToUpdate = getEntityById(id);
     if (categoryItemToUpdate.getKeywords() == null) categoryItemToUpdate.setKeywords(new HashSet<>());
     categoryItemToUpdate.getKeywords().add(keyword);
     return categoryItemRepository.save(categoryItemToUpdate);

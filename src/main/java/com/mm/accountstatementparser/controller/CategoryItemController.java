@@ -21,26 +21,26 @@ public class CategoryItemController {
   @GetMapping
   public ResponseEntity<List<CategoryItemDto>> getAllCategoryItems() {
     return new ResponseEntity<>(
-        categoryItemService.getAllCategoryItems().stream().map(CategoryItem::toDto).toList(),
+        categoryItemService.getAll().stream().map(CategoryItem::toDto).toList(),
         HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<CategoryItemDto> getCategoryItemById(@PathVariable UUID id) {
-    return new ResponseEntity<>(categoryItemService.getCategoryItemById(id).toDto(), HttpStatus.OK);
+    return new ResponseEntity<>(categoryItemService.getEntityById(id).toDto(), HttpStatus.OK);
   }
 
   @PostMapping
   public ResponseEntity<CategoryItemDto> createCategoryItem(@RequestBody CategoryItemDto categoryItemDto) {
     return new ResponseEntity<>(
-        categoryItemService.persistCategoryItem(categoryItemDto.toEntity()).toDto(), HttpStatus.CREATED);
+        categoryItemService.persistEntity(categoryItemDto.toEntity()).toDto(), HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<CategoryItemDto> updateCategoryItemById(
       @PathVariable UUID id, @RequestBody CategoryItemDto categoryItemDto) {
     return new ResponseEntity<>(
-        categoryItemService.updateCategoryItemById(id, categoryItemDto.toEntity()).toDto(),
+        categoryItemService.updateEntityById(id, categoryItemDto.toEntity()).toDto(),
         HttpStatus.OK);
   }
 
@@ -48,12 +48,12 @@ public class CategoryItemController {
   public ResponseEntity<CategoryItemDto> updateFieldsInCategoryItemById(
           @PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
     return new ResponseEntity<>(
-            categoryItemService.updateFieldsInCategoryItemById(id, fields).toDto(), HttpStatus.OK);
+            categoryItemService.updateFieldsInEntityById(id, fields).toDto(), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<HttpStatus> deleteCategoryItemById(@PathVariable UUID id) {
-    categoryItemService.deleteCategoryItemById(id);
+    categoryItemService.deleteEntityById(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }

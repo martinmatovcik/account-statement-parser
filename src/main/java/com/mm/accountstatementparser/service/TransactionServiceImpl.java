@@ -24,26 +24,19 @@ public class TransactionServiceImpl implements TransactionService {
   private final TransactionRepository transactionRepository;
 
   @Override
-  public List<Transaction> getAllTransactions() {
+  public List<Transaction> getAll() {
     return transactionRepository.findAll();
   }
 
   @Override
-  public List<Transaction> getAllTransactionsForMonth(Month month) {
-    return transactionRepository.findAll().stream()
-        .filter(transaction -> transaction.getDate().getMonth() == month)
-        .toList();
-  }
-
-  @Override
-  public Transaction getTransactionById(UUID id) {
+  public Transaction getEntityById(UUID id) {
     return transactionRepository
         .findById(id)
         .orElseThrow(() -> new RuntimeException("Transaction with given ID does not exist"));
   }
 
   @Override
-  public Transaction persistTransaction(Transaction transaction) {
+  public Transaction persistEntity(Transaction transaction) {
     return transactionRepository.save(transaction);
   }
 
@@ -58,14 +51,25 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Transaction updateTransactionById(UUID id, Transaction updatedTransaction) {
-    Transaction transactionToUpdate = getTransactionById(id);
+  public Transaction updateEntityById(UUID id, Transaction updatedTransaction) {
+    Transaction transactionToUpdate = getEntityById(id);
     BeanUtils.copyProperties(updatedTransaction, transactionToUpdate, "id");
     return transactionRepository.save(transactionToUpdate);
   }
 
   @Override
-  public void deleteTransactionById(UUID id) {
+  public Transaction updateFieldsInEntityById(UUID id, Map<Object, Object> fields) {
+    Transaction entityToUpdate = getEntityById(id);
+    fields.forEach(
+        (key, value) -> {
+          Field field = ReflectionUtils.findField(Transaction.class, (String) key);
+          Objects.requireNonNull(field).setAccessible(true);
+        });
+    return transactionRepository.save(entityToUpdate);
+  }
+
+  @Override
+  public void deleteEntityById(UUID id) {
     transactionRepository.deleteById(id);
   }
 
@@ -81,7 +85,7 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public Transaction updateFieldsInTransactionById(UUID id, Map<Object, Object> fields) {
-    Transaction transactionToUpdate = getTransactionById(id);
+    Transaction transactionToUpdate = getEntityById(id);
     fields.forEach(
         (key, value) -> {
           Field field = ReflectionUtils.findField(Transaction.class, (String) key);
@@ -101,19 +105,23 @@ public class TransactionServiceImpl implements TransactionService {
       CategoryItem categoryItem = null;
       String keyword = assignItemCommandDto.getKeyword();
       if (keyword != null && !keyword.isEmpty())
-        categoryItem = categoryItemService.findCategoryItemByKeywords(List.of(keyword)).orElse(null);
+        categoryItem =
+            categoryItemService.findCategoryItemByKeywords(List.of(keyword)).orElse(null);
       if (categoryItem == null) {
-        categoryItem = categoryItemService.findCategoryItemByCode(assignItemCommandDto.getCategoryItemCode());
-        categoryItem = categoryItemService.updateCategoryItemKeywords(categoryItem.getId(), keyword);
+        categoryItem =
+            categoryItemService.findCategoryItemByCode(assignItemCommandDto.getCategoryItemCode());
+        categoryItem =
+            categoryItemService.updateCategoryItemKeywords(categoryItem.getId(), keyword);
       }
 
       UUID id = assignItemCommandDto.getTransactionId();
-      Transaction transactionToUpdate = getTransactionById(id);
+      Transaction transactionToUpdate = getEntityById(id);
       transactionToUpdate.setCategoryItem(categoryItem);
 
-      Transaction updatedTransaction = updateTransactionById(id, transactionToUpdate);
+      Transaction updatedTransaction = updateEntityById(id, transactionToUpdate);
 
-      categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(true, updatedTransaction);
+      categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
+          true, updatedTransaction);
       result.add(updatedTransaction);
     }
 
@@ -122,18 +130,25 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public List<Transaction> reassignAllUnassignedTransactionsToItems() {
-    return transactionRepository.findAllByCategoryItem(categoryItemService.findOrCreateCategoryItemUnassigned()).stream()
+    return transactionRepository
+        .findAllByCategoryItem(categoryItemService.findOrCreateCategoryItemUnassigned())
+        .stream()
         .map(this::assignItemOrUnassignedToTransactionAndPersist)
-        .filter(transaction -> transaction.getCategoryItem() != categoryItemService.findCategoryItemByCode("unassigned"))
+        .filter(
+            transaction ->
+                transaction.getCategoryItem()
+                    != categoryItemService.findCategoryItemByCode("unassigned"))
         .toList();
   }
 
   private Transaction assignItemOrUnassignedToTransactionAndPersist(Transaction transaction) {
     boolean isOriginalTransactionItemUnassigned =
-        transaction.getCategoryItem() != null && transaction.getCategoryItem().getCode().equals("unassigned");
+        transaction.getCategoryItem() != null
+            && transaction.getCategoryItem().getCode().equals("unassigned");
 
     List<String> transactionKeywords = parseTransactionNote(transaction.getTransactionNote());
-    Optional<CategoryItem> matchingItem = categoryItemService.findCategoryItemByKeywords(transactionKeywords);
+    Optional<CategoryItem> matchingItem =
+        categoryItemService.findCategoryItemByKeywords(transactionKeywords);
 
     if (!isOriginalTransactionItemUnassigned && matchingItem.isEmpty())
       transaction.setCategoryItem(categoryItemService.findOrCreateCategoryItemUnassigned());
@@ -141,7 +156,7 @@ public class TransactionServiceImpl implements TransactionService {
       matchingItem.ifPresent(transaction::setCategoryItem);
     }
 
-    Transaction persistedTransaction = persistTransaction(transaction);
+    Transaction persistedTransaction = persistEntity(transaction);
     categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
         isOriginalTransactionItemUnassigned, persistedTransaction);
     return persistedTransaction;

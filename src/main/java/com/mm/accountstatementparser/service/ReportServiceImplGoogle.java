@@ -80,10 +80,10 @@ public class ReportServiceImplGoogle implements ReportService {
                 List.of("SUM", "=SUM(B3:B8)"),
                 metaData));
 
-    data.addAll(
-        transactionService.getAllTransactionsForMonth(month).stream()
-            .map(t -> t.toDto().toData())
-            .toList());
+//    data.addAll(
+//        transactionService.getAllTransactionsForMonth(month).stream()
+//            .map(t -> t.toDto().toData())
+//            .toList());
 
     insertDataToSheet(generateSheetNameForGivenMonth(month, false), data);
   }
@@ -165,7 +165,7 @@ public class ReportServiceImplGoogle implements ReportService {
     data.add(List.of());
 
     //    SECTIONS
-    for (Category category : categoryService.findAll()) {
+    for (Category category : categoryService.getAll()) {
       if (!Objects.equals(category.getCode(), "INCOME")) data.addAll(generateSection(month, category));
     }
 
