@@ -14,42 +14,48 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/category")
 @RequiredArgsConstructor
-public class CategoryController {
+public class CategoryController extends CrudEntityController<CategoryDto> {
   private final CategoryService categoryService;
 
+  @Override
   @GetMapping
-  public ResponseEntity<List<CategoryDto>> getAllCategories() {
+  public ResponseEntity<List<CategoryDto>> getAll() {
     return new ResponseEntity<>(
         categoryService.getAll().stream().map(Category::toDto).toList(), HttpStatus.OK);
   }
 
+  @Override
   @GetMapping("/{id}")
-  public ResponseEntity<CategoryDto> getCategoryById(@PathVariable UUID id) {
+  public ResponseEntity<CategoryDto> getEntityById(@PathVariable UUID id) {
     return new ResponseEntity<>(categoryService.getEntityById(id).toDto(), HttpStatus.OK);
   }
 
+  @Override
   @PostMapping
-  public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto) {
+  public ResponseEntity<CategoryDto> createEntity(@RequestBody CategoryDto requestDto) {
     return new ResponseEntity<>(
-        categoryService.persistEntity(categoryDto.toEntity()).toDto(), HttpStatus.CREATED);
+        categoryService.persistEntity(requestDto.toEntity()).toDto(), HttpStatus.CREATED);
   }
 
+  @Override
   @PutMapping("/{id}")
-  public ResponseEntity<CategoryDto> updateCategoryById(
-      @PathVariable UUID id, @RequestBody CategoryDto categoryDto) {
+  public ResponseEntity<CategoryDto> updateEntityById(
+      @PathVariable UUID id, @RequestBody CategoryDto requestDto) {
     return new ResponseEntity<>(
-        categoryService.updateEntityById(id, categoryDto.toEntity()).toDto(), HttpStatus.OK);
+        categoryService.updateEntityById(id, requestDto.toEntity()).toDto(), HttpStatus.OK);
   }
 
+  @Override
   @PatchMapping("/{id}")
-  public ResponseEntity<CategoryDto> updateFieldsInCategoryById(
+  public ResponseEntity<CategoryDto> updateEntityFieldsById(
       @PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
     return new ResponseEntity<>(
-        categoryService.updateFieldsInEntityById(id, fields).toDto(), HttpStatus.OK);
+        categoryService.updateEntityFieldsById(id, fields).toDto(), HttpStatus.OK);
   }
 
+  @Override
   @DeleteMapping("/{id}")
-  public ResponseEntity<HttpStatus> deleteCategoryById(@PathVariable UUID id) {
+  public ResponseEntity<HttpStatus> deleteEntityById(@PathVariable UUID id) {
     categoryService.deleteEntityById(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }

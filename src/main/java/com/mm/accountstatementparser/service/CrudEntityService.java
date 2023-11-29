@@ -1,6 +1,5 @@
 package com.mm.accountstatementparser.service;
 
-import com.mm.accountstatementparser.dto.entityDto.DtoParent;
 import com.mm.accountstatementparser.entity.EntityParent;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public interface CrudEntityService<T extends EntityParent<?>> {
     T getEntityById(UUID id);
     T persistEntity(T entity);
     T updateEntityById(UUID id, T updatedEntity);
-    T updateFieldsInEntityById(UUID id, Map<Object, Object> fields);
+    T updateEntityFieldsById(UUID id, Map<Object, Object> fields);
     void deleteEntityById(UUID id);
 
 }

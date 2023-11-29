@@ -58,7 +58,7 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Transaction updateFieldsInEntityById(UUID id, Map<Object, Object> fields) {
+  public Transaction updateEntityFieldsById(UUID id, Map<Object, Object> fields) {
     Transaction entityToUpdate = getEntityById(id);
     fields.forEach(
         (key, value) -> {

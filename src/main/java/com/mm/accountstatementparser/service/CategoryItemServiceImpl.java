@@ -45,7 +45,7 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   }
 
   @Override
-  public CategoryItem updateFieldsInEntityById(UUID id, Map<Object, Object> fields) {
+  public CategoryItem updateEntityFieldsById(UUID id, Map<Object, Object> fields) {
     CategoryItem entityToUpdate = getEntityById(id);
     fields.forEach(
             (key, value) -> {

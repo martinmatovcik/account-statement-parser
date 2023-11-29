@@ -7,14 +7,13 @@ import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class TransactionDto extends DtoParent<Transaction> {
   @Nullable private UUID id;

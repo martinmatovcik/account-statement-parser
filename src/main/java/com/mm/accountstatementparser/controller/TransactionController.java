@@ -16,56 +16,59 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/transaction")
 @RequiredArgsConstructor
-public class TransactionController {
+public class TransactionController extends CrudEntityController<TransactionDto> {
   private final TransactionService transactionService;
 
+  @Override
   @GetMapping
-  public ResponseEntity<List<TransactionDto>> getAllTransactions() {
+  public ResponseEntity<List<TransactionDto>> getAll() {
     return new ResponseEntity<>(
-        transactionService.getAll().stream().map(Transaction::toDto).toList(),
-        HttpStatus.OK);
+        transactionService.getAll().stream().map(Transaction::toDto).toList(), HttpStatus.OK);
   }
 
+  @Override
   @GetMapping("/{id}")
-  public ResponseEntity<TransactionDto> getTransactionById(@PathVariable UUID id) {
+  public ResponseEntity<TransactionDto> getEntityById(@PathVariable UUID id) {
     return new ResponseEntity<>(transactionService.getEntityById(id).toDto(), HttpStatus.OK);
   }
 
+  @Override
   @PostMapping
-  public ResponseEntity<TransactionProcessResultDto> createTransaction(
-      @RequestBody TransactionDto transactionDto) {
+  public ResponseEntity<TransactionDto> createEntity(@RequestBody TransactionDto requestDto) {
     TransactionProcessResultDto result =
-        transactionService.processTransaction(transactionDto.toEntity());
+        transactionService.processTransaction(requestDto.toEntity());
 
     HttpStatus httpStatus = HttpStatus.CREATED;
-    if (result.getSavedTransactionDto() == null) httpStatus = HttpStatus.ACCEPTED;
+    if (result.getId() == null) httpStatus = HttpStatus.ACCEPTED;
 
     return new ResponseEntity<>(result, httpStatus);
   }
 
+  @Override
   @PutMapping("/{id}")
-  public ResponseEntity<TransactionDto> updateTransactionById(
-      @PathVariable UUID id, @RequestBody TransactionDto transactionDto) {
+  public ResponseEntity<TransactionDto> updateEntityById(
+      @PathVariable UUID id, @RequestBody TransactionDto requestDto) {
     return new ResponseEntity<>(
-        transactionService.updateEntityById(id, transactionDto.toEntity()).toDto(),
-        HttpStatus.OK);
+        transactionService.updateEntityById(id, requestDto.toEntity()).toDto(), HttpStatus.OK);
   }
 
+  @Override
   @PatchMapping("/{id}")
-  public ResponseEntity<TransactionDto> updateFieldsInTransactionById(
+  public ResponseEntity<TransactionDto> updateEntityFieldsById(
       @PathVariable UUID id, @RequestBody Map<Object, Object> fields) {
     return new ResponseEntity<>(
-        transactionService.updateFieldsInEntityById(id, fields).toDto(), HttpStatus.OK);
+        transactionService.updateEntityFieldsById(id, fields).toDto(), HttpStatus.OK);
   }
 
+  @Override
   @DeleteMapping("/{id}")
-  public ResponseEntity<HttpStatus> deleteTransactionById(@PathVariable UUID id) {
+  public ResponseEntity<HttpStatus> deleteEntityById(@PathVariable UUID id) {
     transactionService.deleteEntityById(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @PutMapping("/assign-category-item")
-  public ResponseEntity<List<TransactionDto>> assignItemToTransactionById(
+  @PutMapping("/assign")
+  public ResponseEntity<List<TransactionDto>> assignCategoryItemToTransactionById(
       @RequestBody List<AssignItemCommandDto> assignItemCommandDtos) {
     return new ResponseEntity<>(
         transactionService.assignTransactionToItemById(assignItemCommandDtos).stream()
@@ -74,8 +77,8 @@ public class TransactionController {
         HttpStatus.OK);
   }
 
-  @PutMapping("/reassign")
-  public ResponseEntity<List<TransactionDto>> reassignUnassignedTransaction() {
+  @PutMapping("/re-assign")
+  public ResponseEntity<List<TransactionDto>> reassignUnassignedTransactions() {
     return new ResponseEntity<>(
         transactionService.reassignAllUnassignedTransactionsToItems().stream()
             .map(Transaction::toDto)
