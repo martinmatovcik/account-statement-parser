@@ -6,7 +6,7 @@ import com.mm.accountstatementparser.entity.CategoryItem;
 public interface CategoryService extends CrudEntityService<Category> {
   Category findCategoryByCode(String categoryCode);
 
-  void updatePlanedAmountRealAmountAndDifference(Category newCategory, CategoryItem categoryItem);
+  void updatePlannedAmountRealAmountAndDifference(Category newCategory, CategoryItem categoryItem);
 
   Category findOrCreateCategoryOthers();
 }

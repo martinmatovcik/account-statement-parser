@@ -62,7 +62,7 @@ public class CategoryItemController extends CrudEntityController<CategoryItemDto
   }
 
   @PutMapping("/assign")
-  public ResponseEntity<List<CategoryItemDto>> assignCategoryItemToCategoryById(
+  public ResponseEntity<List<CategoryItemDto>> assignCategoryItemsToCategoriesById(
           @RequestBody List<AssignCategoryCommandDto> assignCategoryCommandDtos) {
     return new ResponseEntity<>(
             categoryItemService.assignCategoryItemsToCategories(assignCategoryCommandDtos).stream()

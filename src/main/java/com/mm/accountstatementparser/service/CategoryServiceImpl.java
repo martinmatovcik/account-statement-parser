@@ -43,7 +43,22 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public Category updateEntityById(UUID id, Category updatedEntity) {
+    BigDecimal updatedPlannedAmount = updatedEntity.getPlannedAmount();
+
     Category entityToUpdate = getEntityById(id);
+
+    if (!entityToUpdate.getCategoryItems().equals(updatedEntity.getCategoryItems()))
+      throw new RuntimeException(categoryItemRuntimeExceptionMessage());
+
+    if (!updatedEntity.getRealAmount().equals(entityToUpdate.getRealAmount())
+        || !updatedEntity.getDifference().equals(entityToUpdate.getDifference()))
+      throw new RuntimeException(fieldsRuntimeExceptionMessage());
+
+    if (!entityToUpdate.getPlannedAmount().equals(updatedPlannedAmount)) {
+      updatedEntity.setDifference(
+          calculateDifference(updatedPlannedAmount, updatedEntity.getRealAmount()));
+    }
+
     BeanUtils.copyProperties(updatedEntity, entityToUpdate, "id");
     return categoryRepository.save(entityToUpdate);
   }
@@ -53,8 +68,19 @@ public class CategoryServiceImpl implements CategoryService {
     Category entityToUpdate = getEntityById(id);
     fields.forEach(
         (key, value) -> {
+          if (key.equals("categoryItems"))
+            throw new RuntimeException(categoryItemRuntimeExceptionMessage());
+
+          if (key.equals("realAmount") || key.equals("difference"))
+            throw new RuntimeException(fieldsRuntimeExceptionMessage());
+
           Field field = ReflectionUtils.findField(Category.class, (String) key);
           Objects.requireNonNull(field).setAccessible(true);
+
+          if (key.equals("plannedAmount")) {
+            entityToUpdate.setDifference(
+                calculateDifference((BigDecimal) value, entityToUpdate.getRealAmount()));
+          }
         });
     return categoryRepository.save(entityToUpdate);
   }
@@ -70,7 +96,7 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
-  public void updatePlanedAmountRealAmountAndDifference(
+  public void updatePlannedAmountRealAmountAndDifference(
       Category newCategory, CategoryItem categoryItem) {
 
     BigDecimal actualPlannedAmount = categoryItem.getPlannedAmount();
@@ -83,7 +109,8 @@ public class CategoryServiceImpl implements CategoryService {
       BigDecimal originalRealAmount = originalCategory.getRealAmount();
       originalCategory.setPlannedAmount(originalPlannedAmount.subtract(actualPlannedAmount));
       originalCategory.setRealAmount(originalRealAmount.subtract(actualRealAmount));
-      originalCategory.setDifference(originalPlannedAmount.subtract(originalRealAmount));
+      originalCategory.setDifference(
+          calculateDifference(originalPlannedAmount, originalRealAmount));
 
       updateEntity(originalCategory);
     }
@@ -92,7 +119,7 @@ public class CategoryServiceImpl implements CategoryService {
     BigDecimal newRealAmount = newCategory.getRealAmount();
     newCategory.setPlannedAmount(newPlannedAmount.add(actualPlannedAmount));
     newCategory.setRealAmount(newRealAmount.add(actualRealAmount));
-    newCategory.setDifference(newPlannedAmount.subtract(newRealAmount));
+    newCategory.setDifference(calculateDifference(newPlannedAmount, newRealAmount));
 
     updateEntity(newCategory);
   }
@@ -103,5 +130,17 @@ public class CategoryServiceImpl implements CategoryService {
         .findByCode("others")
         .orElseGet(
             () -> persistEntity(Category.builder().code("others").headerValue("Ostatné").build()));
+  }
+
+  private BigDecimal calculateDifference(BigDecimal plannedAmount, BigDecimal realAmount) {
+    return plannedAmount.subtract(realAmount);
+  }
+
+  private String categoryItemRuntimeExceptionMessage() {
+    return "If you want to un/assign CategoryItem from/to Category, please do it using \"/api/v1/category-item/unassign\" or \"/api/v1/category-item/assign\".";
+  }
+
+  private String fieldsRuntimeExceptionMessage() {
+    return "Fields, \"realAmount\" and \"difference\", cannot be updated.";
   }
 }

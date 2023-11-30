@@ -140,21 +140,20 @@ public class TransactionServiceImpl implements TransactionService {
     CategoryItem originalCategoryItem = transaction.getCategoryItem();
 
     List<String> transactionKeywords = parseTransactionNote(transaction.getTransactionNote());
-    Optional<CategoryItem> matchingItem =
+    Optional<CategoryItem> matchingCategoryItem =
         categoryItemService.findCategoryItemByKeywords(transactionKeywords);
+    CategoryItem categoryItem;
 
-    if (originalCategoryItem != null
-        && originalCategoryItem.getCode().equals("unassigned")
-        && matchingItem.isEmpty())
-      transaction.setCategoryItem(categoryItemService.findOrCreateCategoryItemUnassigned());
-    else {
-      matchingItem.ifPresent(transaction::setCategoryItem);
-    }
+    if ((originalCategoryItem == null || originalCategoryItem.getCode().equals("unassigned"))
+        && matchingCategoryItem.isEmpty())
+      categoryItem = categoryItemService.findOrCreateCategoryItemUnassigned();
+    else categoryItem = matchingCategoryItem.get();
 
-    Transaction persistedTransaction = persistEntity(transaction);
     categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
-        originalCategoryItem, persistedTransaction);
-    return persistedTransaction;
+        categoryItem, transaction);
+    transaction.setCategoryItem(categoryItem);
+
+    return persistEntity(transaction);
   }
 
   private List<String> parseTransactionNote(String transactionNote) {
