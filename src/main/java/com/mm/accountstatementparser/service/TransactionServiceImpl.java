@@ -137,6 +137,14 @@ public class TransactionServiceImpl implements TransactionService {
         .toList();
   }
 
+  @Override
+  public void deleteAll() {
+    List<Transaction> transactions = transactionRepository.findAll();
+    for (Transaction transaction : transactions) {
+      deleteEntityById(transaction.getId());
+    }
+  }
+
   private Transaction assignItemOrUnassignedToTransactionAndPersist(Transaction transaction) {
     CategoryItem originalCategoryItem = transaction.getCategoryItem();
 

@@ -85,4 +85,12 @@ public class TransactionController extends CrudEntityController<TransactionDto> 
             .toList(),
         HttpStatus.OK);
   }
+
+//  Internal-Only
+  @DeleteMapping
+  public ResponseEntity<HttpStatus> deleteAll() {
+    transactionService.deleteAll();
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
 }

@@ -18,4 +18,6 @@ public interface TransactionService extends CrudEntityService<Transaction> {
   List<Transaction> assignTransactionsToCategoryItems(List<AssignCategoryItemCommandDto> assignCategoryItemCommandDtos);
 
   List<Transaction> reassignAllUnassignedTransactions();
+
+  void deleteAll();
 }
