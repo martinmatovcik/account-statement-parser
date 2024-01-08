@@ -21,6 +21,7 @@ public class CategoryItem extends EntityParent<CategoryItemDto> {
   @Builder.Default private BigDecimal plannedAmount = BigDecimal.ZERO;
   @Builder.Default private BigDecimal realAmount = BigDecimal.ZERO;
   @Builder.Default private BigDecimal difference = BigDecimal.ZERO;
+
   @ElementCollection @Builder.Default @ToString.Exclude
   private Set<String> keywords = new HashSet<>();
 
@@ -37,19 +38,18 @@ public class CategoryItem extends EntityParent<CategoryItemDto> {
   @Override
   public CategoryItemDto toDto() {
     return CategoryItemDto.builder()
-            .id(this.id)
-            .code(this.code)
-            .name(this.name)
-            .plannedAmount(this.plannedAmount)
-            .realAmount(this.realAmount)
-            .difference(this.difference)
-            .keywords(this.keywords)
-            .categoryId(this.category != null ? this.category.getId() : null)
-            .transactions(this.transactions != null ? this.transactions.stream().map(Transaction::toDto).toList() : null)
-            .build();
-  }
-
-  public void setCategory(Category category) {
-    this.category = category;
+        .id(this.id)
+        .code(this.code)
+        .name(this.name)
+        .plannedAmount(this.plannedAmount)
+        .realAmount(this.realAmount)
+        .difference(this.difference)
+        .keywords(this.keywords)
+        .categoryId(this.category != null ? this.category.getId() : null)
+        .transactions(
+            this.transactions != null
+                ? this.transactions.stream().map(Transaction::toDto).toList()
+                : null)
+        .build();
   }
 }
