@@ -29,7 +29,7 @@ public interface CategoryItemService extends CrudEntityService<CategoryItem> {
 
   CategoryItem findOrCreateCategoryItemUnassigned();
 
-  void updateCategoryItemRealAmountAndDifferenceWithTransaction(CategoryItem newCategoryItem, Transaction transaction);
+  void updateCategoryItemRealAmountAndDifferenceWithTransaction(@Nullable CategoryItem newCategoryItem, Transaction transaction);
 
   CategoryItem updateCategoryItemKeywords(UUID id, String keyword);
   List<CategoryItem> assignCategoryItemsToCategories(List<AssignCategoryCommandDto> assignCategoryCommandDtos);

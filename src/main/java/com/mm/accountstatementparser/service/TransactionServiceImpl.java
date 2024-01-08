@@ -75,6 +75,7 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public void deleteEntityById(UUID id) {
+    categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(null, getEntityById(id));
     transactionRepository.deleteById(id);
   }
 

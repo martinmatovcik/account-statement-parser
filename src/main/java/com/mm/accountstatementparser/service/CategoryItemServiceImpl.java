@@ -6,6 +6,7 @@ import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
 import com.mm.accountstatementparser.entity.Transaction;
 import com.mm.accountstatementparser.repository.CategoryItemRepository;
+import jakarta.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.*;
@@ -138,7 +139,7 @@ public class CategoryItemServiceImpl implements CategoryItemService {
 
   @Override
   public void updateCategoryItemRealAmountAndDifferenceWithTransaction(
-      CategoryItem newCategoryItem, Transaction transaction) {
+      @Nullable CategoryItem newCategoryItem, Transaction transaction) {
 
     BigDecimal actualTransactionAmount = transaction.getAmount().abs();
 
@@ -146,24 +147,26 @@ public class CategoryItemServiceImpl implements CategoryItemService {
     Category actualCategory = null;
 
     if (originalCategoryItem != null) {
-      BigDecimal originalRealAmount = originalCategoryItem.getRealAmount();
-      originalCategoryItem.setRealAmount(originalRealAmount.subtract(actualTransactionAmount));
+      BigDecimal newRealAmount = originalCategoryItem.getRealAmount().subtract(actualTransactionAmount);
+      originalCategoryItem.setRealAmount(newRealAmount);
       originalCategoryItem.setDifference(
-          originalCategoryItem.getPlannedAmount().subtract(originalRealAmount));
+          originalCategoryItem.getPlannedAmount().subtract(newRealAmount));
       updateEntity(originalCategoryItem);
       actualCategory = originalCategoryItem.getCategory();
     }
 
-    BigDecimal newRealAmount = newCategoryItem.getRealAmount().add(actualTransactionAmount);
-    newCategoryItem.setRealAmount(newRealAmount);
-    newCategoryItem.setDifference(newCategoryItem.getPlannedAmount().subtract(newRealAmount));
+    if (newCategoryItem != null) {
+      BigDecimal newRealAmount = newCategoryItem.getRealAmount().add(actualTransactionAmount);
+      newCategoryItem.setRealAmount(newRealAmount);
+      newCategoryItem.setDifference(newCategoryItem.getPlannedAmount().subtract(newRealAmount));
 
-    if (newCategoryItem.getCategory() == null) { //todo
-      newCategoryItem.setCategory(categoryService.findOrCreateCategoryOthers());
-      categoryService.updatePlannedAmountRealAmountAndDifference(actualCategory, newCategoryItem);
+      if (newCategoryItem.getCategory() == null) { // todo - update category amount when updating categoryItem
+        newCategoryItem.setCategory(categoryService.findOrCreateCategoryOthers());
+        categoryService.updatePlannedAmountRealAmountAndDifference(actualCategory, newCategoryItem);
+      }
+
+      updateEntity(newCategoryItem);
     }
-
-    updateEntity(newCategoryItem);
   }
 
   @Override
