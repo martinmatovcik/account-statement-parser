@@ -17,13 +17,7 @@ public interface CategoryItemService extends CrudEntityService<CategoryItem> {
 
   BigDecimal sumPlannedAmountOfCategoryItems();
 
-  BigDecimal sumRealAmountOfCategoryItems();
-
-  BigDecimal sumDifferenceOfCategoryItems();
-
   BigDecimal sumPlannedAmountOfCategoryItemsForCategory(Category category);
-
-  BigDecimal sumRealAmountOfCategoryItemsForCategory(Category category);
 
   BigDecimal sumDifferenceOfCategoryItemsForCategory(Category category);
 

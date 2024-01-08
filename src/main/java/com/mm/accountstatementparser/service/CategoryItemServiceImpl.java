@@ -79,27 +79,10 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   }
 
   @Override
-  public BigDecimal sumRealAmountOfCategoryItems() {
-    return categoryItemRepository.sumRealAmountOfCategoryItems();
-  }
-
-  @Override
-  public BigDecimal sumDifferenceOfCategoryItems() {
-    return categoryItemRepository.sumDifferenceOfCategoryItems();
-  }
-
-  @Override
   public BigDecimal sumPlannedAmountOfCategoryItemsForCategory(Category category) {
     return BigDecimal.valueOf(1);
     // todo: 1
     //    return itemRepository.sumPlannedAmountOfItemsForCategory(category);
-  }
-
-  @Override
-  public BigDecimal sumRealAmountOfCategoryItemsForCategory(Category category) {
-    return BigDecimal.valueOf(2);
-    // todo: 2
-    //    return itemRepository.sumRealAmountOfItemsForCategory(category);
   }
 
   @Override
