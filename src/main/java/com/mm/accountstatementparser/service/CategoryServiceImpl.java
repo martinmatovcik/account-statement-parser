@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -134,6 +136,26 @@ public class CategoryServiceImpl implements CategoryService {
     newCategory.setDifference(calculateDifference(newCategoryPlannedAmount, newCategoryRealAmount));
 
     updateEntity(newCategory);
+  }
+
+  @Override
+  public void updateRealAmountAndDifferenceWithCategoryItem(
+          @Nullable Category newCategory, CategoryItem categoryItem, BigDecimal transactionAmount) {
+    BigDecimal actualCategoryItemRealAmount = categoryItem.getRealAmount().abs();
+    BigDecimal actualCategoryItemDifference = categoryItem.getDifference().abs();
+
+    Category actualCategory = categoryItem.getCategory();
+    BigDecimal actualCategoryPlannedAmount = actualCategory.getPlannedAmount().abs();
+    BigDecimal actualCategoryRealAmount = actualCategory.getRealAmount().abs();
+    BigDecimal actualCategoryDifference = actualCategory.getDifference().abs();
+
+    if (newCategory == null) {
+      actualCategoryRealAmount = actualCategoryRealAmount.add(transactionAmount);
+      actualCategory.setRealAmount(actualCategoryRealAmount);
+      actualCategoryDifference = actualCategoryPlannedAmount.subtract(actualCategoryRealAmount);
+      actualCategory.setDifference(actualCategoryDifference);
+      updateEntity(actualCategory);
+    }
   }
 
   @Override

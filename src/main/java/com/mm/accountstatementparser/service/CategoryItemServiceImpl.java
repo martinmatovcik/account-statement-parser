@@ -147,7 +147,8 @@ public class CategoryItemServiceImpl implements CategoryItemService {
     Category actualCategory = null;
 
     if (originalCategoryItem != null) {
-      BigDecimal newRealAmount = originalCategoryItem.getRealAmount().subtract(actualTransactionAmount);
+      BigDecimal newRealAmount =
+          originalCategoryItem.getRealAmount().subtract(actualTransactionAmount);
       originalCategoryItem.setRealAmount(newRealAmount);
       originalCategoryItem.setDifference(
           originalCategoryItem.getPlannedAmount().subtract(newRealAmount));
@@ -160,9 +161,13 @@ public class CategoryItemServiceImpl implements CategoryItemService {
       newCategoryItem.setRealAmount(newRealAmount);
       newCategoryItem.setDifference(newCategoryItem.getPlannedAmount().subtract(newRealAmount));
 
-      if (newCategoryItem.getCategory() == null) { // todo - update category amount when updating categoryItem
-        newCategoryItem.setCategory(categoryService.findOrCreateCategoryOthers());
-        categoryService.updatePlannedAmountRealAmountAndDifference(actualCategory, newCategoryItem);
+      if (newCategoryItem.getCategory() != null) {
+        // todo - update category amount when updating categoryItem
+        Category newCategory = categoryService.findOrCreateCategoryOthers();
+        newCategoryItem.setCategory(newCategory);
+        categoryService.updateRealAmountAndDifferenceWithCategoryItem(null, newCategoryItem, actualTransactionAmount);
+        //        categoryService.updatePlannedAmountRealAmountAndDifference(actualCategory,
+        // newCategoryItem);
       }
 
       updateEntity(newCategoryItem);
