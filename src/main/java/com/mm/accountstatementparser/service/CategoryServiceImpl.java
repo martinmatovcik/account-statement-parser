@@ -3,14 +3,13 @@ package com.mm.accountstatementparser.service;
 import com.mm.accountstatementparser.entity.Category;
 import com.mm.accountstatementparser.entity.CategoryItem;
 import com.mm.accountstatementparser.repository.CategoryRepository;
+import jakarta.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -119,7 +118,8 @@ public class CategoryServiceImpl implements CategoryService {
 
       BigDecimal originalCategoryNewRealAmount =
           originalCategoryRealAmount.subtract(originalCategoryItemRealAmount);
-      originalCategory.setRealAmount(originalCategoryNewRealAmount.compareTo(BigDecimal.ZERO) > 0
+      originalCategory.setRealAmount(
+          originalCategoryNewRealAmount.compareTo(BigDecimal.ZERO) > 0
               ? originalCategoryNewRealAmount
               : BigDecimal.ZERO);
 
@@ -140,20 +140,14 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void updateRealAmountAndDifferenceWithCategoryItem(
-          @Nullable Category newCategory, CategoryItem categoryItem, BigDecimal transactionAmount) {
-    BigDecimal actualCategoryItemRealAmount = categoryItem.getRealAmount().abs();
-    BigDecimal actualCategoryItemDifference = categoryItem.getDifference().abs();
-
-    Category actualCategory = categoryItem.getCategory();
-    BigDecimal actualCategoryPlannedAmount = actualCategory.getPlannedAmount().abs();
-    BigDecimal actualCategoryRealAmount = actualCategory.getRealAmount().abs();
-    BigDecimal actualCategoryDifference = actualCategory.getDifference().abs();
-
+      @Nullable Category newCategory, CategoryItem categoryItem, BigDecimal transactionAmount) {
     if (newCategory == null) {
-      actualCategoryRealAmount = actualCategoryRealAmount.add(transactionAmount);
+      Category actualCategory = categoryItem.getCategory();
+      BigDecimal actualCategoryRealAmount =
+          actualCategory.getRealAmount().abs().add(transactionAmount);
       actualCategory.setRealAmount(actualCategoryRealAmount);
-      actualCategoryDifference = actualCategoryPlannedAmount.subtract(actualCategoryRealAmount);
-      actualCategory.setDifference(actualCategoryDifference);
+      actualCategory.setDifference(
+          actualCategory.getPlannedAmount().abs().subtract(actualCategoryRealAmount));
       updateEntity(actualCategory);
     }
   }
@@ -164,6 +158,15 @@ public class CategoryServiceImpl implements CategoryService {
         .findByCode("others")
         .orElseGet(
             () -> persistEntity(Category.builder().code("others").headerValue("Ostatné").build()));
+  }
+
+  @Override
+  public void updateRealAmountAndDifferenceWhenDeletingTransaction(
+      Category category, BigDecimal transactionAmount) {
+    category.setRealAmount(category.getRealAmount().subtract(transactionAmount));
+    category.setDifference(category.getDifference().add(transactionAmount));
+
+    updateEntity(category);
   }
 
   private BigDecimal calculateDifference(BigDecimal plannedAmount, BigDecimal realAmount) {

@@ -138,13 +138,13 @@ public class CategoryItemServiceImpl implements CategoryItemService {
   }
 
   @Override
-  public void updateCategoryItemRealAmountAndDifferenceWithTransaction(
+  public void updateRealAmountAndDifferenceWithTransaction(
       @Nullable CategoryItem newCategoryItem, Transaction transaction) {
 
     BigDecimal actualTransactionAmount = transaction.getAmount().abs();
 
     CategoryItem originalCategoryItem = transaction.getCategoryItem();
-    Category actualCategory = null;
+    Category originalCategory = null;
 
     if (originalCategoryItem != null) {
       BigDecimal newRealAmount =
@@ -153,7 +153,8 @@ public class CategoryItemServiceImpl implements CategoryItemService {
       originalCategoryItem.setDifference(
           originalCategoryItem.getPlannedAmount().subtract(newRealAmount));
       updateEntity(originalCategoryItem);
-      actualCategory = originalCategoryItem.getCategory();
+      originalCategory = originalCategoryItem.getCategory();
+      categoryService.updateRealAmountAndDifferenceWhenDeletingTransaction(originalCategory, actualTransactionAmount);
     }
 
     if (newCategoryItem != null) {

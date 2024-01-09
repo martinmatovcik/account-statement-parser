@@ -14,4 +14,6 @@ public interface CategoryService extends CrudEntityService<Category> {
   void updateRealAmountAndDifferenceWithCategoryItem(@Nullable Category newCategory, CategoryItem categoryItem, BigDecimal transactionAmount);
 
   Category findOrCreateCategoryOthers();
+
+  void updateRealAmountAndDifferenceWhenDeletingTransaction(Category category, BigDecimal transactionAmount);
 }

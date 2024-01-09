@@ -75,7 +75,7 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public void deleteEntityById(UUID id) {
-    categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(null, getEntityById(id));
+    categoryItemService.updateRealAmountAndDifferenceWithTransaction(null, getEntityById(id));
     transactionRepository.deleteById(id);
   }
 
@@ -114,7 +114,7 @@ public class TransactionServiceImpl implements TransactionService {
 
       Transaction transactionToUpdate =
           getEntityById(assignCategoryItemCommandDto.getTransactionId());
-      categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
+      categoryItemService.updateRealAmountAndDifferenceWithTransaction(
           categoryItem, transactionToUpdate);
       transactionToUpdate.setCategoryItem(categoryItem);
 
@@ -158,7 +158,7 @@ public class TransactionServiceImpl implements TransactionService {
       categoryItem = categoryItemService.findOrCreateCategoryItemUnassigned();
     else categoryItem = matchingCategoryItem.get();
 
-    categoryItemService.updateCategoryItemRealAmountAndDifferenceWithTransaction(
+    categoryItemService.updateRealAmountAndDifferenceWithTransaction(
         categoryItem, transaction);
     transaction.setCategoryItem(categoryItem);
 
