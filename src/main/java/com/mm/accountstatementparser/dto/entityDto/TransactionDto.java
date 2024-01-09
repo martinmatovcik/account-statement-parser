@@ -23,7 +23,7 @@ public class TransactionDto extends DtoParent<Transaction> {
   @Nullable private String variableSymbol;
   @Nullable private String recipientMessage;
   private String transactionNote;
-  @Nullable private UUID itemId;
+  @Nullable private UUID categoryItemId;
 
   @Override
   public Transaction toEntity() {
@@ -48,7 +48,7 @@ public class TransactionDto extends DtoParent<Transaction> {
         this.variableSymbol != null ? this.variableSymbol : "",
         this.recipientMessage != null ? this.recipientMessage : "",
         this.transactionNote != null ? this.transactionNote : "",
-        this.itemId != null ? this.itemId.toString() : ""
+        this.categoryItemId != null ? this.categoryItemId.toString() : ""
     );
   }
 }

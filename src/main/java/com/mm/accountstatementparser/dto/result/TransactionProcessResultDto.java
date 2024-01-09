@@ -19,7 +19,7 @@ public class TransactionProcessResultDto extends TransactionDto {
         transactionDto.getVariableSymbol(),
         transactionDto.getRecipientMessage(),
         transactionDto.getTransactionNote(),
-        transactionDto.getItemId());
+        transactionDto.getCategoryItemId());
   }
   public TransactionProcessResultDto(TransactionDto transactionDto, List<String> transactionKeywords) {
     super(
@@ -30,7 +30,7 @@ public class TransactionProcessResultDto extends TransactionDto {
         transactionDto.getVariableSymbol(),
         transactionDto.getRecipientMessage(),
         transactionDto.getTransactionNote(),
-        transactionDto.getItemId());
+        transactionDto.getCategoryItemId());
     this.transactionKeywords = transactionKeywords;
   }
 }

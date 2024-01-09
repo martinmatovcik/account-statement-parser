@@ -1,6 +1,5 @@
 package com.mm.accountstatementparser.entity;
 
-import com.mm.accountstatementparser.dto.entityDto.DtoParent;
 import com.mm.accountstatementparser.dto.entityDto.TransactionDto;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -40,7 +39,7 @@ public class Transaction extends EntityParent<TransactionDto> {
         .variableSymbol(this.variableSymbol)
         .recipientMessage(this.recipientMessage)
         .transactionNote(this.transactionNote)
-        .itemId(this.categoryItem != null ? this.categoryItem.getId() : null)
+        .categoryItemId(this.categoryItem != null ? this.categoryItem.getId() : null)
         .build();
   }
 }
